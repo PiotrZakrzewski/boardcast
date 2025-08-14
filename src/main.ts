@@ -11,6 +11,9 @@ interface HexCell {
   isBlinking: boolean;
   blinkColor?: string;
   blinkPhase: number;
+  isPulsing: boolean;
+  pulseColor?: string;
+  pulsePhase: number;
   originalColor: string;
 }
 
@@ -76,6 +79,8 @@ class BoardcastHexBoard {
             highlighted: false,
             isBlinking: false,
             blinkPhase: 0,
+            isPulsing: false,
+            pulsePhase: 0,
             originalColor: '#2a2a2a'
           });
         }
@@ -201,6 +206,10 @@ class BoardcastHexBoard {
   }
 
   private getHexFillColor(cell: HexCell): string {
+    if (cell.isPulsing && cell.pulseColor) {
+      const pulseIntensity = (Math.sin(cell.pulsePhase) + 1) / 2; // 0 to 1
+      return this.interpolateColors(cell.originalColor, cell.pulseColor, pulseIntensity);
+    }
     if (cell.isBlinking && cell.blinkColor) {
       const blinkIntensity = (Math.sin(cell.blinkPhase) + 1) / 2;
       return blinkIntensity > 0.5 ? cell.blinkColor : cell.originalColor;
@@ -209,6 +218,28 @@ class BoardcastHexBoard {
       return cell.highlightColor;
     }
     return cell.originalColor;
+  }
+
+  private interpolateColors(color1: string, color2: string, factor: number): string {
+    // Convert hex colors to RGB
+    const getRGB = (hex: string) => {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      return { r, g, b };
+    };
+
+    const rgb1 = getRGB(color1);
+    const rgb2 = getRGB(color2);
+
+    // Interpolate between colors
+    const r = Math.round(rgb1.r + (rgb2.r - rgb1.r) * factor);
+    const g = Math.round(rgb1.g + (rgb2.g - rgb1.g) * factor);
+    const b = Math.round(rgb1.b + (rgb2.b - rgb1.b) * factor);
+
+    // Convert back to hex
+    const toHex = (n: number) => n.toString(16).padStart(2, '0');
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
   }
 
   private getShapePath(shape: 'rect' | 'triangle' | 'star', size: number): string {
@@ -224,10 +255,13 @@ class BoardcastHexBoard {
     const animate = () => {
       this.time += 0.05;
       
-      // Update blink phases
+      // Update blink and pulse phases
       this.hexCells.forEach(cell => {
         if (cell.isBlinking) {
           cell.blinkPhase = this.time * 3; // Speed of blinking
+        }
+        if (cell.isPulsing) {
+          cell.pulsePhase = this.time * 0.8; // Slower speed for gradual pulse
         }
       });
       
@@ -263,7 +297,19 @@ class BoardcastHexBoard {
       cell.isBlinking = true;
       cell.blinkColor = colour;
       cell.highlighted = false; // Stop static highlight if it was highlighted
+      cell.isPulsing = false; // Stop pulsing if it was pulsing
       cell.blinkPhase = this.time * 3;
+    }
+  }
+
+  public pulse(q: number, r: number, colour: string = '#4fc3f7'): void {
+    const cell = this.hexCells.find(hex => hex.q === q && hex.r === r);
+    if (cell) {
+      cell.isPulsing = true;
+      cell.pulseColor = colour;
+      cell.highlighted = false; // Stop static highlight if it was highlighted
+      cell.isBlinking = false; // Stop blinking if it was blinking
+      cell.pulsePhase = this.time * 0.8; // Slower than blink for gradual transition
     }
   }
 
@@ -397,8 +443,10 @@ class BoardcastHexBoard {
     this.hexCells.forEach(cell => {
       cell.highlighted = false;
       cell.isBlinking = false;
+      cell.isPulsing = false;
       cell.highlightColor = undefined;
       cell.blinkColor = undefined;
+      cell.pulseColor = undefined;
     });
     
     // Clear all tokens
@@ -413,6 +461,7 @@ class BoardcastHexBoard {
     const hideCoordBtn = document.getElementById('hide-coordinates');
     const demoHighlightBtn = document.getElementById('demo-highlight');
     const demoBlinkBtn = document.getElementById('demo-blink');
+    const demoPulseBtn = document.getElementById('demo-pulse');
     const demoTokensBtn = document.getElementById('demo-tokens');
     const demoMovementBtn = document.getElementById('demo-movement');
     const resetBtn = document.getElementById('reset-board');
@@ -432,6 +481,13 @@ class BoardcastHexBoard {
       this.blink(2, -1, '#ff6b6b');
       this.blink(-2, 1, '#4ecdc4');
       this.blink(1, 1, '#feca57');
+    });
+
+    demoPulseBtn?.addEventListener('click', () => {
+      this.resetBoard();
+      this.pulse(1, -1, '#ff6b6b');
+      this.pulse(-1, 0, '#4ecdc4');
+      this.pulse(0, 1, '#feca57');
     });
 
     demoTokensBtn?.addEventListener('click', () => {

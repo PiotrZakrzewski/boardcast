@@ -23,6 +23,14 @@ Make specific hex slowly pulse transitioning between a highlight colour and its 
 blink(q, r, colour)
 ```
 
+### Pulse a hex (animated)
+
+Make specific hex slowly pulse with gradual color transitions between the normal fill colour and highlight colour
+
+```javascript
+pulse(q, r, colour)
+```
+
 ### Place Token
 
 Will place a token on the board using predefined shapes and colours

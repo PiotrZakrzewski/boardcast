@@ -91,7 +91,18 @@ blink(q, r, colour = '#4fc3f7')
 - Stores blink state in HexCell (isBlinking, blinkColor, blinkPhase)
 - Animation loop handles blink timing automatically
 
-### 3. Token Method
+### 3. Pulse Method
+```javascript
+pulse(q, r, colour = '#4fc3f7')
+```
+**Implementation Status: ✅ COMPLETED**
+- Added pulse animation state tracking for gradual color transitions
+- Uses RGB color interpolation for smooth gradual transitions
+- Slower animation speed (0.8x) compared to blink for gentler effect
+- Stores pulse state in HexCell (isPulsing, pulseColor, pulsePhase)
+- Mutually exclusive with blink and highlight effects
+
+### 4. Token Method
 ```javascript
 token(q, r, tokenName, shape, colour, label?)
 ```
@@ -107,7 +118,7 @@ token(q, r, tokenName, shape, colour, label?)
 - Labels positioned below tokens with outline for readability
 - Position tokens at hex centers using axialToPixel()
 
-### 4. Move Method
+### 5. Move Method
 ```javascript
 move(tokenName, q, r)
 ```
