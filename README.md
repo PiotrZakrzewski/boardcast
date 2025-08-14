@@ -2,6 +2,32 @@
 
 Create animations explaining rules of a tabletop RPG game.
 
+## Configuration
+
+Configure the grid size when creating a new board:
+
+```javascript
+// Default configuration (8 hex radius)
+const board = new BoardcastHexBoard();
+
+// Custom configuration
+const board = new BoardcastHexBoard({
+  gridRadius: 5,     // Number of hexes from center (5 = small, 8 = default, 12 = large)
+  hexRadius: 20,     // Size of individual hexes in pixels
+  width: 800,        // Canvas width
+  height: 600        // Canvas height
+});
+
+// Change grid size at runtime
+board.setGridSize(3);             // Small grid (fixed hex size)
+board.setGridSizeWithScaling(3);  // Small grid with auto-scaled hex size
+board.setHexSize(30);             // Change hex size only
+board.configure({                 // Multiple properties
+  gridRadius: 10,
+  hexRadius: 15
+});
+```
+
 ## Supported Calls
 
 Common parameters used in many of the calls

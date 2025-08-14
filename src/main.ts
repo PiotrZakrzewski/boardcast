@@ -29,6 +29,13 @@ interface GamePiece {
   label?: string;
 }
 
+interface GridConfig {
+  gridRadius?: number;
+  hexRadius?: number;
+  width?: number;
+  height?: number;
+}
+
 class BoardcastHexBoard {
   private svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>;
   private hexCells: HexCell[] = [];
@@ -37,12 +44,23 @@ class BoardcastHexBoard {
   private width: number = 1000;
   private height: number = 700;
   private hexRadius: number = 25;
+  private gridRadius: number = 8;
   private coordinatesVisible: boolean = false;
   private isAnimating: boolean = false;
   private time: number = 0;
 
-  constructor() {
+  constructor(config: GridConfig = {}) {
     this.svg = d3.select('#chart');
+    this.gridRadius = config.gridRadius ?? 8;
+    this.hexRadius = config.hexRadius ?? 25;
+    this.width = config.width ?? 1000;
+    this.height = config.height ?? 700;
+    
+    // Update SVG dimensions if provided
+    if (config.width || config.height) {
+      this.svg.attr('width', this.width).attr('height', this.height);
+    }
+    
     this.initializeBoard();
     this.setupEventListeners();
     this.startAnimationLoop();
@@ -57,11 +75,14 @@ class BoardcastHexBoard {
   }
 
   private initializeBoard(): void {
-    const gridRadius = 8; // Smaller board for tabletop games
+    // Clear existing cells and tokens
+    this.hexCells = [];
+    this.gamePieces = [];
+    this.tokenRegistry.clear();
     
-    for (let q = -gridRadius; q <= gridRadius; q++) {
-      const r1 = Math.max(-gridRadius, -q - gridRadius);
-      const r2 = Math.min(gridRadius, -q + gridRadius);
+    for (let q = -this.gridRadius; q <= this.gridRadius; q++) {
+      const r1 = Math.max(-this.gridRadius, -q - this.gridRadius);
+      const r2 = Math.min(this.gridRadius, -q + this.gridRadius);
       
       for (let r = r1; r <= r2; r++) {
         const pixel = this.axialToPixel(q, r);
@@ -456,9 +477,79 @@ class BoardcastHexBoard {
     this.render();
   }
 
+  public setGridSize(gridRadius: number): void {
+    this.gridRadius = gridRadius;
+    this.initializeBoard();
+    this.render();
+  }
+
+  public setGridSizeWithScaling(gridRadius: number): void {
+    this.gridRadius = gridRadius;
+    this.hexRadius = this.calculateOptimalHexSize(gridRadius);
+    this.initializeBoard();
+    this.render();
+  }
+
+  private calculateOptimalHexSize(gridRadius: number): number {
+    // Calculate the optimal hex size to fill most of the available space
+    // Hex grid width = gridRadius * 3 * hexRadius
+    // Hex grid height = gridRadius * 2 * sqrt(3) * hexRadius
+    // We want to use most of the available canvas while leaving some margin
+    
+    const margin = 60; // Margin from edges
+    const availableWidth = this.width - 2 * margin;
+    const availableHeight = this.height - 2 * margin;
+    
+    // Calculate hex size based on width constraint
+    const hexSizeFromWidth = availableWidth / (gridRadius * 3);
+    
+    // Calculate hex size based on height constraint
+    const hexSizeFromHeight = availableHeight / (gridRadius * 2 * Math.sqrt(3));
+    
+    // Use the smaller of the two to ensure it fits in both dimensions
+    const optimalSize = Math.min(hexSizeFromWidth, hexSizeFromHeight);
+    
+    // Clamp between reasonable bounds
+    return Math.max(8, Math.min(40, optimalSize));
+  }
+
+  public setHexSize(hexRadius: number): void {
+    this.hexRadius = hexRadius;
+    this.initializeBoard();
+    this.render();
+  }
+
+  public configure(config: GridConfig): void {
+    if (config.gridRadius !== undefined) this.gridRadius = config.gridRadius;
+    if (config.hexRadius !== undefined) this.hexRadius = config.hexRadius;
+    if (config.width !== undefined) {
+      this.width = config.width;
+      this.svg.attr('width', this.width);
+    }
+    if (config.height !== undefined) {
+      this.height = config.height;
+      this.svg.attr('height', this.height);
+    }
+    
+    this.initializeBoard();
+    this.render();
+  }
+
+  public getGridConfig(): GridConfig {
+    return {
+      gridRadius: this.gridRadius,
+      hexRadius: this.hexRadius,
+      width: this.width,
+      height: this.height
+    };
+  }
+
   private setupEventListeners(): void {
     const showCoordBtn = document.getElementById('show-coordinates');
     const hideCoordBtn = document.getElementById('hide-coordinates');
+    const gridSmallBtn = document.getElementById('grid-small');
+    const gridMediumBtn = document.getElementById('grid-medium');
+    const gridLargeBtn = document.getElementById('grid-large');
     const demoHighlightBtn = document.getElementById('demo-highlight');
     const demoBlinkBtn = document.getElementById('demo-blink');
     const demoPulseBtn = document.getElementById('demo-pulse');
@@ -468,6 +559,10 @@ class BoardcastHexBoard {
 
     showCoordBtn?.addEventListener('click', () => this.showCoordinates());
     hideCoordBtn?.addEventListener('click', () => this.hideCoordinates());
+    
+    gridSmallBtn?.addEventListener('click', () => this.setGridSizeWithScaling(3));
+    gridMediumBtn?.addEventListener('click', () => this.setGridSizeWithScaling(6));
+    gridLargeBtn?.addEventListener('click', () => this.setGridSizeWithScaling(10));
     
     demoHighlightBtn?.addEventListener('click', () => {
       this.resetBoard();
@@ -513,7 +608,12 @@ class BoardcastHexBoard {
 }
 
 // Initialize the boardcast library when the DOM is loaded
+let board: BoardcastHexBoard;
+
 document.addEventListener('DOMContentLoaded', () => {
-  new BoardcastHexBoard();
+  board = new BoardcastHexBoard();
   console.log('Boardcast hex board library initialized!');
+  
+  // Make board available globally for console access
+  (window as any).boardcast = board;
 });

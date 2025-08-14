@@ -45,6 +45,7 @@ vite.config.ts       # Vite build configuration
 
 ## Key Architecture Patterns
 
+- **Configurable Grid System**: Adjustable grid size and hex dimensions for different game scales
 - **Hex Coordinate System**: Uses axial coordinates (q, r) for hexagonal grid positioning
 - **Game Piece Management**: Entities that can be animated between hex positions
 - **Coordinate Display**: Toggle-able coordinate labels for development and education
@@ -53,10 +54,37 @@ vite.config.ts       # Vite build configuration
 ## Library Components
 
 The `BoardcastHexBoard` class in `src/main.ts` provides the core functionality:
+
+### Configuration Methods:
+- `new BoardcastHexBoard(config?)` - Initialize with optional GridConfig
+- `setGridSize(radius)` - Change number of hexes displayed (fixed hex size)
+- `setGridSizeWithScaling(radius)` - Change grid size with auto-scaled hex size
+- `setHexSize(radius)` - Change size of individual hexes
+- `configure(config)` - Update multiple configuration options
+- `getGridConfig()` - Get current configuration
+
+### Display Methods:
 - `showCoordinates()` / `hideCoordinates()` - Toggle coordinate display
-- `movePiece(id, hexes[])` - Animate piece movement through sequence of hex positions
-- `resetBoard()` - Reset all pieces to starting positions
-- Automatic highlighting of target hexes during movement animations
+- `resetBoard()` - Reset all pieces and effects
+
+### Animation Methods:
+- `highlight(q, r, colour)` - Static hex highlighting
+- `blink(q, r, colour)` - Sharp blinking animation
+- `pulse(q, r, colour)` - Gradual color transitions
+- `token(q, r, name, shape, colour, label?)` - Place tokens with optional labels
+- `move(tokenName, q, r)` - Animate token movement
+
+## Grid Configuration
+
+The `gridRadius` parameter controls how many hexes are displayed from the center:
+- gridRadius = 3: Small grid (37 hexes total) - good for simple demos
+- gridRadius = 6: Medium grid (127 hexes total) - good for medium games  
+- gridRadius = 8: Default grid (217 hexes total) - good for complex games
+- gridRadius = 10: Large grid (331 hexes total) - good for large battle maps
+
+**Auto-scaling**: Demo buttons use `setGridSizeWithScaling()` which automatically calculates optimal hex size to fill available space. Smaller grids get larger hexes, larger grids get smaller hexes to maintain good visual coverage.
+
+Use smaller grids (3-5) for focused rule demonstrations, larger grids (8-12) for complex scenarios.
 
 ## Hex Coordinate System
 
@@ -64,6 +92,7 @@ Uses axial coordinates where each hex has (q, r) coordinates:
 - Center hex is (0, 0)
 - Adjacent hexes differ by ±1 in one coordinate
 - `axialToPixel()` converts hex coordinates to screen positions
+- Grid spans from -gridRadius to +gridRadius in each direction
 
 ## Public API Implementation Plan
 
