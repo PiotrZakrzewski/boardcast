@@ -73,72 +73,83 @@ Based on the README.md specification, here's the plan to implement the public me
 ```javascript
 highlight(q, r, colour = '#4fc3f7')
 ```
-**Implementation Plan:**
+**Implementation Status: ✅ COMPLETED**
 - Find hex cell by coordinates (q, r)
 - Update cell's fill color to specified colour
-- Add/update a `highlightColor` property to HexCell interface
-- Modify render() to use highlightColor when present
-- Store original color for potential restoration
+- Added `highlightColor` property to HexCell interface
+- Modified render() to use highlightColor when present
+- Stores original color for restoration
 
 ### 2. Blink Method
 ```javascript
 blink(q, r, colour = '#4fc3f7')
 ```
-**Implementation Plan:**
-- Add animation state tracking for blinking hexes
-- Create interval-based animation that toggles between highlight and normal colors
-- Use smooth transitions (CSS transitions or D3 transitions)
-- Store blink state in HexCell (isBlinking, blinkColor, blinkPhase)
-- Update animation loop to handle blink timing
+**Implementation Status: ✅ COMPLETED**
+- Added animation state tracking for blinking hexes
+- Created continuous animation loop that toggles between highlight and normal colors
+- Uses sin wave for smooth blinking transition
+- Stores blink state in HexCell (isBlinking, blinkColor, blinkPhase)
+- Animation loop handles blink timing automatically
 
 ### 3. Token Method
 ```javascript
-token(q, r, tokenName, shape, colour)
+token(q, r, tokenName, shape, colour, label?)
 ```
-**Implementation Plan:**
-- Extend GamePiece interface to include shape and tokenName
-- Create shape rendering functions:
+**Implementation Status: ✅ COMPLETED**
+- Extended GamePiece interface to include shape, tokenName, and optional label
+- Created shape rendering functions:
   - `createRectPath()` for rectangles
   - `createTrianglePath()` for triangles  
   - `createStarPath()` for stars
-  - Circles already supported via SVG circle elements
-- Add token registry to track tokens by name
-- Modify render() to handle different shapes
+  - Circles supported via SVG circle elements
+- Added token registry to track tokens by name
+- Modified render() to handle different shapes and optional labels
+- Labels positioned below tokens with outline for readability
 - Position tokens at hex centers using axialToPixel()
 
 ### 4. Move Method
 ```javascript
 move(tokenName, q, r)
 ```
-**Implementation Plan:**
+**Implementation Status: ✅ COMPLETED**
 - Find token by tokenName in registry
 - Get target hex coordinates and convert to pixel position
-- Use existing smooth animation from movePiece() method
-- Update token's currentHex property
-- Support queuing multiple moves for same token
-- Return Promise for chaining animations
+- Uses smooth easing animation with requestAnimationFrame
+- Updates token's currentHex property
+- Returns Promise for chaining animations
+- Temporarily highlights target hex during movement
 
-### Implementation Architecture Changes Needed:
+## Implementation Status: ✅ ALL METHODS COMPLETED
 
-1. **Enhanced HexCell Interface:**
-   - Add highlightColor, isBlinking, blinkColor properties
-   - Add original color storage
+All public API methods from the README.md specification have been successfully implemented:
 
-2. **Enhanced GamePiece Interface:**
-   - Add tokenName and shape properties
-   - Support different rendering based on shape
+### Key Features Added:
 
-3. **Animation System:**
-   - Add blink animation loop
-   - Token move queue system
-   - Promise-based animation chaining
+1. **Enhanced HexCell Interface:** ✅
+   - Added highlightColor, isBlinking, blinkColor, blinkPhase properties
+   - Added original color storage for restoration
 
-4. **Shape Rendering:**
-   - SVG path generators for different shapes
-   - Consistent sizing across shape types
+2. **Enhanced GamePiece Interface:** ✅
+   - Added tokenName, shape, and optional label properties
+   - Support for different rendering based on shape type
 
-5. **Token Registry:**
-   - Map tokenName -> GamePiece for lookup
-   - Collision detection (multiple tokens per hex)
+3. **Animation System:** ✅
+   - Continuous blink animation loop using sin waves
+   - Smooth token movement with easing functions
+   - Promise-based animation chaining for sequences
 
-This plan maintains the existing coordinate system and rendering architecture while adding the animation features specified in the README.
+4. **Shape Rendering:** ✅
+   - SVG path generators for rect, triangle, and star shapes
+   - Circle support via SVG circle elements
+   - Consistent sizing across all shape types
+
+5. **Token Registry:** ✅
+   - Map tokenName -> GamePiece for efficient lookup
+   - Automatic replacement of tokens with same name
+   - Label rendering with outline for readability
+
+6. **Demo System:** ✅
+   - Interactive demo buttons showcasing each API method
+   - Example usage with labeled tokens (Player, Guard, Enemy, Treasure)
+
+The library maintains the existing coordinate system and rendering architecture while providing all the animation features specified in the README.md.

@@ -28,8 +28,10 @@ blink(q, r, colour)
 Will place a token on the board using predefined shapes and colours
 
 ```javascript
-token(q, r, tokenName, shape, colour)
+token(q, r, tokenName, shape, colour, label?)
 ```
+
+Optional `label` parameter displays text below the token for identification.
 
 ### Move Token
 

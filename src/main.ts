@@ -23,6 +23,7 @@ interface GamePiece {
   size: number;
   shape: 'circle' | 'rect' | 'triangle' | 'star';
   currentHex: { q: number; r: number };
+  label?: string;
 }
 
 class BoardcastHexBoard {
@@ -180,6 +181,22 @@ class BoardcastHexBoard {
           .attr('stroke', '#fff')
           .attr('stroke-width', 2);
       }
+
+      // Render token label if present
+      if (piece.label) {
+        this.svg.append('text')
+          .attr('class', 'token-label')
+          .attr('x', piece.x)
+          .attr('y', piece.y + piece.size + 18) // Position below the token
+          .attr('text-anchor', 'middle')
+          .attr('fill', '#fff')
+          .attr('font-size', '12px')
+          .attr('font-family', 'sans-serif')
+          .attr('font-weight', 'bold')
+          .attr('stroke', '#000')
+          .attr('stroke-width', 0.5)
+          .text(piece.label);
+      }
     });
   }
 
@@ -250,7 +267,7 @@ class BoardcastHexBoard {
     }
   }
 
-  public token(q: number, r: number, tokenName: string, shape: 'rect' | 'circle' | 'triangle' | 'star', colour: string): void {
+  public token(q: number, r: number, tokenName: string, shape: 'rect' | 'circle' | 'triangle' | 'star', colour: string, label?: string): void {
     const targetCell = this.hexCells.find(cell => cell.q === q && cell.r === r);
     if (!targetCell) return;
 
@@ -271,7 +288,8 @@ class BoardcastHexBoard {
       color: colour,
       size: 12,
       shape,
-      currentHex: { q, r }
+      currentHex: { q, r },
+      label
     };
 
     this.gamePieces.push(newToken);
@@ -418,15 +436,15 @@ class BoardcastHexBoard {
 
     demoTokensBtn?.addEventListener('click', () => {
       this.resetBoard();
-      this.token(0, 0, 'center', 'circle', '#ff4444');
-      this.token(1, 0, 'right', 'rect', '#44ff44');
-      this.token(-1, 1, 'left', 'triangle', '#4444ff');
-      this.token(0, -1, 'top', 'star', '#ffff44');
+      this.token(0, 0, 'center', 'circle', '#ff4444', 'Player');
+      this.token(1, 0, 'right', 'rect', '#44ff44', 'Guard');
+      this.token(-1, 1, 'left', 'triangle', '#4444ff', 'Enemy');
+      this.token(0, -1, 'top', 'star', '#ffff44', 'Treasure');
     });
 
     demoMovementBtn?.addEventListener('click', async () => {
       this.resetBoard();
-      this.token(0, 0, 'player', 'circle', '#ff4444');
+      this.token(0, 0, 'player', 'circle', '#ff4444', 'Hero');
       
       // Demo movement sequence
       await this.move('player', 2, -1);
