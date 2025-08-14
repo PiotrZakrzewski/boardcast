@@ -18,13 +18,19 @@
         }
         
         h1 {
-            margin-bottom: 30px;
+            margin-bottom: 10px;
             color: #4fc3f7;
+        }
+        
+        p {
+            margin-bottom: 30px;
+            color: #888;
+            font-style: italic;
         }
         
         #chart {
             border: 1px solid #333;
-            background-color: #000;
+            background-color: #0a0a0a;
             margin: 0 auto;
             display: block;
         }
@@ -52,11 +58,13 @@
 <body>
     <div id="app">
         <h1>Boardcast</h1>
-        <svg id="chart" width="800" height="600"></svg>
+        <p>Animation library for tabletop game rules on hex boards</p>
+        <svg id="chart" width="1000" height="700"></svg>
         <div class="controls">
-            <button id="start-animation">Start Animation</button>
-            <button id="stop-animation">Stop Animation</button>
-            <button id="reset-animation">Reset</button>
+            <button id="show-coordinates">Show Coordinates</button>
+            <button id="hide-coordinates">Hide Coordinates</button>
+            <button id="start-movement">Start Movement Demo</button>
+            <button id="reset-board">Reset Board</button>
         </div>
     </div>
     <script type="module" src="/src/main.ts"></script>

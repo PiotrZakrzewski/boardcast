@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Boardcast is a TypeScript project that uses D3.js to create complex web animations. The project is built with Vite for fast development and optimized builds.
+Boardcast is a TypeScript library for creating animated demonstrations of tabletop game rules on hex-based boards. Built with D3.js for smooth animations and Vite for fast development.
 
 ## Development Commands
 
@@ -45,15 +45,23 @@ vite.config.ts       # Vite build configuration
 
 ## Key Architecture Patterns
 
-- **Class-based Animation**: Main animations are implemented as TypeScript classes
-- **D3 Data Binding**: Uses D3's enter/update/exit pattern for efficient DOM manipulation
-- **RequestAnimationFrame**: Smooth 60fps animations using browser animation frames
-- **Event-driven Interactions**: Mouse interactions and button controls trigger animation state changes
+- **Hex Coordinate System**: Uses axial coordinates (q, r) for hexagonal grid positioning
+- **Game Piece Management**: Entities that can be animated between hex positions
+- **Coordinate Display**: Toggle-able coordinate labels for development and education
+- **Smooth Animations**: Easing functions for natural piece movement between hexes
 
-## Animation Framework
+## Library Components
 
-The `ParticleAnimation` class in `src/main.ts` demonstrates the core animation pattern:
-- Particle physics simulation with gravity and collision detection
-- D3 selection and data binding for efficient rendering
-- Interactive mouse effects that influence particle movement
-- Start/stop/reset controls for animation lifecycle management
+The `BoardcastHexBoard` class in `src/main.ts` provides the core functionality:
+- `showCoordinates()` / `hideCoordinates()` - Toggle coordinate display
+- `movePiece(id, hexes[])` - Animate piece movement through sequence of hex positions
+- `resetBoard()` - Reset all pieces to starting positions
+- Automatic highlighting of target hexes during movement animations
+
+## Hex Coordinate System
+
+Uses axial coordinates where each hex has (q, r) coordinates:
+- Center hex is (0, 0)
+- Adjacent hexes differ by ±1 in one coordinate
+- Third coordinate s = -q - r (displayed when coordinates are shown)
+- `axialToPixel()` converts hex coordinates to screen positions
