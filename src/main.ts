@@ -122,25 +122,12 @@ class BoardcastHexBoard {
         .append('text')
         .attr('class', 'coordinate')
         .attr('x', d => d.x)
-        .attr('y', d => d.y - 5)
+        .attr('y', d => d.y)
         .attr('text-anchor', 'middle')
         .attr('fill', '#fff')
         .attr('font-size', '10px')
         .attr('font-family', 'monospace')
         .text(d => `${d.q},${d.r}`);
-
-      this.svg.selectAll<SVGTextElement, HexCell>('text.coordinate-s')
-        .data(this.hexCells, d => d.id)
-        .enter()
-        .append('text')
-        .attr('class', 'coordinate-s')
-        .attr('x', d => d.x)
-        .attr('y', d => d.y + 8)
-        .attr('text-anchor', 'middle')
-        .attr('fill', '#aaa')
-        .attr('font-size', '8px')
-        .attr('font-family', 'monospace')
-        .text(d => `s:${-d.q - d.r}`);
     }
 
     // Render game pieces

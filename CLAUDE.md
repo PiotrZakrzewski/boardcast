@@ -63,5 +63,4 @@ The `BoardcastHexBoard` class in `src/main.ts` provides the core functionality:
 Uses axial coordinates where each hex has (q, r) coordinates:
 - Center hex is (0, 0)
 - Adjacent hexes differ by ±1 in one coordinate
-- Third coordinate s = -q - r (displayed when coordinates are shown)
 - `axialToPixel()` converts hex coordinates to screen positions
