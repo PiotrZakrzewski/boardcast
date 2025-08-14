@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boardcast - D3 Animations</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+        
+        #app {
+            text-align: center;
+        }
+        
+        h1 {
+            margin-bottom: 30px;
+            color: #4fc3f7;
+        }
+        
+        #chart {
+            border: 1px solid #333;
+            background-color: #000;
+            margin: 0 auto;
+            display: block;
+        }
+        
+        .controls {
+            margin-top: 20px;
+        }
+        
+        button {
+            background-color: #4fc3f7;
+            color: #1a1a1a;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background-color: #29b6f6;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>Boardcast</h1>
+        <svg id="chart" width="800" height="600"></svg>
+        <div class="controls">
+            <button id="start-animation">Start Animation</button>
+            <button id="stop-animation">Stop Animation</button>
+            <button id="reset-animation">Reset</button>
+        </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
