@@ -94,6 +94,16 @@ Will transition the token to move smoothly from its current position to another
 move(tokenName, q, r)
 ```
 
+### Point at hex
+
+Display a red arrow pointing at a specific hex coordinate with an optional label
+
+```javascript
+point(q, r, label?)
+```
+
+Optional `label` parameter displays text near the arrow for identification.
+
 ## Development
 
 ### Project Structure

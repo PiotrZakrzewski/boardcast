@@ -27,6 +27,18 @@ export interface GamePiece {
   label?: string;
 }
 
+export interface GamePointer {
+  id: string;
+  targetQ: number;
+  targetR: number;
+  x: number; // arrow tip position
+  y: number; // arrow tip position
+  startX: number; // arrow start position
+  startY: number; // arrow start position
+  label?: string;
+  color: string;
+}
+
 export interface GridConfig {
   gridRadius?: number;
   hexRadius?: number;

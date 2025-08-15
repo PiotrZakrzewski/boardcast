@@ -1,10 +1,11 @@
 import * as d3 from 'd3';
-import { HexCell, GamePiece, GridConfig } from './types.js';
+import { HexCell, GamePiece, GamePointer, GridConfig } from './types.js';
 
 export class BoardcastHexBoard {
   private svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>;
   private hexCells: HexCell[] = [];
   private gamePieces: GamePiece[] = [];
+  private gamePointers: GamePointer[] = [];
   private tokenRegistry: Map<string, GamePiece> = new Map();
   private width: number = 1000;
   private height: number = 700;
@@ -39,9 +40,10 @@ export class BoardcastHexBoard {
   }
 
   private initializeBoard(): void {
-    // Clear existing cells and tokens
+    // Clear existing cells, tokens, and pointers
     this.hexCells = [];
     this.gamePieces = [];
+    this.gamePointers = [];
     this.tokenRegistry.clear();
     
     for (let q = -this.gridRadius; q <= this.gridRadius; q++) {
@@ -115,6 +117,47 @@ export class BoardcastHexBoard {
     return points.join(' ') + ' Z';
   }
 
+  private createArrowPath(startX: number, startY: number, endX: number, endY: number): { line: string; head: string } {
+    // Calculate arrow head
+    const headLength = 15;
+    const headWidth = 8;
+    
+    const dx = endX - startX;
+    const dy = endY - startY;
+    const length = Math.sqrt(dx * dx + dy * dy);
+    
+    if (length === 0) {
+      return { line: '', head: '' };
+    }
+    
+    // Normalize direction
+    const unitX = dx / length;
+    const unitY = dy / length;
+    
+    // Calculate arrow head points
+    const headBaseX = endX - headLength * unitX;
+    const headBaseY = endY - headLength * unitY;
+    
+    // Perpendicular vector for head width
+    const perpX = -unitY * headWidth;
+    const perpY = unitX * headWidth;
+    
+    const headPoint1X = headBaseX + perpX;
+    const headPoint1Y = headBaseY + perpY;
+    const headPoint2X = headBaseX - perpX;
+    const headPoint2Y = headBaseY - perpY;
+    
+    // Create line (stop before arrow head)
+    const lineEndX = endX - (headLength * 0.7) * unitX;
+    const lineEndY = endY - (headLength * 0.7) * unitY;
+    const line = `M ${startX},${startY} L ${lineEndX},${lineEndY}`;
+    
+    // Create arrow head
+    const head = `M ${endX},${endY} L ${headPoint1X},${headPoint1Y} L ${headPoint2X},${headPoint2Y} Z`;
+    
+    return { line, head };
+  }
+
   private render(): void {
     // Clear existing content
     this.svg.selectAll('*').remove();
@@ -186,6 +229,52 @@ export class BoardcastHexBoard {
           .attr('stroke', '#000')
           .attr('stroke-width', 0.5)
           .text(piece.label);
+      }
+    });
+
+    // Render pointers (arrows)
+    this.gamePointers.forEach(pointer => {
+      const arrow = this.createArrowPath(pointer.startX, pointer.startY, pointer.x, pointer.y);
+      
+      // Render arrow line
+      if (arrow.line) {
+        this.svg.append('path')
+          .attr('class', 'pointer-line')
+          .attr('d', arrow.line)
+          .attr('stroke', pointer.color)
+          .attr('stroke-width', 3)
+          .attr('fill', 'none')
+          .attr('stroke-linecap', 'round');
+      }
+      
+      // Render arrow head
+      if (arrow.head) {
+        this.svg.append('path')
+          .attr('class', 'pointer-head')
+          .attr('d', arrow.head)
+          .attr('fill', pointer.color)
+          .attr('stroke', pointer.color)
+          .attr('stroke-width', 1);
+      }
+      
+      // Render pointer label if present
+      if (pointer.label) {
+        // Position label near the start of the arrow
+        const labelX = pointer.startX + (pointer.x - pointer.startX) * 0.2;
+        const labelY = pointer.startY + (pointer.y - pointer.startY) * 0.2 - 10;
+        
+        this.svg.append('text')
+          .attr('class', 'pointer-label')
+          .attr('x', labelX)
+          .attr('y', labelY)
+          .attr('text-anchor', 'middle')
+          .attr('fill', pointer.color)
+          .attr('font-size', '14px')
+          .attr('font-family', 'sans-serif')
+          .attr('font-weight', 'bold')
+          .attr('stroke', '#000')
+          .attr('stroke-width', 0.5)
+          .text(pointer.label);
       }
     });
   }
@@ -299,6 +388,66 @@ export class BoardcastHexBoard {
     }
   }
 
+  public point(q: number, r: number, label?: string): void {
+    const targetCell = this.hexCells.find(cell => cell.q === q && cell.r === r);
+    if (!targetCell) return;
+
+    // Calculate pointer position (pointing from outside the grid toward the hex)
+    const centerX = this.width / 2;
+    const centerY = this.height / 2;
+    
+    // Calculate direction from center to target
+    const dx = targetCell.x - centerX;
+    const dy = targetCell.y - centerY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    
+    if (distance === 0) {
+      // If pointing at center, point from top
+      const startX = centerX;
+      const startY = centerY - 80;
+      const endX = targetCell.x;
+      const endY = targetCell.y; // Point directly to hex center
+      
+      this.gamePointers.push({
+        id: `pointer-${Date.now()}-${Math.random()}`,
+        targetQ: q,
+        targetR: r,
+        x: endX,
+        y: endY,
+        startX,
+        startY,
+        label,
+        color: '#ff4444'
+      });
+    } else {
+      // Point from outside the grid
+      const unitX = dx / distance;
+      const unitY = dy / distance;
+      
+      // Start position outside the grid
+      const margin = 100;
+      const startDistance = distance + margin;
+      const startX = centerX + unitX * startDistance;
+      const startY = centerY + unitY * startDistance;
+      
+      // End position at hex center (not edge)
+      const endX = targetCell.x; // Point directly to hex center
+      const endY = targetCell.y; // Point directly to hex center
+      
+      this.gamePointers.push({
+        id: `pointer-${Date.now()}-${Math.random()}`,
+        targetQ: q,
+        targetR: r,
+        x: endX,
+        y: endY,
+        startX,
+        startY,
+        label,
+        color: '#ff4444'
+      });
+    }
+  }
+
   public token(q: number, r: number, tokenName: string, shape: 'rect' | 'circle' | 'triangle' | 'star', colour: string, label?: string): void {
     const targetCell = this.hexCells.find(cell => cell.q === q && cell.r === r);
     if (!targetCell) return;
@@ -382,8 +531,9 @@ export class BoardcastHexBoard {
       cell.pulseColor = undefined;
     });
     
-    // Clear all tokens
+    // Clear all tokens and pointers
     this.gamePieces = [];
+    this.gamePointers = [];
     this.tokenRegistry.clear();
     
     this.render();

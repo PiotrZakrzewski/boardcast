@@ -1,2 +1,2 @@
 export { BoardcastHexBoard } from './BoardcastHexBoard.js';
-export type { HexCell, GamePiece, GridConfig } from './types.js';
+export type { HexCell, GamePiece, GamePointer, GridConfig } from './types.js';

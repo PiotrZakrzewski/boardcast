@@ -22,6 +22,7 @@ function setupDemoEventListeners(): void {
   const demoHighlightBtn = document.getElementById('demo-highlight');
   const demoBlinkBtn = document.getElementById('demo-blink');
   const demoPulseBtn = document.getElementById('demo-pulse');
+  const demoPointBtn = document.getElementById('demo-point');
   const demoTokensBtn = document.getElementById('demo-tokens');
   const demoMovementBtn = document.getElementById('demo-movement');
   const resetBtn = document.getElementById('reset-board');
@@ -52,6 +53,14 @@ function setupDemoEventListeners(): void {
     board.pulse(1, -1, '#ff6b6b');
     board.pulse(-1, 0, '#4ecdc4');
     board.pulse(0, 1, '#feca57');
+  });
+
+  demoPointBtn?.addEventListener('click', () => {
+    board.resetBoard();
+    board.point(2, -1, 'Target A');
+    board.point(-1, 2, 'Target B');
+    board.point(0, 0, 'Center');
+    board.point(-2, 0, 'Left');
   });
 
   demoTokensBtn?.addEventListener('click', () => {
