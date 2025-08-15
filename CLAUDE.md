@@ -98,6 +98,7 @@ The `BoardcastHexBoard` class in `lib/BoardcastHexBoard.ts` provides the core fu
 - `pulse(q, r, colour)` - Gradual color transitions
 - `point(q, r, label?)` - Display red arrows pointing at hexes with optional labels
 - `caption(text, duration?)` - Display large text overlays for instructions (default 2s)
+- `clear(type?)` - Selectively clear artifacts (ALL, HIGHLIGHT, BLINK, PULSE, POINT, TOKEN, CAPTION)
 - `token(q, r, name, shape, colour, label?)` - Place tokens with optional labels
 - `move(tokenName, q, r)` - Animate token movement
 
@@ -198,7 +199,18 @@ caption(text, duration?)
 - Multiple captions can be queued with setTimeout for sequences
 - Automatically clears with resetBoard() method
 
-### 7. Move Method
+### 7. Clear Method
+```javascript
+clear(type?)
+```
+**Implementation Status: ✅ COMPLETED**
+- Added ClearType enum with ALL, HIGHLIGHT, BLINK, PULSE, POINT, TOKEN, CAPTION
+- Selective clearing of specific artifact types for precise control
+- Private helper methods for each artifact type (clearHighlights, clearBlinks, etc.)
+- Automatically triggers re-render after clearing
+- Defaults to clearing ALL artifacts if no type specified
+
+### 8. Move Method
 ```javascript
 move(tokenName, q, r)
 ```
@@ -209,6 +221,7 @@ move(tokenName, q, r)
 - Updates token's currentHex property
 - Returns Promise for chaining animations
 - Temporarily highlights target hex during movement
+- **Preserves existing highlights** - tokens render over terrain highlights
 
 ## Implementation Status: ✅ ALL METHODS COMPLETED
 
@@ -249,10 +262,18 @@ All public API methods from the README.md specification have been successfully i
    - Automatic replacement of tokens with same name
    - Label rendering with outline for readability
 
-8. **Demo System:** ✅
+9. **Demo System:** ✅
    - Interactive demo buttons showcasing each API method
    - Example usage with labeled tokens (Player, Guard, Enemy, Treasure)
    - Point demo showing multiple arrows with labels
    - Caption demo showing sequential text overlays
+   - Complete game tutorials combining multiple methods
+
+10. **Game Tutorials:** ✅
+   - Lancer Movement: Comprehensive RPG movement mechanics tutorial
+   - Terrain visualization using color-coded highlights
+   - Sequential storytelling with captions, movement, and visual cues
+   - Uses clear(ClearType.POINT) for clean arrow management
+   - Demonstrates real-world library usage for educational content
 
 The library maintains the existing coordinate system and rendering architecture while providing all the animation features specified in the README.md.

@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { HexCell, GamePiece, GamePointer, GameCaption, GridConfig } from './types.js';
+import { HexCell, GamePiece, GamePointer, GameCaption, GridConfig, ClearType } from './types.js';
 
 export class BoardcastHexBoard {
   private svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>;
@@ -500,6 +500,81 @@ export class BoardcastHexBoard {
     }, duration);
   }
 
+  public clear(type: ClearType = ClearType.ALL): void {
+    switch (type) {
+      case ClearType.ALL:
+        this.clearHighlights();
+        this.clearBlinks();
+        this.clearPulses();
+        this.clearPointers();
+        this.clearTokens();
+        this.clearCaptions();
+        break;
+      
+      case ClearType.HIGHLIGHT:
+        this.clearHighlights();
+        break;
+      
+      case ClearType.BLINK:
+        this.clearBlinks();
+        break;
+      
+      case ClearType.PULSE:
+        this.clearPulses();
+        break;
+      
+      case ClearType.POINT:
+        this.clearPointers();
+        break;
+      
+      case ClearType.TOKEN:
+        this.clearTokens();
+        break;
+      
+      case ClearType.CAPTION:
+        this.clearCaptions();
+        break;
+    }
+    
+    this.render();
+  }
+
+  private clearHighlights(): void {
+    this.hexCells.forEach(cell => {
+      cell.highlighted = false;
+      cell.highlightColor = undefined;
+    });
+  }
+
+  private clearBlinks(): void {
+    this.hexCells.forEach(cell => {
+      cell.isBlinking = false;
+      cell.blinkColor = undefined;
+      cell.blinkPhase = 0;
+    });
+  }
+
+  private clearPulses(): void {
+    this.hexCells.forEach(cell => {
+      cell.isPulsing = false;
+      cell.pulseColor = undefined;
+      cell.pulsePhase = 0;
+    });
+  }
+
+  private clearPointers(): void {
+    this.gamePointers = [];
+  }
+
+  private clearTokens(): void {
+    this.gamePieces = [];
+    this.tokenRegistry.clear();
+  }
+
+  private clearCaptions(): void {
+    this.gameCaptions = [];
+  }
+
   public token(q: number, r: number, tokenName: string, shape: 'rect' | 'circle' | 'triangle' | 'star', colour: string, label?: string): void {
     const targetCell = this.hexCells.find(cell => cell.q === q && cell.r === r);
     if (!targetCell) return;
@@ -538,7 +613,11 @@ export class BoardcastHexBoard {
 
     this.isAnimating = true;
 
-    // Highlight target hex
+    // Store original highlight state
+    const originalHighlighted = targetCell.highlighted;
+    const originalHighlightColor = targetCell.highlightColor;
+
+    // Highlight target hex (temporarily for movement indication)
     targetCell.highlighted = true;
     targetCell.highlightColor = '#4fc3f7';
 
@@ -563,7 +642,9 @@ export class BoardcastHexBoard {
           requestAnimationFrame(animate);
         } else {
           token.currentHex = { q, r };
-          targetCell.highlighted = false;
+          // Restore original highlight state
+          targetCell.highlighted = originalHighlighted;
+          targetCell.highlightColor = originalHighlightColor;
           this.isAnimating = false;
           resolve();
         }

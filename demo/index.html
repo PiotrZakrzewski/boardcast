@@ -37,17 +37,50 @@
         
         .controls {
             margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .control-section {
+            background-color: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 20px;
+            min-width: 250px;
+            text-align: center;
+        }
+
+        .control-section h3 {
+            margin: 0 0 15px 0;
+            color: #4fc3f7;
+            font-size: 16px;
+            font-weight: bold;
+            border-bottom: 1px solid #444;
+            padding-bottom: 8px;
+        }
+
+        .placeholder {
+            color: #666;
+            font-style: italic;
+            margin: 10px 0;
+            font-size: 14px;
         }
         
         button {
             background-color: #4fc3f7;
             color: #1a1a1a;
             border: none;
-            padding: 10px 20px;
-            margin: 0 10px;
+            padding: 8px 16px;
+            margin: 4px;
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
+            font-size: 14px;
         }
         
         button:hover {
@@ -61,21 +94,44 @@
         <p>Animation library for tabletop game rules on hex boards</p>
         <svg id="chart" width="1000" height="700"></svg>
         <div class="controls">
-            <button id="show-coordinates">Show Coordinates</button>
-            <button id="hide-coordinates">Hide Coordinates</button>
-            <br><br>
-            <button id="grid-small">Small Grid (3)</button>
-            <button id="grid-medium">Medium Grid (6)</button>
-            <button id="grid-large">Large Grid (10)</button>
-            <br><br>
-            <button id="demo-highlight">Demo: Highlight</button>
-            <button id="demo-blink">Demo: Blink</button>
-            <button id="demo-pulse">Demo: Pulse</button>
-            <button id="demo-point">Demo: Point</button>
-            <button id="demo-caption">Demo: Caption</button>
-            <button id="demo-tokens">Demo: Tokens</button>
-            <button id="demo-movement">Demo: Movement</button>
-            <button id="reset-board">Reset Board</button>
+            <!-- Grid Configuration -->
+            <div class="control-section">
+                <h3>Grid Configuration</h3>
+                <button id="show-coordinates">Show Coordinates</button>
+                <button id="hide-coordinates">Hide Coordinates</button>
+                <br>
+                <button id="grid-small">Small Grid (3)</button>
+                <button id="grid-medium">Medium Grid (6)</button>
+                <button id="grid-large">Large Grid (10)</button>
+            </div>
+
+            <!-- Basic Methods -->
+            <div class="control-section">
+                <h3>Basic Methods</h3>
+                <button id="demo-highlight">Highlight</button>
+                <button id="demo-blink">Blink</button>
+                <button id="demo-pulse">Pulse</button>
+                <br>
+                <button id="demo-point">Point</button>
+                <button id="demo-caption">Caption</button>
+                <button id="demo-clear">Clear</button>
+                <br>
+                <button id="demo-tokens">Tokens</button>
+                <button id="demo-movement">Movement</button>
+            </div>
+
+            <!-- Tutorials (Complex Scenarios) -->
+            <div class="control-section">
+                <h3>Game Tutorials</h3>
+                <button id="tutorial-lancer-movement">Lancer Movement</button>
+                <!-- More tutorial buttons will be added here -->
+            </div>
+
+            <!-- Utility -->
+            <div class="control-section">
+                <h3>Utility</h3>
+                <button id="reset-board">Reset Board</button>
+            </div>
         </div>
     </div>
     <script type="module" src="./demo.ts"></script>

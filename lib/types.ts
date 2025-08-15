@@ -47,6 +47,16 @@ export interface GameCaption {
   visible: boolean;
 }
 
+export enum ClearType {
+  ALL = 'ALL',
+  HIGHLIGHT = 'HIGHLIGHT',
+  BLINK = 'BLINK',
+  PULSE = 'PULSE',
+  POINT = 'POINT',
+  TOKEN = 'TOKEN',
+  CAPTION = 'CAPTION'
+}
+
 export interface GridConfig {
   gridRadius?: number;
   hexRadius?: number;

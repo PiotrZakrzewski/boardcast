@@ -114,6 +114,28 @@ caption(text, duration?)
 
 Shows text in large font over the board. Duration defaults to 2000ms (2 seconds).
 
+### Clear artifacts
+
+Selectively clear different types of visual artifacts from the board
+
+```javascript
+clear(type?)
+```
+
+Types: `ALL` (default), `HIGHLIGHT`, `BLINK`, `PULSE`, `POINT`, `TOKEN`, `CAPTION`
+
+## Game Tutorials
+
+The demo includes complete game rule tutorials that combine multiple methods:
+
+### Lancer Movement
+Comprehensive tutorial covering Lancer RPG mech movement mechanics:
+- Basic movement (SPEED-based)
+- BOOST for extra movement
+- Terrain types (Normal, Difficult, Dangerous)
+- Engagement rules and penalties
+- DISENGAGE to avoid reactions
+
 ## Development
 
 ### Project Structure
