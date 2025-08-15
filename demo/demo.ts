@@ -178,11 +178,11 @@ async function lancerMovementTutorial(): Promise<void> {
   // CAPTION "Terrain can make it harder to move"
   await board.caption('Terrain can make it harder to move');
   
-  // highlight some hexes next to the mech in red, point arrow at them with label "difficult terrain"
-  board.highlight(1, 2, '#FF4444');
-  board.highlight(0, 3, '#FF4444');
-  board.highlight(-1, 3, '#FF4444');
-  board.point(1, 2, 'difficult terrain');
+  // highlight some hexes next to the mech in yellow, point arrow at them with label "difficult terrain"
+  board.highlight(1, 1, '#FFFF44');
+  board.highlight(0, 2, '#FFFF44');
+  board.highlight(-1, 2, '#FFFF44');
+  board.point(1, 1, 'difficult terrain');
   
   // CAPTION "Moving through difficult terrain costs 2x speed"
   await board.caption('Moving through difficult terrain costs 2x speed');
@@ -191,10 +191,43 @@ async function lancerMovementTutorial(): Promise<void> {
   board.clear(ClearType.POINT);
   
   // make the mech move into one of the difficult terrain hexes
-  await board.move('mech', 1, 2);
+  await board.move('mech', 1, 1);
   
   // CAPTION "With Speed 2 this mech can move through only 1 difficult terrain"
   await board.caption('With Speed 2 this mech can move through only 1 difficult terrain');
+  
+  // clear the highlights
+  board.clear(ClearType.HIGHLIGHT);
+  
+  // CAPTION "Dangerous terrain does not slow you down ..."
+  await board.caption('Dangerous terrain does not slow you down ...');
+  
+  // CAPTION "But may cause damage"
+  await board.caption('But may cause damage');
+  
+  // highlight some hexes near the mech in red, point at them with label dangerous terrain
+  board.highlight(2, 1, '#FF4444');
+  board.highlight(1, 2, '#FF4444');
+  board.highlight(0, 3, '#FF4444');
+  board.point(2, 1, 'dangerous terrain');
+  
+  // Wait a moment to show the dangerous terrain
+  await sleep(2000);
+  
+  // clear the arrows
+  board.clear(ClearType.POINT);
+  
+  // move the mech into one of the dangerous hexes
+  await board.move('mech', 2, 1);
+  
+  // CAPTION "When you move into dangerous terrain for the first time"
+  await board.caption('When you move into dangerous terrain for the first time');
+  
+  // CAPTION "You must roll ENGINEERING, you get 5 damage if you fail"
+  await board.caption('You must roll ENGINEERING, you get 5 damage if you fail');
+  
+  // CAPTION "The damage type depends on the terrain itself (up to GM)"
+  await board.caption('The damage type depends on the terrain itself (up to GM)');
 }
 
 // Utility function for async delays
