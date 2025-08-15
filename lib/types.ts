@@ -39,6 +39,14 @@ export interface GamePointer {
   color: string;
 }
 
+export interface GameCaption {
+  id: string;
+  text: string;
+  startTime: number;
+  duration: number;
+  visible: boolean;
+}
+
 export interface GridConfig {
   gridRadius?: number;
   hexRadius?: number;

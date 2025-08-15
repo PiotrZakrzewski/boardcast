@@ -1,24 +1,25 @@
 import * as d3 from 'd3';
-import { HexCell, GamePiece, GamePointer, GridConfig } from './types.js';
+import { HexCell, GamePiece, GamePointer, GameCaption, GridConfig } from './types.js';
 
 export class BoardcastHexBoard {
   private svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>;
   private hexCells: HexCell[] = [];
   private gamePieces: GamePiece[] = [];
   private gamePointers: GamePointer[] = [];
+  private gameCaptions: GameCaption[] = [];
   private tokenRegistry: Map<string, GamePiece> = new Map();
   private width: number = 1000;
   private height: number = 700;
   private hexRadius: number = 25;
-  private gridRadius: number = 8;
-  private coordinatesVisible: boolean = false;
+  private gridRadius: number = 3;
+  private coordinatesVisible: boolean = true;
   private isAnimating: boolean = false;
   private time: number = 0;
 
   constructor(svgSelector: string, config: GridConfig = {}) {
     this.svg = d3.select(svgSelector);
-    this.gridRadius = config.gridRadius ?? 8;
-    this.hexRadius = config.hexRadius ?? 25;
+    this.gridRadius = config.gridRadius ?? 3;
+    this.hexRadius = config.hexRadius ?? this.calculateOptimalHexSize(config.gridRadius ?? 3);
     this.width = config.width ?? 1000;
     this.height = config.height ?? 700;
     
@@ -40,10 +41,11 @@ export class BoardcastHexBoard {
   }
 
   private initializeBoard(): void {
-    // Clear existing cells, tokens, and pointers
+    // Clear existing cells, tokens, pointers, and captions
     this.hexCells = [];
     this.gamePieces = [];
     this.gamePointers = [];
+    this.gameCaptions = [];
     this.tokenRegistry.clear();
     
     for (let q = -this.gridRadius; q <= this.gridRadius; q++) {
@@ -277,6 +279,36 @@ export class BoardcastHexBoard {
           .text(pointer.label);
       }
     });
+
+    // Render captions (text overlays)
+    this.gameCaptions.forEach(caption => {
+      if (caption.visible) {
+        // Create semi-transparent background for better text readability
+        this.svg.append('rect')
+          .attr('class', 'caption-background')
+          .attr('x', 0)
+          .attr('y', this.height / 2 - 40)
+          .attr('width', this.width)
+          .attr('height', 80)
+          .attr('fill', 'rgba(0, 0, 0, 0.7)')
+          .attr('stroke', 'none');
+
+        // Render caption text
+        this.svg.append('text')
+          .attr('class', 'caption-text')
+          .attr('x', this.width / 2)
+          .attr('y', this.height / 2)
+          .attr('text-anchor', 'middle')
+          .attr('dominant-baseline', 'middle')
+          .attr('fill', '#ffffff')
+          .attr('font-size', '28px')
+          .attr('font-family', 'sans-serif')
+          .attr('font-weight', 'bold')
+          .attr('stroke', '#000')
+          .attr('stroke-width', 1)
+          .text(caption.text);
+      }
+    });
   }
 
   private getHexFillColor(cell: HexCell): string {
@@ -448,6 +480,26 @@ export class BoardcastHexBoard {
     }
   }
 
+  public caption(text: string, duration: number = 2000): void {
+    const caption: GameCaption = {
+      id: `caption-${Date.now()}-${Math.random()}`,
+      text,
+      startTime: Date.now(),
+      duration,
+      visible: true
+    };
+
+    this.gameCaptions.push(caption);
+
+    // Auto-remove caption after duration
+    setTimeout(() => {
+      const index = this.gameCaptions.findIndex(c => c.id === caption.id);
+      if (index !== -1) {
+        this.gameCaptions.splice(index, 1);
+      }
+    }, duration);
+  }
+
   public token(q: number, r: number, tokenName: string, shape: 'rect' | 'circle' | 'triangle' | 'star', colour: string, label?: string): void {
     const targetCell = this.hexCells.find(cell => cell.q === q && cell.r === r);
     if (!targetCell) return;
@@ -531,9 +583,10 @@ export class BoardcastHexBoard {
       cell.pulseColor = undefined;
     });
     
-    // Clear all tokens and pointers
+    // Clear all tokens, pointers, and captions
     this.gamePieces = [];
     this.gamePointers = [];
+    this.gameCaptions = [];
     this.tokenRegistry.clear();
     
     this.render();

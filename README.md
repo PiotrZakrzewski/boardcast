@@ -104,6 +104,16 @@ point(q, r, label?)
 
 Optional `label` parameter displays text near the arrow for identification.
 
+### Caption
+
+Display large text overlay for instructions and commentary
+
+```javascript
+caption(text, duration?)
+```
+
+Shows text in large font over the board. Duration defaults to 2000ms (2 seconds).
+
 ## Development
 
 ### Project Structure

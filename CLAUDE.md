@@ -97,6 +97,7 @@ The `BoardcastHexBoard` class in `lib/BoardcastHexBoard.ts` provides the core fu
 - `blink(q, r, colour)` - Sharp blinking animation
 - `pulse(q, r, colour)` - Gradual color transitions
 - `point(q, r, label?)` - Display red arrows pointing at hexes with optional labels
+- `caption(text, duration?)` - Display large text overlays for instructions (default 2s)
 - `token(q, r, name, shape, colour, label?)` - Place tokens with optional labels
 - `move(tokenName, q, r)` - Animate token movement
 
@@ -185,7 +186,19 @@ point(q, r, label?)
 - Supports optional labels positioned near arrow start
 - Automatically clears with resetBoard() method
 
-### 6. Move Method
+### 6. Caption Method
+```javascript
+caption(text, duration?)
+```
+**Implementation Status: ✅ COMPLETED**
+- Added GameCaption interface to types.ts
+- Displays large text overlays centered on the board
+- Semi-transparent background for text readability
+- Auto-removes caption after specified duration (default 2000ms)
+- Multiple captions can be queued with setTimeout for sequences
+- Automatically clears with resetBoard() method
+
+### 7. Move Method
 ```javascript
 move(tokenName, q, r)
 ```
@@ -216,24 +229,30 @@ All public API methods from the README.md specification have been successfully i
    - Arrow rendering with SVG paths for line and arrowhead
    - Optional labels positioned near arrow start
 
-4. **Animation System:** ✅
+4. **GameCaption Interface:** ✅
+   - Added interface for text overlay system
+   - Large font text with semi-transparent background
+   - Auto-timed removal with configurable duration
+
+5. **Animation System:** ✅
    - Continuous blink animation loop using sin waves
    - Smooth token movement with easing functions
    - Promise-based animation chaining for sequences
 
-5. **Shape Rendering:** ✅
+6. **Shape Rendering:** ✅
    - SVG path generators for rect, triangle, and star shapes
    - Circle support via SVG circle elements
    - Consistent sizing across all shape types
 
-6. **Token Registry:** ✅
+7. **Token Registry:** ✅
    - Map tokenName -> GamePiece for efficient lookup
    - Automatic replacement of tokens with same name
    - Label rendering with outline for readability
 
-7. **Demo System:** ✅
+8. **Demo System:** ✅
    - Interactive demo buttons showcasing each API method
    - Example usage with labeled tokens (Player, Guard, Enemy, Treasure)
    - Point demo showing multiple arrows with labels
+   - Caption demo showing sequential text overlays
 
 The library maintains the existing coordinate system and rendering architecture while providing all the animation features specified in the README.md.

@@ -23,6 +23,7 @@ function setupDemoEventListeners(): void {
   const demoBlinkBtn = document.getElementById('demo-blink');
   const demoPulseBtn = document.getElementById('demo-pulse');
   const demoPointBtn = document.getElementById('demo-point');
+  const demoCaptionBtn = document.getElementById('demo-caption');
   const demoTokensBtn = document.getElementById('demo-tokens');
   const demoMovementBtn = document.getElementById('demo-movement');
   const resetBtn = document.getElementById('reset-board');
@@ -61,6 +62,17 @@ function setupDemoEventListeners(): void {
     board.point(-1, 2, 'Target B');
     board.point(0, 0, 'Center');
     board.point(-2, 0, 'Left');
+  });
+
+  demoCaptionBtn?.addEventListener('click', () => {
+    board.resetBoard();
+    board.caption('Welcome to Boardcast!', 3000);
+    setTimeout(() => {
+      board.caption('This demonstrates caption overlays', 2500);
+    }, 3200);
+    setTimeout(() => {
+      board.caption('Perfect for explaining game rules!', 2000);
+    }, 6000);
   });
 
   demoTokensBtn?.addEventListener('click', () => {
