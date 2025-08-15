@@ -480,7 +480,7 @@ export class BoardcastHexBoard {
     }
   }
 
-  public caption(text: string, duration: number = 2000): void {
+  public async caption(text: string, duration: number = 2000, pauseAfter: number = 2000): Promise<void> {
     const caption: GameCaption = {
       id: `caption-${Date.now()}-${Math.random()}`,
       text,
@@ -491,13 +491,18 @@ export class BoardcastHexBoard {
 
     this.gameCaptions.push(caption);
 
-    // Auto-remove caption after duration
-    setTimeout(() => {
-      const index = this.gameCaptions.findIndex(c => c.id === caption.id);
-      if (index !== -1) {
-        this.gameCaptions.splice(index, 1);
-      }
-    }, duration);
+    // Wait for caption duration + pause
+    const totalWait = duration + pauseAfter;
+    
+    return new Promise<void>((resolve) => {
+      setTimeout(() => {
+        const index = this.gameCaptions.findIndex(c => c.id === caption.id);
+        if (index !== -1) {
+          this.gameCaptions.splice(index, 1);
+        }
+        resolve();
+      }, totalWait);
+    });
   }
 
   public clear(type: ClearType = ClearType.ALL): void {

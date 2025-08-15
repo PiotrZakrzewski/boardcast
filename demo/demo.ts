@@ -66,18 +66,14 @@ function setupDemoEventListeners(): void {
     board.point(-2, 0, 'Left');
   });
 
-  demoCaptionBtn?.addEventListener('click', () => {
+  demoCaptionBtn?.addEventListener('click', async () => {
     board.resetBoard();
-    board.caption('Welcome to Boardcast!', 3000);
-    setTimeout(() => {
-      board.caption('This demonstrates caption overlays', 2500);
-    }, 3200);
-    setTimeout(() => {
-      board.caption('Perfect for explaining game rules!', 2000);
-    }, 6000);
+    await board.caption('Welcome to Boardcast!', 3000);
+    await board.caption('This demonstrates caption overlays', 2500);
+    await board.caption('Perfect for explaining game rules!', 2000);
   });
 
-  demoClearBtn?.addEventListener('click', () => {
+  demoClearBtn?.addEventListener('click', async () => {
     // Create various artifacts to demonstrate clearing
     board.resetBoard();
     board.highlight(0, 0, '#ff6b6b');
@@ -86,18 +82,14 @@ function setupDemoEventListeners(): void {
     board.pulse(0, 1, '#ff6b6b');
     board.point(1, 1, 'Target');
     board.token(0, -1, 'demo', 'star', '#4444ff', 'Token');
-    board.caption('All artifacts created - click again to clear points only', 3000);
+    await board.caption('All artifacts created - watch selective clearing', 3000);
     
-    // Demonstrate selective clearing after a delay
-    setTimeout(() => {
-      board.clear(ClearType.POINT);
-      board.caption('Points cleared! Click Clear again to clear all highlights', 3000);
-    }, 4000);
+    // Demonstrate selective clearing
+    board.clear(ClearType.POINT);
+    await board.caption('Points cleared! Watch highlights clear next', 3000);
     
-    setTimeout(() => {
-      board.clear(ClearType.HIGHLIGHT);
-      board.caption('Highlights cleared! Other artifacts remain', 2000);
-    }, 8000);
+    board.clear(ClearType.HIGHLIGHT);
+    await board.caption('Highlights cleared! Other artifacts remain', 2000);
   });
 
   demoTokensBtn?.addEventListener('click', () => {
@@ -146,42 +138,32 @@ async function lancerMovementTutorial(): Promise<void> {
   board.highlight(1, 0, '#666666');
   
   // Phase 1: Introduction and terrain setup
-  board.caption('Lancer Movement Tutorial', 3000);
-  await sleep(5000); // 3s caption + 2s pause
+  await board.caption('Lancer Movement Tutorial', 3000);
   
   // Introduce difficult terrain with arrows
   board.point(0, -1, 'Orange');
-  board.caption('Orange = Difficult Terrain (2x movement cost)', 3000);
-  await sleep(5000); // 3s caption + 2s pause
-  
+  await board.caption('Orange = Difficult Terrain (2x movement cost)', 3000);
   board.clear(ClearType.POINT); // Clear difficult terrain arrow
   
   // Introduce dangerous terrain with arrows
   board.point(-1, 1, 'Red');
-  board.caption('Red = Dangerous Terrain (Engineering check or 5 damage)', 3000);
-  await sleep(5000); // 3s caption + 2s pause
-  
+  await board.caption('Red = Dangerous Terrain (Engineering check or 5 damage)', 3000);
   board.clear(ClearType.POINT); // Clear dangerous terrain arrow
   
   // Introduce cover/obstacles with arrows
   board.point(1, 0, 'Gray');
-  board.caption('Gray = Hard Cover/Obstacles', 3000);
-  await sleep(5000); // 3s caption + 2s pause
-  
+  await board.caption('Gray = Hard Cover/Obstacles', 3000);
   board.clear(ClearType.POINT); // Clear cover arrows
   
   // Phase 2: Setup mechs
   board.token(0, 0, 'player-mech', 'circle', '#4444FF', 'Blue Mech');
   board.token(2, 1, 'enemy-mech', 'triangle', '#FF4444', 'Enemy');
   
-  board.caption('Blue Mech (SPEED 4) vs Enemy (engaged when adjacent)', 3000);
-  await sleep(5000); // 3s caption + 2s pause
+  await board.caption('Blue Mech (SPEED 4) vs Enemy (engaged when adjacent)', 3000);
   
   // Phase 3: Basic movement demonstration
-  board.caption('Standard Move: Up to SPEED (4 spaces)', 2500);
   board.point(0, 0, 'Start');
-  await sleep(4500); // 2.5s caption + 2s pause
-  
+  await board.caption('Standard Move: Up to SPEED (4 spaces)', 2500);
   board.clear(ClearType.POINT); // Clear the start arrow
   
   // Show movement range
@@ -192,8 +174,7 @@ async function lancerMovementTutorial(): Promise<void> {
   board.highlight(-1, 2, '#4FC3F7');
   board.highlight(0, 2, '#4FC3F7');
   
-  board.caption('Blue shows normal 4-space movement range', 2500);
-  await sleep(4500); // 2.5s caption + 2s pause
+  await board.caption('Blue shows normal 4-space movement range', 2500);
   
   // Clear range highlights, restore terrain
   board.highlight(-2, 0, '#2a2a2a');
@@ -213,17 +194,14 @@ async function lancerMovementTutorial(): Promise<void> {
   board.highlight(1, 0, '#666666');
   
   // Phase 4: Difficult terrain movement
-  board.caption('Moving through difficult terrain (orange)', 2500);
-  await sleep(4500); // 2.5s caption + 2s pause
+  await board.caption('Moving through difficult terrain (orange)', 2500);
   
   board.point(-1, -1, '2 Move');
-  board.caption('Difficult terrain costs 2 movement per space', 2500);
-  await sleep(4500); // 2.5s caption + 2s pause
+  await board.caption('Difficult terrain costs 2 movement per space', 2500);
   
   await board.move('player-mech', -1, -1);
   board.clear(ClearType.POINT); // Clear the movement arrow
-  board.caption('Moved 1 space, cost 2 movement (2/4 used)', 2500);
-  await sleep(4500); // 2.5s caption + 2s pause
+  await board.caption('Moved 1 space, cost 2 movement (2/4 used)', 2500);
   
   // Phase 5: Continue through difficult terrain
   board.point(0, -1, '2 More');
