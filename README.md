@@ -2,16 +2,35 @@
 
 Create animations explaining rules of a tabletop RPG game.
 
+## Installation
+
+```bash
+npm install boardcast
+```
+
+## Usage
+
+```javascript
+import { BoardcastHexBoard } from 'boardcast';
+
+// Create a new board
+const board = new BoardcastHexBoard('#my-svg-element');
+
+// Start using the API
+board.highlight(1, 0, '#ff6b6b');
+board.token(0, 0, 'player', 'circle', '#4444ff', 'Hero');
+```
+
 ## Configuration
 
 Configure the grid size when creating a new board:
 
 ```javascript
 // Default configuration (8 hex radius)
-const board = new BoardcastHexBoard();
+const board = new BoardcastHexBoard('#my-svg');
 
 // Custom configuration
-const board = new BoardcastHexBoard({
+const board = new BoardcastHexBoard('#my-svg', {
   gridRadius: 5,     // Number of hexes from center (5 = small, 8 = default, 12 = large)
   hexRadius: 20,     // Size of individual hexes in pixels
   width: 800,        // Canvas width
@@ -73,4 +92,49 @@ Will transition the token to move smoothly from its current position to another
 
 ```javascript
 move(tokenName, q, r)
+```
+
+## Development
+
+### Project Structure
+
+```
+boardcast/
+├── lib/                    # Library source code
+│   ├── BoardcastHexBoard.ts   # Main library class
+│   ├── types.ts              # TypeScript interfaces
+│   └── index.ts              # Library exports
+├── demo/                   # Demo application
+│   ├── index.html             # Demo HTML
+│   └── demo.ts               # Demo JavaScript
+├── dist/                   # Built files
+│   ├── lib/                  # Built library
+│   └── demo/                 # Built demo
+└── docs/                   # Documentation
+```
+
+### Scripts
+
+```bash
+# Development
+npm run dev          # Start demo development server
+npm run typecheck    # Run TypeScript type checking
+
+# Building
+npm run build        # Build library for distribution
+npm run build:demo   # Build demo for deployment
+npm run preview      # Preview built demo
+```
+
+### Using in Development
+
+To work on the library while testing in a project:
+
+```bash
+# In the boardcast directory
+npm run build
+npm link
+
+# In your project directory
+npm link boardcast
 ```

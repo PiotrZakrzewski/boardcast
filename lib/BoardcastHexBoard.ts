@@ -1,42 +1,7 @@
 import * as d3 from 'd3';
+import { HexCell, GamePiece, GridConfig } from './types.js';
 
-interface HexCell {
-  q: number; // axial coordinate
-  r: number; // axial coordinate
-  x: number; // screen x position
-  y: number; // screen y position
-  id: string;
-  highlighted: boolean;
-  highlightColor?: string;
-  isBlinking: boolean;
-  blinkColor?: string;
-  blinkPhase: number;
-  isPulsing: boolean;
-  pulseColor?: string;
-  pulsePhase: number;
-  originalColor: string;
-}
-
-interface GamePiece {
-  id: string;
-  tokenName?: string;
-  x: number;
-  y: number;
-  color: string;
-  size: number;
-  shape: 'circle' | 'rect' | 'triangle' | 'star';
-  currentHex: { q: number; r: number };
-  label?: string;
-}
-
-interface GridConfig {
-  gridRadius?: number;
-  hexRadius?: number;
-  width?: number;
-  height?: number;
-}
-
-class BoardcastHexBoard {
+export class BoardcastHexBoard {
   private svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>;
   private hexCells: HexCell[] = [];
   private gamePieces: GamePiece[] = [];
@@ -49,8 +14,8 @@ class BoardcastHexBoard {
   private isAnimating: boolean = false;
   private time: number = 0;
 
-  constructor(config: GridConfig = {}) {
-    this.svg = d3.select('#chart');
+  constructor(svgSelector: string, config: GridConfig = {}) {
+    this.svg = d3.select(svgSelector);
     this.gridRadius = config.gridRadius ?? 8;
     this.hexRadius = config.hexRadius ?? 25;
     this.width = config.width ?? 1000;
@@ -62,7 +27,6 @@ class BoardcastHexBoard {
     }
     
     this.initializeBoard();
-    this.setupEventListeners();
     this.startAnimationLoop();
     this.render();
   }
@@ -309,6 +273,7 @@ class BoardcastHexBoard {
       cell.highlighted = true;
       cell.highlightColor = colour;
       cell.isBlinking = false; // Stop blinking if it was blinking
+      cell.isPulsing = false; // Stop pulsing if it was pulsing
     }
   }
 
@@ -407,59 +372,6 @@ class BoardcastHexBoard {
     });
   }
 
-  public async movePiece(pieceId: string, targetHexes: { q: number; r: number }[]): Promise<void> {
-    const piece = this.gamePieces.find(p => p.id === pieceId);
-    if (!piece || this.isAnimating) return;
-
-    this.isAnimating = true;
-
-    for (const targetHex of targetHexes) {
-      const targetCell = this.hexCells.find(cell => cell.q === targetHex.q && cell.r === targetHex.r);
-      if (!targetCell) continue;
-
-      // Highlight target hex
-      targetCell.highlighted = true;
-      this.render();
-
-      // Animate piece movement
-      await new Promise<void>((resolve) => {
-        const startX = piece.x;
-        const startY = piece.y;
-        const duration = 1000; // 1 second
-        const startTime = Date.now();
-
-        const animate = () => {
-          const elapsed = Date.now() - startTime;
-          const progress = Math.min(elapsed / duration, 1);
-          
-          // Easing function for smooth movement
-          const easeProgress = 1 - Math.pow(1 - progress, 3);
-          
-          piece.x = startX + (targetCell.x - startX) * easeProgress;
-          piece.y = startY + (targetCell.y - startY) * easeProgress;
-          
-          this.render();
-          
-          if (progress < 1) {
-            requestAnimationFrame(animate);
-          } else {
-            piece.currentHex = { q: targetHex.q, r: targetHex.r };
-            targetCell.highlighted = false;
-            this.render();
-            resolve();
-          }
-        };
-        
-        animate();
-      });
-
-      // Wait a bit before next move
-      await new Promise(resolve => setTimeout(resolve, 500));
-    }
-
-    this.isAnimating = false;
-  }
-
   public resetBoard(): void {
     this.hexCells.forEach(cell => {
       cell.highlighted = false;
@@ -543,77 +455,4 @@ class BoardcastHexBoard {
       height: this.height
     };
   }
-
-  private setupEventListeners(): void {
-    const showCoordBtn = document.getElementById('show-coordinates');
-    const hideCoordBtn = document.getElementById('hide-coordinates');
-    const gridSmallBtn = document.getElementById('grid-small');
-    const gridMediumBtn = document.getElementById('grid-medium');
-    const gridLargeBtn = document.getElementById('grid-large');
-    const demoHighlightBtn = document.getElementById('demo-highlight');
-    const demoBlinkBtn = document.getElementById('demo-blink');
-    const demoPulseBtn = document.getElementById('demo-pulse');
-    const demoTokensBtn = document.getElementById('demo-tokens');
-    const demoMovementBtn = document.getElementById('demo-movement');
-    const resetBtn = document.getElementById('reset-board');
-
-    showCoordBtn?.addEventListener('click', () => this.showCoordinates());
-    hideCoordBtn?.addEventListener('click', () => this.hideCoordinates());
-    
-    gridSmallBtn?.addEventListener('click', () => this.setGridSizeWithScaling(3));
-    gridMediumBtn?.addEventListener('click', () => this.setGridSizeWithScaling(6));
-    gridLargeBtn?.addEventListener('click', () => this.setGridSizeWithScaling(10));
-    
-    demoHighlightBtn?.addEventListener('click', () => {
-      this.resetBoard();
-      this.highlight(1, 0, '#ff6b6b');
-      this.highlight(-1, 1, '#4ecdc4');
-      this.highlight(0, -1, '#feca57');
-    });
-
-    demoBlinkBtn?.addEventListener('click', () => {
-      this.resetBoard();
-      this.blink(2, -1, '#ff6b6b');
-      this.blink(-2, 1, '#4ecdc4');
-      this.blink(1, 1, '#feca57');
-    });
-
-    demoPulseBtn?.addEventListener('click', () => {
-      this.resetBoard();
-      this.pulse(1, -1, '#ff6b6b');
-      this.pulse(-1, 0, '#4ecdc4');
-      this.pulse(0, 1, '#feca57');
-    });
-
-    demoTokensBtn?.addEventListener('click', () => {
-      this.resetBoard();
-      this.token(0, 0, 'center', 'circle', '#ff4444', 'Player');
-      this.token(1, 0, 'right', 'rect', '#44ff44', 'Guard');
-      this.token(-1, 1, 'left', 'triangle', '#4444ff', 'Enemy');
-      this.token(0, -1, 'top', 'star', '#ffff44', 'Treasure');
-    });
-
-    demoMovementBtn?.addEventListener('click', async () => {
-      this.resetBoard();
-      this.token(0, 0, 'player', 'circle', '#ff4444', 'Hero');
-      
-      // Demo movement sequence
-      await this.move('player', 2, -1);
-      await this.move('player', -1, 2);
-      await this.move('player', 0, 0);
-    });
-
-    resetBtn?.addEventListener('click', () => this.resetBoard());
-  }
 }
-
-// Initialize the boardcast library when the DOM is loaded
-let board: BoardcastHexBoard;
-
-document.addEventListener('DOMContentLoaded', () => {
-  board = new BoardcastHexBoard();
-  console.log('Boardcast hex board library initialized!');
-  
-  // Make board available globally for console access
-  (window as any).boardcast = board;
-});

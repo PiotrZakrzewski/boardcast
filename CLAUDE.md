@@ -35,12 +35,20 @@ npm run typecheck
 ## Project Structure
 
 ```
-src/
-├── main.ts          # Entry point with ParticleAnimation class
-index.html           # HTML template with SVG canvas
-package.json         # Dependencies and scripts
-tsconfig.json        # TypeScript configuration
-vite.config.ts       # Vite build configuration
+lib/                          # Library source code
+├── BoardcastHexBoard.ts         # Main library class
+├── types.ts                    # TypeScript interfaces
+└── index.ts                    # Library exports
+demo/                         # Demo application
+├── index.html                  # Demo HTML
+└── demo.ts                     # Demo TypeScript
+dist/                         # Built files (generated)
+├── lib/                        # Built library for npm
+└── demo/                       # Built demo for deployment
+package.json                  # Dependencies and scripts
+tsconfig.json                 # TypeScript configuration
+vite.lib.config.ts           # Vite config for library build
+vite.demo.config.ts          # Vite config for demo build
 ```
 
 ## Key Architecture Patterns
@@ -50,10 +58,27 @@ vite.config.ts       # Vite build configuration
 - **Game Piece Management**: Entities that can be animated between hex positions
 - **Coordinate Display**: Toggle-able coordinate labels for development and education
 - **Smooth Animations**: Easing functions for natural piece movement between hexes
+- **Library/Demo Separation**: Clean separation between importable library and web demonstration
+
+## Library vs Demo
+
+**Library (`lib/`)**: 
+- Pure TypeScript classes and interfaces
+- No DOM initialization or event handlers
+- Requires SVG selector parameter in constructor
+- Designed for import by other projects
+- Exports: `BoardcastHexBoard`, `HexCell`, `GamePiece`, `GridConfig`
+
+**Demo (`demo/`)**:
+- Web application showcasing library features
+- HTML interface with buttons and controls
+- Event handlers and UI interactions
+- Initializes library with DOM elements
+- Serves as documentation and testing environment
 
 ## Library Components
 
-The `BoardcastHexBoard` class in `src/main.ts` provides the core functionality:
+The `BoardcastHexBoard` class in `lib/BoardcastHexBoard.ts` provides the core functionality:
 
 ### Configuration Methods:
 - `new BoardcastHexBoard(config?)` - Initialize with optional GridConfig
