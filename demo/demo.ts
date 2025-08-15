@@ -118,191 +118,83 @@ function setupDemoEventListeners(): void {
   });
 }
 
-// Comprehensive Lancer Movement Tutorial
+// Lancer Movement Tutorial - Based on script
 async function lancerMovementTutorial(): Promise<void> {
   board.resetBoard();
   
-  // Set up terrain using highlight colors
-  // Normal terrain (default)
-  // Difficult terrain (orange/yellow)
-  board.highlight(-1, -1, '#FFA500'); // Orange for difficult terrain
-  board.highlight(0, -1, '#FFA500');
-  board.highlight(1, -1, '#FFA500');
+  // CAPTION "In Lancer SPEED determines how far you can go" 3s
+  await board.caption('In Lancer SPEED determines how far you can go', 3000);
   
-  // Dangerous terrain (red)
-  board.highlight(-2, 1, '#FF4444'); // Red for dangerous terrain
-  board.highlight(-1, 1, '#FF4444');
+  // show a circle token with label "mech" on the origin
+  board.token(0, 0, 'mech', 'circle', '#4444FF', 'mech');
   
-  // Cover/obstacles (dark gray)
-  board.highlight(2, -1, '#666666'); // Hard cover
-  board.highlight(1, 0, '#666666');
+  // CAPTION "This mech has speed 2"
+  await board.caption('This mech has speed 2');
   
-  // Phase 1: Introduction and terrain setup
-  await board.caption('Lancer Movement Tutorial', 3000);
+  // show pulse on all coordinates in distance 2 from the origin
+  // Distance 1 hexes
+  board.pulse(1, 0, '#4fc3f7');
+  board.pulse(-1, 0, '#4fc3f7');
+  board.pulse(0, 1, '#4fc3f7');
+  board.pulse(0, -1, '#4fc3f7');
+  board.pulse(1, -1, '#4fc3f7');
+  board.pulse(-1, 1, '#4fc3f7');
   
-  // Introduce difficult terrain with arrows
-  board.point(0, -1, 'Orange');
-  await board.caption('Orange = Difficult Terrain (2x movement cost)', 3000);
-  board.clear(ClearType.POINT); // Clear difficult terrain arrow
+  // Distance 2 hexes
+  board.pulse(2, 0, '#4fc3f7');
+  board.pulse(-2, 0, '#4fc3f7');
+  board.pulse(0, 2, '#4fc3f7');
+  board.pulse(0, -2, '#4fc3f7');
+  board.pulse(2, -1, '#4fc3f7');
+  board.pulse(1, -2, '#4fc3f7');
+  board.pulse(-1, -1, '#4fc3f7');
+  board.pulse(-2, 1, '#4fc3f7');
+  board.pulse(-1, 2, '#4fc3f7');
+  board.pulse(1, 1, '#4fc3f7');
+  board.pulse(2, -2, '#4fc3f7');
+  board.pulse(-2, 2, '#4fc3f7');
   
-  // Introduce dangerous terrain with arrows
-  board.point(-1, 1, 'Red');
-  await board.caption('Red = Dangerous Terrain (Engineering check or 5 damage)', 3000);
-  board.clear(ClearType.POINT); // Clear dangerous terrain arrow
+  // CAPTION "The mech will now move by 2"
+  await board.caption('The mech will now move by 2');
   
-  // Introduce cover/obstacles with arrows
-  board.point(1, 0, 'Gray');
-  await board.caption('Gray = Hard Cover/Obstacles', 3000);
-  board.clear(ClearType.POINT); // Clear cover arrows
+  // now move the mech token two hexes away
+  await board.move('mech', 2, 0);
   
-  // Phase 2: Setup mechs
-  board.token(0, 0, 'player-mech', 'circle', '#4444FF', 'Blue Mech');
-  board.token(2, 1, 'enemy-mech', 'triangle', '#FF4444', 'Enemy');
+  // clear the highlights
+  board.clear(ClearType.PULSE);
   
-  await board.caption('Blue Mech (SPEED 4) vs Enemy (engaged when adjacent)', 3000);
+  // CAPTION "It is out of move now..."
+  await board.caption('It is out of move now...');
   
-  // Phase 3: Basic movement demonstration
-  board.point(0, 0, 'Start');
-  await board.caption('Standard Move: Up to SPEED (4 spaces)', 2500);
-  board.clear(ClearType.POINT); // Clear the start arrow
+  // CAPTION "...but it can spend a quick action to move again"
+  await board.caption('...but it can spend a quick action to move again');
   
-  // Show movement range
-  board.highlight(-2, 0, '#4FC3F7'); // Possible moves (4 spaces)
-  board.highlight(-1, 0, '#4FC3F7');
-  board.highlight(1, 1, '#4FC3F7');
-  board.highlight(0, 1, '#4FC3F7');
-  board.highlight(-1, 2, '#4FC3F7');
-  board.highlight(0, 2, '#4FC3F7');
+  // move again two fields somewhere else
+  await board.move('mech', 0, 2);
   
-  await board.caption('Blue shows normal 4-space movement range', 2500);
+  // CAPTION "this is called a boost"
+  await board.caption('this is called a boost');
   
-  // Clear range highlights, restore terrain
-  board.highlight(-2, 0, '#2a2a2a');
-  board.highlight(-1, 0, '#2a2a2a');
-  board.highlight(1, 1, '#2a2a2a');
-  board.highlight(0, 1, '#2a2a2a');
-  board.highlight(-1, 2, '#2a2a2a');
-  board.highlight(0, 2, '#2a2a2a');
+  // CAPTION "Terrain can make it harder to move"
+  await board.caption('Terrain can make it harder to move');
   
-  // Restore terrain colors
-  board.highlight(-1, -1, '#FFA500');
-  board.highlight(0, -1, '#FFA500');
-  board.highlight(1, -1, '#FFA500');
-  board.highlight(-2, 1, '#FF4444');
-  board.highlight(-1, 1, '#FF4444');
-  board.highlight(2, -1, '#666666');
-  board.highlight(1, 0, '#666666');
+  // highlight some hexes next to the mech in red, point arrow at them with label "difficult terrain"
+  board.highlight(1, 2, '#FF4444');
+  board.highlight(0, 3, '#FF4444');
+  board.highlight(-1, 3, '#FF4444');
+  board.point(1, 2, 'difficult terrain');
   
-  // Phase 4: Difficult terrain movement
-  await board.caption('Moving through difficult terrain (orange)', 2500);
+  // CAPTION "Moving through difficult terrain costs 2x speed"
+  await board.caption('Moving through difficult terrain costs 2x speed');
   
-  board.point(-1, -1, '2 Move');
-  await board.caption('Difficult terrain costs 2 movement per space', 2500);
+  // clear the arrows
+  board.clear(ClearType.POINT);
   
-  await board.move('player-mech', -1, -1);
-  board.clear(ClearType.POINT); // Clear the movement arrow
-  await board.caption('Moved 1 space, cost 2 movement (2/4 used)', 2500);
+  // make the mech move into one of the difficult terrain hexes
+  await board.move('mech', 1, 2);
   
-  // Phase 5: Continue through difficult terrain
-  board.point(0, -1, '2 More');
-  await board.move('player-mech', 0, -1);
-  board.clear(ClearType.POINT); // Clear the movement arrow
-  board.caption('Another difficult space (4/4 movement used)', 2500);
-  await sleep(4500); // 2.5s caption + 2s pause
-  
-  // Phase 6: BOOST demonstration
-  board.caption('BOOST: Quick Action for extra movement!', 2500);
-  await sleep(4500); // 2.5s caption + 2s pause
-  
-  board.caption('BOOST gives additional SPEED (4) movement', 2500);
-  await sleep(4500); // 2.5s caption + 2s pause
-  
-  board.point(1, 0, 'BOOST');
-  board.caption('Using BOOST to move 1 more space', 2000);
-  await sleep(4000); // 2s caption + 2s pause
-  
-  await board.move('player-mech', 1, 0);
-  board.clear(ClearType.POINT); // Clear the BOOST arrow
-  
-  // Phase 7: Engagement rules
-  board.caption('ENGAGEMENT: Adjacent mechs become ENGAGED', 3000);
-  await sleep(5000); // 3s caption + 2s pause
-  
-  board.point(2, 1, 'Enemy');
-  board.caption('Moving adjacent to enemy = ENGAGEMENT', 2500);
-  await sleep(4500); // 2.5s caption + 2s pause
-  
-  board.clear(ClearType.POINT); // Clear enemy pointer
-  board.point(2, 0, 'Engage');
-  await board.move('player-mech', 2, 0);
-  board.clear(ClearType.POINT); // Clear engage arrow
-  
-  // Visual indication of engagement
-  board.blink(2, 0, '#FFFF00'); // Yellow blink for engaged mech
-  board.blink(2, 1, '#FFFF00'); // Yellow blink for engaged enemy
-  
-  board.caption('ENGAGED! Both mechs affected:', 2500);
-  await sleep(4500); // 2.5s caption + 2s pause
-  
-  board.caption('• Ranged attacks +1 Difficulty', 2000);
-  await sleep(4000); // 2s caption + 2s pause
-  
-  board.caption('• Moving away may trigger reactions', 2500);
-  await sleep(4500); // 2.5s caption + 2s pause
-  
-  // Phase 8: DISENGAGE demonstration
-  board.caption('DISENGAGE: Full Action to avoid reactions', 2500);
-  await sleep(4500); // 2.5s caption + 2s pause
-  
-  board.caption('DISENGAGE ignores engagement for rest of turn', 2500);
-  await sleep(4500); // 2.5s caption + 2s pause
-  
-  board.point(1, 1, 'Safe');
-  board.caption('Moving away safely with DISENGAGE', 2000);
-  await sleep(4000); // 2s caption + 2s pause
-  
-  await board.move('player-mech', 1, 1);
-  board.clear(ClearType.POINT); // Clear safe movement arrow
-  
-  // Stop blinking to show disengagement
-  board.highlight(2, 0, '#2a2a2a');
-  board.highlight(2, 1, '#2a2a2a');
-  board.highlight(1, 1, '#4FC3F7'); // Highlight new position
-  
-  // Phase 9: Dangerous terrain warning
-  board.caption('Dangerous Terrain ahead!', 2000);
-  await sleep(4000); // 2s caption + 2s pause
-  
-  board.point(-1, 1, 'Danger');
-  board.caption('Red terrain: Engineering check or 5 damage', 3000);
-  await sleep(5000); // 3s caption + 2s pause
-  
-  board.clear(ClearType.POINT); // Clear danger arrow
-  
-  // Phase 10: Summary
-  board.caption('Lancer Movement Summary:', 2000);
-  await sleep(4000); // 2s caption + 2s pause
-  
-  board.caption('• Standard Move: Up to SPEED', 2000);
-  await sleep(4000); // 2s caption + 2s pause
-  
-  board.caption('• BOOST: Extra SPEED as Quick Action', 2000);
-  await sleep(4000); // 2s caption + 2s pause
-  
-  board.caption('• Difficult Terrain: 2x movement cost', 2000);
-  await sleep(4000); // 2s caption + 2s pause
-  
-  board.caption('• Dangerous Terrain: Damage risk', 2000);
-  await sleep(4000); // 2s caption + 2s pause
-  
-  board.caption('• ENGAGEMENT: Adjacent = penalties', 2000);
-  await sleep(4000); // 2s caption + 2s pause
-  
-  board.caption('• DISENGAGE: Full Action to avoid reactions', 2500);
-  await sleep(4500); // 2.5s caption + 2s pause
-  
-  board.caption('Tutorial Complete! Try the controls yourself.', 3000);
-  await sleep(3000); // Just the caption duration, no extra pause needed at the end
+  // CAPTION "With Speed 2 this mech can move through only 1 difficult terrain"
+  await board.caption('With Speed 2 this mech can move through only 1 difficult terrain');
 }
 
 // Utility function for async delays

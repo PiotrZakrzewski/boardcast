@@ -480,7 +480,7 @@ export class BoardcastHexBoard {
     }
   }
 
-  public async caption(text: string, duration: number = 2000, pauseAfter: number = 2000): Promise<void> {
+  public async caption(text: string, duration: number = 2000): Promise<void> {
     const caption: GameCaption = {
       id: `caption-${Date.now()}-${Math.random()}`,
       text,
@@ -491,17 +491,19 @@ export class BoardcastHexBoard {
 
     this.gameCaptions.push(caption);
 
-    // Wait for caption duration + pause
-    const totalWait = duration + pauseAfter;
-    
     return new Promise<void>((resolve) => {
+      // First wait for caption duration, then remove caption
       setTimeout(() => {
         const index = this.gameCaptions.findIndex(c => c.id === caption.id);
         if (index !== -1) {
           this.gameCaptions.splice(index, 1);
         }
-        resolve();
-      }, totalWait);
+        
+        // Then wait additional 1 second after caption disappears
+        setTimeout(() => {
+          resolve();
+        }, 1000);
+      }, duration);
     });
   }
 
