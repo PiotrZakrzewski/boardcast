@@ -12,7 +12,7 @@ export default defineConfig({
     emptyOutDir: true,
     sourcemap: true
   },
-  base: './',
+  base: '/boardcast/',
   resolve: {
     alias: {
       // Resolve library imports to source files during demo build
