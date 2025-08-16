@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import path from 'path'
 
 export default defineConfig({
   root: 'demo',
@@ -13,7 +14,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      // Allow importing .js extensions from .ts files during development
+      // Resolve library imports to source files during demo build
+      '../lib/index': path.resolve(__dirname, 'lib/index.ts')
     }
   }
 })
