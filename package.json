@@ -9,14 +9,21 @@
     ".": {
       "import": "./dist/lib/index.js",
       "types": "./dist/lib/index.d.ts"
+    },
+    "./contrib": {
+      "import": "./dist/contrib/index.js",
+      "types": "./dist/contrib/index.d.ts"
     }
   },
   "files": [
-    "dist/lib/**/*"
+    "dist/lib/**/*",
+    "dist/contrib/**/*"
   ],
   "scripts": {
     "dev": "vite --config vite.demo.config.ts",
-    "build": "tsc && vite build --config vite.lib.config.ts",
+    "build": "tsc && vite build --config vite.lib.config.ts && vite build --config vite.contrib.config.ts",
+    "build:lib": "tsc && vite build --config vite.lib.config.ts",
+    "build:contrib": "tsc && vite build --config vite.contrib.config.ts",
     "build:demo": "vite build --config vite.demo.config.ts",
     "preview": "vite preview --config vite.demo.config.ts",
     "typecheck": "tsc --noEmit",
