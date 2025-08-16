@@ -123,13 +123,13 @@ async function lancerMovementTutorial(): Promise<void> {
   board.resetBoard();
   
   // CAPTION "In Lancer SPEED determines how far you can go" 3s
-  await board.caption('In Lancer SPEED determines how far you can go', 3000);
+  await board.caption('In Lancer SPEED determines how far you can go', 3000, 'bottom');
   
   // show a circle token with label "mech" on the origin
   board.token(0, 0, 'mech', 'circle', '#4444FF', 'mech');
   
   // CAPTION "This mech has speed 2"
-  await board.caption('This mech has speed 2');
+  await board.caption('This mech has speed 2', 2000, 'bottom');
   
   // show pulse on all coordinates in distance 2 from the origin
   // Distance 1 hexes
@@ -155,7 +155,7 @@ async function lancerMovementTutorial(): Promise<void> {
   board.pulse(-2, 2, '#4fc3f7');
   
   // CAPTION "The mech will now move by 2"
-  await board.caption('The mech will now move by 2');
+  await board.caption('The mech will now move by 2', 2000, 'bottom');
   
   // now move the mech token two hexes away
   await board.move('mech', 2, 0);
@@ -164,19 +164,19 @@ async function lancerMovementTutorial(): Promise<void> {
   board.clear(ClearType.PULSE);
   
   // CAPTION "It is out of move now..."
-  await board.caption('It is out of move now...');
+  await board.caption('It is out of move now...', 2000, 'bottom');
   
   // CAPTION "...but it can spend a quick action to move again"
-  await board.caption('...but it can spend a quick action to move again');
+  await board.caption('...but it can spend a quick action to move again', 2000, 'bottom');
   
   // move again two fields somewhere else
   await board.move('mech', 0, 2);
   
   // CAPTION "this is called a boost"
-  await board.caption('this is called a boost');
+  await board.caption('this is called a boost', 2000, 'bottom');
   
   // CAPTION "Terrain can make it harder to move"
-  await board.caption('Terrain can make it harder to move');
+  await board.caption('Terrain can make it harder to move', 2000, 'bottom');
   
   // highlight some hexes next to the mech in yellow, point arrow at them with label "difficult terrain"
   board.highlight(1, 1, '#FFFF44');
@@ -185,7 +185,7 @@ async function lancerMovementTutorial(): Promise<void> {
   board.point(1, 1, 'difficult terrain');
   
   // CAPTION "Moving through difficult terrain costs 2x speed"
-  await board.caption('Moving through difficult terrain costs 2x speed');
+  await board.caption('Moving through difficult terrain costs 2x speed', 2000, 'bottom');
   
   // clear the arrows
   board.clear(ClearType.POINT);
@@ -194,16 +194,16 @@ async function lancerMovementTutorial(): Promise<void> {
   await board.move('mech', 1, 1);
   
   // CAPTION "With Speed 2 this mech can move through only 1 difficult terrain"
-  await board.caption('With Speed 2 this mech can move through only 1 difficult terrain');
+  await board.caption('With Speed 2 this mech can move through only 1 difficult terrain', 2000, 'bottom');
   
   // clear the highlights
   board.clear(ClearType.HIGHLIGHT);
   
   // CAPTION "Dangerous terrain does not slow you down ..."
-  await board.caption('Dangerous terrain does not slow you down ...');
+  await board.caption('Dangerous terrain does not slow you down ...', 2000, 'bottom');
   
   // CAPTION "But may cause damage"
-  await board.caption('But may cause damage');
+  await board.caption('But may cause damage', 2000, 'bottom');
   
   // highlight some hexes near the mech in red, point at them with label dangerous terrain
   board.highlight(2, 1, '#FF4444');
@@ -221,13 +221,13 @@ async function lancerMovementTutorial(): Promise<void> {
   await board.move('mech', 2, 1);
   
   // CAPTION "When you move into dangerous terrain for the first time"
-  await board.caption('When you move into dangerous terrain for the first time');
+  await board.caption('When you move into dangerous terrain for the first time', 2000, 'bottom');
   
   // CAPTION "You must roll ENGINEERING, you get 5 damage if you fail"
-  await board.caption('You must roll ENGINEERING, you get 5 damage if you fail');
+  await board.caption('You must roll ENGINEERING, you get 5 damage if you fail', 2000, 'bottom');
   
   // CAPTION "The damage type depends on the terrain itself (up to GM)"
-  await board.caption('The damage type depends on the terrain itself (up to GM)');
+  await board.caption('The damage type depends on the terrain itself (up to GM)', 2000, 'bottom');
 }
 
 // Utility function for async delays

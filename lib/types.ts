@@ -45,6 +45,7 @@ export interface GameCaption {
   startTime: number;
   duration: number;
   visible: boolean;
+  position: 'center' | 'bottom';
 }
 
 export enum ClearType {

@@ -283,11 +283,23 @@ export class BoardcastHexBoard {
     // Render captions (text overlays)
     this.gameCaptions.forEach(caption => {
       if (caption.visible) {
+        // Calculate position based on caption.position
+        let backgroundY: number;
+        let textY: number;
+        
+        if (caption.position === 'bottom') {
+          backgroundY = this.height - 80;
+          textY = this.height - 40;
+        } else { // center (default)
+          backgroundY = this.height / 2 - 40;
+          textY = this.height / 2;
+        }
+
         // Create semi-transparent background for better text readability
         this.svg.append('rect')
           .attr('class', 'caption-background')
           .attr('x', 0)
-          .attr('y', this.height / 2 - 40)
+          .attr('y', backgroundY)
           .attr('width', this.width)
           .attr('height', 80)
           .attr('fill', 'rgba(0, 0, 0, 0.7)')
@@ -297,7 +309,7 @@ export class BoardcastHexBoard {
         this.svg.append('text')
           .attr('class', 'caption-text')
           .attr('x', this.width / 2)
-          .attr('y', this.height / 2)
+          .attr('y', textY)
           .attr('text-anchor', 'middle')
           .attr('dominant-baseline', 'middle')
           .attr('fill', '#ffffff')
@@ -480,13 +492,14 @@ export class BoardcastHexBoard {
     }
   }
 
-  public async caption(text: string, duration: number = 2000): Promise<void> {
+  public async caption(text: string, duration: number = 2000, position: 'center' | 'bottom' = 'center'): Promise<void> {
     const caption: GameCaption = {
       id: `caption-${Date.now()}-${Math.random()}`,
       text,
       startTime: Date.now(),
       duration,
-      visible: true
+      visible: true,
+      position
     };
 
     this.gameCaptions.push(caption);
