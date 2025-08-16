@@ -12,6 +12,7 @@ export default defineConfig({
     emptyOutDir: true,
     sourcemap: true
   },
+  base: './',
   resolve: {
     alias: {
       // Resolve library imports to source files during demo build
