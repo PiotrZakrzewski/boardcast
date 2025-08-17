@@ -6,7 +6,9 @@
   "scripts": {
     "test": "playwright test",
     "test:headed": "playwright test --headed",
-    "test:ui": "playwright test --ui"
+    "test:ui": "playwright test --ui",
+    "record:lancer": "node record-lancer.js",
+    "record:lancer:test": "playwright test tests/record-lancer.spec.ts --headed"
   },
   "keywords": [],
   "author": "",
