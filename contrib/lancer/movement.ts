@@ -4,7 +4,7 @@
 
 import { BoardcastHexBoard } from '../../lib/BoardcastHexBoard.js';
 import { Colors } from '../../lib/types.js';
-import type { LancerMech, MovementRange } from './types.js';
+import type { MovementRange } from './types.js';
 
 export class LancerMovement {
   constructor(private board: BoardcastHexBoard) {}

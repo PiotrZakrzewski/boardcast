@@ -1,4 +1,5 @@
 import { BoardcastHexBoard, ClearType } from '../lib/index';
+import { Lancer } from '../contrib/index';
 
 // Initialize the boardcast demo when the DOM is loaded
 let board: BoardcastHexBoard;
@@ -28,6 +29,7 @@ function setupDemoEventListeners(): void {
   const demoTokensBtn = document.getElementById('demo-tokens');
   const demoMovementBtn = document.getElementById('demo-movement');
   const tutorialLancerMovementBtn = document.getElementById('tutorial-lancer-movement');
+  const tutorialLancerContribBtn = document.getElementById('tutorial-lancer-contrib');
   const resetBtn = document.getElementById('reset-board');
 
   showCoordBtn?.addEventListener('click', () => board.showCoordinates());
@@ -115,6 +117,11 @@ function setupDemoEventListeners(): void {
   // Lancer Movement Tutorial
   tutorialLancerMovementBtn?.addEventListener('click', async () => {
     await lancerMovementTutorial();
+  });
+
+  // Lancer Contrib Demo
+  tutorialLancerContribBtn?.addEventListener('click', async () => {
+    await lancerContribDemo();
   });
 }
 
@@ -228,6 +235,121 @@ async function lancerMovementTutorial(): Promise<void> {
   
   // CAPTION "The damage type depends on the terrain itself (up to GM)"
   await board.caption('The damage type depends on the terrain itself (up to GM)', 2000, 'bottom');
+}
+
+// Lancer Contrib Demo - Showcasing specialized Lancer methods
+async function lancerContribDemo(): Promise<void> {
+  board.resetBoard();
+  
+  // Initialize Lancer contrib classes
+  const movement = new Lancer.LancerMovement(board);
+  const combat = new Lancer.LancerCombat(board);
+  
+  await board.caption('Lancer Contrib Library Demo', 3000, 'bottom');
+  await board.caption('Specialized methods for Lancer RPG mechanics', 3000, 'bottom');
+  
+  // Place a mech at the center
+  board.token(0, 0, 'mech', 'circle', Lancer.Colors.BLUE, 'Atlas');
+  
+  // Demo 1: Movement Range Calculation
+  await board.caption('Movement Range: Speed 4 Mech', 3000, 'bottom');
+  movement.showMovementRange(0, 0, 4);
+  await sleep(4000);
+  
+  board.clear(ClearType.PULSE);
+  
+  // Demo 2: Terrain Effects
+  await board.caption('Terrain Types in Lancer', 3000, 'bottom');
+  
+  // Show difficult terrain
+  const difficultTerrain = [
+    { q: 2, r: 0 }, { q: 3, r: 0 }, { q: 1, r: 2 },
+    { q: -2, r: 1 }, { q: -3, r: 2 }
+  ];
+  movement.showDifficultTerrain(difficultTerrain, '#8B4513');
+  board.point(2, 0, 'Difficult Terrain');
+  await sleep(3000);
+  
+  board.clear(ClearType.POINT);
+  
+  // Show dangerous terrain
+  const dangerousTerrain = [
+    { q: -1, r: -2 }, { q: 0, r: -3 }, { q: 2, r: -2 },
+    { q: 3, r: -1 }, { q: 1, r: 3 }
+  ];
+  movement.showDangerousTerrain(dangerousTerrain);
+  board.point(-1, -2, 'Dangerous Terrain');
+  await sleep(3000);
+  
+  board.clear(ClearType.POINT);
+  await board.caption('Difficult terrain costs 2x movement', 2500, 'bottom');
+  await board.caption('Dangerous terrain causes damage', 2500, 'bottom');
+  
+  // Demo 3: Combat Mechanics
+  await board.caption('Combat: Engagement Zone', 3000, 'bottom');
+  board.clear(ClearType.HIGHLIGHT);
+  
+  // Show engagement zone
+  combat.showEngagementZone(0, 0);
+  await sleep(3000);
+  
+  // Add an enemy mech
+  board.token(3, 1, 'enemy', 'triangle', Lancer.Colors.RED, 'Minotaur');
+  await board.caption('Enemy mech enters the battlefield', 2500, 'bottom');
+  
+  // Demo 4: Weapon Range
+  await board.caption('Weapon Range: Assault Rifle (Range 10)', 3000, 'bottom');
+  board.clear(ClearType.BLINK);
+  
+  const weapon: Lancer.LancerWeapon = {
+    name: 'Assault Rifle',
+    type: 'main',
+    range: 5,
+    damage: '1d6+2',
+    tags: ['Reliable 3']
+  };
+  
+  combat.showWeaponRange(0, 0, weapon, 3, 1);
+  await sleep(4000);
+  
+  // Demo 5: Line of Sight and Cover
+  await board.caption('Cover Mechanics', 3000, 'bottom');
+  board.clear(ClearType.PULSE);
+  board.clear(ClearType.POINT);
+  
+  combat.showCoverPositions(0, 0, 3, 1);
+  await sleep(4000);
+  
+  // Demo 6: Area of Effect Attack
+  await board.caption('Blast Template: Burst 2 Explosion', 3000, 'bottom');
+  board.clear(ClearType.HIGHLIGHT);
+  board.clear(ClearType.POINT);
+  
+  combat.showBlastTemplate(2, 0, 2, Lancer.Colors.ORANGE);
+  await sleep(4000);
+  
+  // Final demonstration - Complex scenario
+  await board.caption('Complex Scenario: Multiple Mechs', 3000, 'bottom');
+  board.clear(ClearType.BLINK);
+  
+  // Add more mechs
+  board.token(-2, 2, 'ally1', 'circle', Lancer.Colors.GREEN, 'Blackbeard');
+  board.token(1, -3, 'ally2', 'circle', Lancer.Colors.GREEN, 'Everest');
+  
+  // Show multiple engagement zones
+  combat.showEngagementZone(-2, 2, Lancer.Colors.ENGAGEMENT_YELLOW);
+  combat.showEngagementZone(1, -3, Lancer.Colors.ENGAGEMENT_YELLOW);
+  
+  await board.caption('Multiple engagement zones create tactical complexity', 3000, 'bottom');
+  await sleep(3000);
+  
+  // Show combined movement and combat
+  await board.caption('Movement + Combat: Positioning is key!', 3000, 'bottom');
+  movement.showMovementRange(-2, 2, 3);
+  await sleep(4000);
+  
+  await board.caption('Lancer Contrib Demo Complete!', 3000, 'bottom');
+  await board.caption('Use these methods to create your own Lancer tutorials', 3000, 'bottom');
 }
 
 // Utility function for async delays
