@@ -2,8 +2,10 @@ import * as d3 from 'd3';
 import { HexCell, GamePiece, GamePointer, GameCaption, GridConfig, ClearType } from './types.js';
 
 export class BoardcastHexBoard {
+  private static readonly MAX_COORDINATE_RANGE = 20; // Fixed coordinate space -20 to +20
+  
   private svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>;
-  private hexCells: HexCell[] = [];
+  private allHexCells: Map<string, HexCell> = new Map(); // All possible hex cells
   private gamePieces: GamePiece[] = [];
   private gamePointers: GamePointer[] = [];
   private gameCaptions: GameCaption[] = [];
@@ -11,7 +13,7 @@ export class BoardcastHexBoard {
   private width: number = 1000;
   private height: number = 700;
   private hexRadius: number = 25;
-  private gridRadius: number = 3;
+  private gridRadius: number = 3; // Display viewport radius
   private coordinatesVisible: boolean = true;
   private isAnimating: boolean = false;
   private time: number = 0;
@@ -41,43 +43,93 @@ export class BoardcastHexBoard {
   }
 
   private initializeBoard(): void {
-    // Clear existing cells, tokens, pointers, and captions
-    this.hexCells = [];
-    this.gamePieces = [];
-    this.gamePointers = [];
-    this.gameCaptions = [];
-    this.tokenRegistry.clear();
+    // Only initialize hex cells once - create fixed coordinate space
+    if (this.allHexCells.size === 0) {
+      this.createFixedCoordinateSpace();
+    }
     
-    for (let q = -this.gridRadius; q <= this.gridRadius; q++) {
-      const r1 = Math.max(-this.gridRadius, -q - this.gridRadius);
-      const r2 = Math.min(this.gridRadius, -q + this.gridRadius);
+    // Update pixel positions for all hex cells based on current hexRadius
+    this.updateHexPixelPositions();
+  }
+
+  private createFixedCoordinateSpace(): void {
+    const range = BoardcastHexBoard.MAX_COORDINATE_RANGE;
+    
+    for (let q = -range; q <= range; q++) {
+      const r1 = Math.max(-range, -q - range);
+      const r2 = Math.min(range, -q + range);
       
       for (let r = r1; r <= r2; r++) {
+        const hexId = `hex-${q}-${r}`;
         const pixel = this.axialToPixel(q, r);
         
-        // Only include hexagons that fit within the viewport
-        if (pixel.x >= 50 && pixel.x <= this.width - 50 && 
-            pixel.y >= 50 && pixel.y <= this.height - 50) {
-          
-          this.hexCells.push({
-            q,
-            r,
-            x: pixel.x,
-            y: pixel.y,
-            id: `hex-${q}-${r}`,
-            highlighted: false,
-            isBlinking: false,
-            blinkPhase: 0,
-            isPulsing: false,
-            pulsePhase: 0,
-            originalColor: '#2a2a2a'
-          });
-        }
+        const hexCell: HexCell = {
+          q,
+          r,
+          x: pixel.x,
+          y: pixel.y,
+          id: hexId,
+          highlighted: false,
+          isBlinking: false,
+          blinkPhase: 0,
+          isPulsing: false,
+          pulsePhase: 0,
+          originalColor: '#2a2a2a'
+        };
+        
+        this.allHexCells.set(hexId, hexCell);
       }
     }
-
-    // Remove the default game piece - tokens will be created via API calls
   }
+
+  private updateHexPixelPositions(): void {
+    // Update pixel positions for all hex cells when hexRadius changes
+    this.allHexCells.forEach(hexCell => {
+      const pixel = this.axialToPixel(hexCell.q, hexCell.r);
+      hexCell.x = pixel.x;
+      hexCell.y = pixel.y;
+    });
+    
+    // Update token positions
+    this.gamePieces.forEach(piece => {
+      const pixel = this.axialToPixel(piece.currentHex.q, piece.currentHex.r);
+      piece.x = pixel.x;
+      piece.y = pixel.y;
+    });
+    
+    // Update pointer positions
+    this.gamePointers.forEach(pointer => {
+      const targetPixel = this.axialToPixel(pointer.targetQ, pointer.targetR);
+      const gridCenter = { x: this.width / 2, y: this.height / 2 };
+      const distance = Math.sqrt(Math.pow(targetPixel.x - gridCenter.x, 2) + Math.pow(targetPixel.y - gridCenter.y, 2));
+      const arrowLength = Math.min(distance * 0.4, 100);
+      const angle = Math.atan2(targetPixel.y - gridCenter.y, targetPixel.x - gridCenter.x);
+      
+      pointer.x = targetPixel.x;
+      pointer.y = targetPixel.y;
+      pointer.startX = targetPixel.x - Math.cos(angle) * arrowLength;
+      pointer.startY = targetPixel.y - Math.sin(angle) * arrowLength;
+    });
+  }
+
+  private getVisibleHexCells(): HexCell[] {
+    // Return only hex cells within current display viewport
+    const visibleCells: HexCell[] = [];
+    
+    this.allHexCells.forEach(hexCell => {
+      const distance = Math.max(Math.abs(hexCell.q), Math.abs(hexCell.r), Math.abs(-hexCell.q - hexCell.r));
+      if (distance <= this.gridRadius) {
+        // Also check if hex is within screen bounds
+        if (hexCell.x >= 50 && hexCell.x <= this.width - 50 && 
+            hexCell.y >= 50 && hexCell.y <= this.height - 50) {
+          visibleCells.push(hexCell);
+        }
+      }
+    });
+    
+    return visibleCells;
+  }
+
 
   private createHexagonPath(size: number): string {
     const points: [number, number][] = [];
@@ -164,9 +216,12 @@ export class BoardcastHexBoard {
     // Clear existing content
     this.svg.selectAll('*').remove();
 
+    // Get visible hex cells for current viewport
+    const visibleHexCells = this.getVisibleHexCells();
+
     // Render hexagons
     const hexagons = this.svg.selectAll<SVGPathElement, HexCell>('path.hex')
-      .data(this.hexCells, d => d.id);
+      .data(visibleHexCells, d => d.id);
 
     hexagons.enter()
       .append('path')
@@ -181,7 +236,7 @@ export class BoardcastHexBoard {
     // Render coordinate labels if enabled
     if (this.coordinatesVisible) {
       const labels = this.svg.selectAll<SVGTextElement, HexCell>('text.coordinate')
-        .data(this.hexCells, d => d.id);
+        .data(visibleHexCells, d => d.id);
 
       labels.enter()
         .append('text')
@@ -374,7 +429,7 @@ export class BoardcastHexBoard {
       this.time += 0.05;
       
       // Update blink and pulse phases
-      this.hexCells.forEach(cell => {
+      this.allHexCells.forEach(cell => {
         if (cell.isBlinking) {
           cell.blinkPhase = this.time * 3; // Speed of blinking
         }
@@ -401,7 +456,7 @@ export class BoardcastHexBoard {
 
   // Public API methods from README.md
   public highlight(q: number, r: number, colour: string = '#4fc3f7'): void {
-    const cell = this.hexCells.find(hex => hex.q === q && hex.r === r);
+    const cell = this.allHexCells.get(`hex-${q}-${r}`);
     if (cell) {
       cell.highlighted = true;
       cell.highlightColor = colour;
@@ -411,7 +466,7 @@ export class BoardcastHexBoard {
   }
 
   public blink(q: number, r: number, colour: string = '#4fc3f7'): void {
-    const cell = this.hexCells.find(hex => hex.q === q && hex.r === r);
+    const cell = this.allHexCells.get(`hex-${q}-${r}`);
     if (cell) {
       cell.isBlinking = true;
       cell.blinkColor = colour;
@@ -422,7 +477,7 @@ export class BoardcastHexBoard {
   }
 
   public pulse(q: number, r: number, colour: string = '#4fc3f7'): void {
-    const cell = this.hexCells.find(hex => hex.q === q && hex.r === r);
+    const cell = this.allHexCells.get(`hex-${q}-${r}`);
     if (cell) {
       cell.isPulsing = true;
       cell.pulseColor = colour;
@@ -433,7 +488,7 @@ export class BoardcastHexBoard {
   }
 
   public point(q: number, r: number, label?: string): void {
-    const targetCell = this.hexCells.find(cell => cell.q === q && cell.r === r);
+    const targetCell = this.allHexCells.get(`hex-${q}-${r}`);
     if (!targetCell) return;
 
     // Calculate pointer position (pointing from outside the grid toward the hex)
@@ -560,14 +615,14 @@ export class BoardcastHexBoard {
   }
 
   private clearHighlights(): void {
-    this.hexCells.forEach(cell => {
+    this.allHexCells.forEach(cell => {
       cell.highlighted = false;
       cell.highlightColor = undefined;
     });
   }
 
   private clearBlinks(): void {
-    this.hexCells.forEach(cell => {
+    this.allHexCells.forEach(cell => {
       cell.isBlinking = false;
       cell.blinkColor = undefined;
       cell.blinkPhase = 0;
@@ -575,7 +630,7 @@ export class BoardcastHexBoard {
   }
 
   private clearPulses(): void {
-    this.hexCells.forEach(cell => {
+    this.allHexCells.forEach(cell => {
       cell.isPulsing = false;
       cell.pulseColor = undefined;
       cell.pulsePhase = 0;
@@ -596,7 +651,7 @@ export class BoardcastHexBoard {
   }
 
   public token(q: number, r: number, tokenName: string, shape: 'rect' | 'circle' | 'triangle' | 'star', colour: string, label?: string): void {
-    const targetCell = this.hexCells.find(cell => cell.q === q && cell.r === r);
+    const targetCell = this.allHexCells.get(`hex-${q}-${r}`);
     if (!targetCell) return;
 
     // Remove existing token with same name if it exists
@@ -628,7 +683,7 @@ export class BoardcastHexBoard {
     const token = this.tokenRegistry.get(tokenName);
     if (!token || this.isAnimating) return;
 
-    const targetCell = this.hexCells.find(cell => cell.q === q && cell.r === r);
+    const targetCell = this.allHexCells.get(`hex-${q}-${r}`);
     if (!targetCell) return;
 
     this.isAnimating = true;
@@ -675,7 +730,7 @@ export class BoardcastHexBoard {
   }
 
   public resetBoard(): void {
-    this.hexCells.forEach(cell => {
+    this.allHexCells.forEach(cell => {
       cell.highlighted = false;
       cell.isBlinking = false;
       cell.isPulsing = false;
@@ -695,15 +750,14 @@ export class BoardcastHexBoard {
 
   public setGridSize(gridRadius: number): void {
     this.gridRadius = gridRadius;
-    this.initializeBoard();
-    this.render();
+    this.render(); // Only re-render, no data rebuild needed
   }
 
   public setGridSizeWithScaling(gridRadius: number): void {
     this.gridRadius = gridRadius;
     this.hexRadius = this.calculateOptimalHexSize(gridRadius);
-    this.initializeBoard();
-    this.render();
+    this.updateHexPixelPositions(); // Update positions for new hex size
+    this.render(); // Re-render with new viewport and positions
   }
 
   private calculateOptimalHexSize(gridRadius: number): number {
