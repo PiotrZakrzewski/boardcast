@@ -17,6 +17,7 @@ export class BoardcastHexBoard {
   private coordinatesVisible: boolean = true;
   private isAnimating: boolean = false;
   private time: number = 0;
+  private onGridExpansion?: (oldRadius: number, newRadius: number, coordinates: Array<{q: number, r: number}>) => void;
 
   constructor(svgSelector: string, config: GridConfig = {}) {
     this.svg = d3.select(svgSelector);
@@ -24,6 +25,7 @@ export class BoardcastHexBoard {
     this.hexRadius = config.hexRadius ?? this.calculateOptimalHexSize(config.gridRadius ?? 3);
     this.width = config.width ?? 1000;
     this.height = config.height ?? 700;
+    this.onGridExpansion = config.onGridExpansion;
     
     // Update SVG dimensions if provided
     if (config.width || config.height) {
@@ -130,6 +132,64 @@ export class BoardcastHexBoard {
     return visibleCells;
   }
 
+
+  private isCoordinateInFixedSpace(q: number, r: number): boolean {
+    const distance = Math.max(Math.abs(q), Math.abs(r), Math.abs(-q - r));
+    return distance <= BoardcastHexBoard.MAX_COORDINATE_RANGE;
+  }
+
+  private calculateRequiredGridRadius(coordinates: Array<{q: number, r: number}>): number {
+    let maxDistance = this.gridRadius; // Start with current radius
+    
+    coordinates.forEach(coord => {
+      const distance = Math.max(Math.abs(coord.q), Math.abs(coord.r), Math.abs(-coord.q - coord.r));
+      maxDistance = Math.max(maxDistance, distance);
+    });
+    
+    return maxDistance;
+  }
+
+  private ensureCoordinatesVisible(coordinates: Array<{q: number, r: number}>): boolean {
+    // Check if all coordinates are within fixed coordinate space
+    const invalidCoords = coordinates.filter(coord => !this.isCoordinateInFixedSpace(coord.q, coord.r));
+    if (invalidCoords.length > 0) {
+      console.warn(`Coordinates outside fixed coordinate space (±${BoardcastHexBoard.MAX_COORDINATE_RANGE}):`, invalidCoords);
+      return false;
+    }
+
+    // Calculate required grid radius to show all coordinates
+    const requiredRadius = this.calculateRequiredGridRadius(coordinates);
+    
+    // Expand viewport if needed
+    if (requiredRadius > this.gridRadius) {
+      const oldRadius = this.gridRadius;
+      this.gridRadius = requiredRadius;
+      
+      const outOfViewCoords = coordinates.filter(coord => {
+        const distance = Math.max(Math.abs(coord.q), Math.abs(coord.r), Math.abs(-coord.q - coord.r));
+        return distance > oldRadius;
+      });
+      
+      // Call user callback if provided
+      if (this.onGridExpansion) {
+        this.onGridExpansion(oldRadius, requiredRadius, outOfViewCoords);
+      } else {
+        // Fallback: log expansion for debugging
+        console.log(`Auto-expanded grid from ${oldRadius} to ${requiredRadius} to show coordinates:`, outOfViewCoords);
+      }
+      
+      // Update hex size if needed to keep grid reasonably sized
+      const newHexRadius = this.calculateOptimalHexSize(requiredRadius);
+      if (newHexRadius !== this.hexRadius) {
+        this.hexRadius = newHexRadius;
+        this.updateHexPixelPositions();
+      }
+      
+      return true; // Grid was expanded
+    }
+    
+    return false; // No expansion needed
+  }
 
   private createHexagonPath(size: number): string {
     const points: [number, number][] = [];
@@ -456,16 +516,27 @@ export class BoardcastHexBoard {
 
   // Public API methods from README.md
   public highlight(q: number, r: number, colour: string = '#4fc3f7'): void {
+    // Ensure coordinate is visible by expanding viewport if needed
+    const expanded = this.ensureCoordinatesVisible([{q, r}]);
+    
     const cell = this.allHexCells.get(`hex-${q}-${r}`);
     if (cell) {
       cell.highlighted = true;
       cell.highlightColor = colour;
       cell.isBlinking = false; // Stop blinking if it was blinking
       cell.isPulsing = false; // Stop pulsing if it was pulsing
+      
+      // Re-render if viewport was expanded
+      if (expanded) {
+        this.render();
+      }
     }
   }
 
   public blink(q: number, r: number, colour: string = '#4fc3f7'): void {
+    // Ensure coordinate is visible by expanding viewport if needed
+    const expanded = this.ensureCoordinatesVisible([{q, r}]);
+    
     const cell = this.allHexCells.get(`hex-${q}-${r}`);
     if (cell) {
       cell.isBlinking = true;
@@ -473,10 +544,18 @@ export class BoardcastHexBoard {
       cell.highlighted = false; // Stop static highlight if it was highlighted
       cell.isPulsing = false; // Stop pulsing if it was pulsing
       cell.blinkPhase = this.time * 3;
+      
+      // Re-render if viewport was expanded
+      if (expanded) {
+        this.render();
+      }
     }
   }
 
   public pulse(q: number, r: number, colour: string = '#4fc3f7'): void {
+    // Ensure coordinate is visible by expanding viewport if needed
+    const expanded = this.ensureCoordinatesVisible([{q, r}]);
+    
     const cell = this.allHexCells.get(`hex-${q}-${r}`);
     if (cell) {
       cell.isPulsing = true;
@@ -484,10 +563,18 @@ export class BoardcastHexBoard {
       cell.highlighted = false; // Stop static highlight if it was highlighted
       cell.isBlinking = false; // Stop blinking if it was blinking
       cell.pulsePhase = this.time * 0.8; // Slower than blink for gradual transition
+      
+      // Re-render if viewport was expanded
+      if (expanded) {
+        this.render();
+      }
     }
   }
 
   public point(q: number, r: number, label?: string): void {
+    // Ensure coordinate is visible by expanding viewport if needed
+    const expanded = this.ensureCoordinatesVisible([{q, r}]);
+    
     const targetCell = this.allHexCells.get(`hex-${q}-${r}`);
     if (!targetCell) return;
 
@@ -544,6 +631,11 @@ export class BoardcastHexBoard {
         label,
         color: '#ff4444'
       });
+    }
+    
+    // Re-render if viewport was expanded
+    if (expanded) {
+      this.render();
     }
   }
 
@@ -651,6 +743,9 @@ export class BoardcastHexBoard {
   }
 
   public token(q: number, r: number, tokenName: string, shape: 'rect' | 'circle' | 'triangle' | 'star', colour: string, label?: string): void {
+    // Ensure coordinate is visible by expanding viewport if needed
+    const expanded = this.ensureCoordinatesVisible([{q, r}]);
+    
     const targetCell = this.allHexCells.get(`hex-${q}-${r}`);
     if (!targetCell) return;
 
@@ -677,11 +772,22 @@ export class BoardcastHexBoard {
 
     this.gamePieces.push(newToken);
     this.tokenRegistry.set(tokenName, newToken);
+    
+    // Re-render if viewport was expanded
+    if (expanded) {
+      this.render();
+    }
   }
 
   public async move(tokenName: string, q: number, r: number): Promise<void> {
     const token = this.tokenRegistry.get(tokenName);
     if (!token || this.isAnimating) return;
+
+    // Ensure target coordinate is visible by expanding viewport if needed
+    const expanded = this.ensureCoordinatesVisible([{q, r}]);
+    if (expanded) {
+      this.render();
+    }
 
     const targetCell = this.allHexCells.get(`hex-${q}-${r}`);
     if (!targetCell) return;
@@ -812,5 +918,9 @@ export class BoardcastHexBoard {
       width: this.width,
       height: this.height
     };
+  }
+
+  public setGridExpansionCallback(callback?: (oldRadius: number, newRadius: number, coordinates: Array<{q: number, r: number}>) => void): void {
+    this.onGridExpansion = callback;
   }
 }

@@ -114,4 +114,5 @@ export interface GridConfig {
   hexRadius?: number;
   width?: number;
   height?: number;
+  onGridExpansion?: (oldRadius: number, newRadius: number, coordinates: Array<{q: number, r: number}>) => void;
 }
