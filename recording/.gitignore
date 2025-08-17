@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Playwright test artifacts
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Videos and screenshots
+videos/
+screenshots/
+
+# npm
+package-lock.json
