@@ -17,7 +17,9 @@
   },
   "files": [
     "dist/lib/**/*",
-    "dist/contrib/**/*"
+    "dist/contrib/**/*",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "dev": "vite --config vite.demo.config.ts",
@@ -31,9 +33,28 @@
     "test:ui": "vitest --ui",
     "test:run": "vitest run"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "animation",
+    "hex",
+    "board",
+    "tabletop",
+    "game",
+    "tutorial",
+    "d3",
+    "visualization",
+    "svg",
+    "hexagonal"
+  ],
+  "author": "Boardcast Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PiotrZakrzewski/boardcast.git"
+  },
+  "bugs": {
+    "url": "https://github.com/PiotrZakrzewski/boardcast/issues"
+  },
+  "homepage": "https://piotrzakrzewski.github.io/boardcast/",
   "dependencies": {
     "d3": "^7.9.0"
   },

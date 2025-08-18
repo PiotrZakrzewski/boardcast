@@ -18,7 +18,7 @@
     "bin/",
     "lib/",
     "runtime/",
-    "templates/"
+    "README.md"
   ],
   "scripts": {
     "build": "echo 'No build step required - using ES modules'",
@@ -34,17 +34,29 @@
     "recording",
     "tabletop"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "Piotr Zakrzewski",
+  "license": "MIT",
   "dependencies": {
     "express": "^5.1.0",
     "playwright": "^1.54.2"
+  },
+  "peerDependencies": {
+    "boardcast": "^1.0.0"
   },
   "peerDependenciesMeta": {
     "boardcast": {
       "optional": true
     }
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PiotrZakrzewski/boardcast.git",
+    "directory": "boardcast-cli"
+  },
+  "bugs": {
+    "url": "https://github.com/PiotrZakrzewski/boardcast/issues"
+  },
+  "homepage": "https://piotrzakrzewski.github.io/boardcast/",
   "engines": {
     "node": ">=18.0.0"
   }
