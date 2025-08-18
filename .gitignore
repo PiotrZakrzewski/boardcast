@@ -38,3 +38,8 @@ logs
 # Temporary files
 *.tmp
 *.temp
+
+# Video files
+*.webm
+*.mp4
+*.mov
