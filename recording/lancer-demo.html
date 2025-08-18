@@ -10,16 +10,23 @@
             padding: 0;
             background-color: #0a0a0a;
             overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         
         #chart {
             background-color: #0a0a0a;
             display: block;
+            max-width: 95vw;
+            max-height: 95vh;
         }
     </style>
 </head>
 <body>
-    <svg id="chart" width="1000" height="700"></svg>
+    <svg id="chart" width="1800" height="1000"></svg>
 
     <!-- Use import map to resolve D3 -->
     <script type="importmap">
@@ -49,7 +56,9 @@
         // Initialize the board
         const board = new BoardcastHexBoard('#chart', {
             gridRadius: 8,
-            hexRadius: 25
+            hexRadius: 40,  // Larger hexes for the bigger canvas
+            width: 1800,
+            height: 1000
         });
 
         // Wait for page to load, then start demo

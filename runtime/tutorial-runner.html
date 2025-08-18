@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boardcast Tutorial</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0a0a0a;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #chart {
+            background-color: #0a0a0a;
+            display: block;
+            max-width: 95vw;
+            max-height: 95vh;
+        }
+    </style>
+</head>
+<body>
+    <svg id="chart" width="1800" height="1000"></svg>
+
+    <!-- Use import map to resolve D3 -->
+    <script type="importmap">
+    {
+        "imports": {
+            "d3": "https://cdn.skypack.dev/d3@7"
+        }
+    }
+    </script>
+    
+    <script type="module">
+        // Import the Boardcast library from the built dist directory
+        import { BoardcastHexBoard } from '/dist/lib/index.js';
+        
+        // Import the user's tutorial (will be dynamically set by server)
+        import { runTutorial, config } from '/user-tutorial.js';
+        
+        // Tutorial completion tracking
+        let tutorialComplete = false;
+        let tutorialError = null;
+        
+        console.log('Initializing tutorial with config:', config);
+        
+        // Initialize the board with user configuration
+        const boardConfig = {
+            gridRadius: config?.gridRadius || 8,
+            hexRadius: calculateHexRadius(config?.gridRadius || 8),
+            width: 1800,
+            height: 1000
+        };
+        
+        const board = new BoardcastHexBoard('#chart', boardConfig);
+        
+        // Calculate optimal hex size based on grid radius
+        function calculateHexRadius(gridRadius) {
+            // Ensure hexes fit well in the 1800x1000 area
+            const maxRadius = Math.min(1800, 1000) / (gridRadius * 3);
+            return Math.max(20, Math.min(50, maxRadius)); // Clamp between 20-50
+        }
+        
+        // Wait for page to load, then start tutorial
+        window.addEventListener('load', async () => {
+            console.log('Starting tutorial...');
+            
+            try {
+                // Small delay to ensure everything is loaded
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Run the user's tutorial
+                await runTutorial(board);
+                
+                console.log('Tutorial completed successfully');
+                tutorialComplete = true;
+                
+                // Dispatch completion event for external listeners
+                window.dispatchEvent(new CustomEvent('tutorialComplete'));
+                
+            } catch (error) {
+                console.error('Tutorial error:', error);
+                tutorialError = error;
+                tutorialComplete = true; // Mark as complete so recording stops
+                
+                // Dispatch error event
+                window.dispatchEvent(new CustomEvent('tutorialError', { 
+                    detail: { error: error.message } 
+                }));
+            }
+        });
+        
+        // Expose completion status for external scripts
+        window.isTutorialComplete = () => tutorialComplete;
+        window.getTutorialError = () => tutorialError;
+    </script>
+</body>
+</html>

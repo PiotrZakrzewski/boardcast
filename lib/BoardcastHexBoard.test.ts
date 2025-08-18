@@ -38,6 +38,12 @@ describe('BoardcastHexBoard - Visual Methods', () => {
     ;(board as any).render()
   }
 
+  // Helper function to get hex cell from the Map
+  const getHexCell = (q: number, r: number) => {
+    const allHexCells = (board as any).allHexCells as Map<string, any>
+    return allHexCells.get(`hex-${q}-${r}`)
+  }
+
   describe('token method', () => {
     it('should create circle token with correct attributes', () => {
       board.token(0, 0, 'player', 'circle', '#ff0000', 'Player')
@@ -372,8 +378,8 @@ describe('BoardcastHexBoard - Visual Methods', () => {
     })
 
     it('should not create arrow for non-existent hex coordinates', () => {
-      // Try to point to hex outside the grid
-      board.point(10, 10)
+      // Try to point to hex outside the MAX_COORDINATE_RANGE
+      board.point(25, 25)
       
       const lines = svg.querySelectorAll('path.pointer-line')
       const heads = svg.querySelectorAll('path.pointer-head')
@@ -483,8 +489,7 @@ describe('BoardcastHexBoard - Visual Methods', () => {
       it('should stop blink and pulse when highlighting', () => {
         // First start blinking
         board.blink(0, 0, '#ff0000')
-        const hexCells = (board as any).hexCells
-        const centerHex = hexCells.find((cell: any) => cell.q === 0 && cell.r === 0)
+        const centerHex = getHexCell(0, 0)
         expect(centerHex.isBlinking).toBe(true)
         
         // Then highlight the same hex
@@ -494,10 +499,10 @@ describe('BoardcastHexBoard - Visual Methods', () => {
       })
 
       it('should not highlight non-existent hex coordinates', () => {
-        board.highlight(10, 10, '#ff0000')
+        board.highlight(25, 25, '#ff0000') // Outside MAX_COORDINATE_RANGE
         forceRender()
         
-        // No hex should have the highlight color
+        // No hex should have the highlight color since the coordinate doesn't exist
         const hexes = svg.querySelectorAll('path.hex')
         const highlightedHex = Array.from(hexes).find(hex => {
           const fill = hex.getAttribute('fill')
@@ -512,8 +517,7 @@ describe('BoardcastHexBoard - Visual Methods', () => {
       it('should start blinking animation for specified hex', () => {
         board.blink(1, 0, '#ff0000')
         
-        const hexCells = (board as any).hexCells
-        const blinkingHex = hexCells.find((cell: any) => cell.q === 1 && cell.r === 0)
+        const blinkingHex = getHexCell(1, 0)
         
         expect(blinkingHex.isBlinking).toBe(true)
         expect(blinkingHex.blinkColor).toBe('#ff0000')
@@ -523,8 +527,7 @@ describe('BoardcastHexBoard - Visual Methods', () => {
       it('should use default color when none specified', () => {
         board.blink(0, 0)
         
-        const hexCells = (board as any).hexCells
-        const blinkingHex = hexCells.find((cell: any) => cell.q === 0 && cell.r === 0)
+        const blinkingHex = getHexCell(0, 0)
         
         expect(blinkingHex.isBlinking).toBe(true)
         expect(blinkingHex.blinkColor).toBe('#4fc3f7')
@@ -533,8 +536,7 @@ describe('BoardcastHexBoard - Visual Methods', () => {
       it('should stop pulse when starting blink', () => {
         // First start pulsing
         board.pulse(0, 0, '#ff0000')
-        const hexCells = (board as any).hexCells
-        const hex = hexCells.find((cell: any) => cell.q === 0 && cell.r === 0)
+        const hex = getHexCell(0, 0)
         expect(hex.isPulsing).toBe(true)
         
         // Then start blinking
@@ -548,8 +550,7 @@ describe('BoardcastHexBoard - Visual Methods', () => {
       it('should start pulsing animation for specified hex', () => {
         board.pulse(-1, 1, '#00ff00')
         
-        const hexCells = (board as any).hexCells
-        const pulsingHex = hexCells.find((cell: any) => cell.q === -1 && cell.r === 1)
+        const pulsingHex = getHexCell(-1, 1)
         
         expect(pulsingHex.isPulsing).toBe(true)
         expect(pulsingHex.pulseColor).toBe('#00ff00')
@@ -560,8 +561,7 @@ describe('BoardcastHexBoard - Visual Methods', () => {
       it('should use default color when none specified', () => {
         board.pulse(0, 0)
         
-        const hexCells = (board as any).hexCells
-        const pulsingHex = hexCells.find((cell: any) => cell.q === 0 && cell.r === 0)
+        const pulsingHex = getHexCell(0, 0)
         
         expect(pulsingHex.isPulsing).toBe(true)
         expect(pulsingHex.pulseColor).toBe('#4fc3f7')
@@ -603,7 +603,7 @@ describe('BoardcastHexBoard - Visual Methods', () => {
       const token = tokenRegistry.get('player')
       const originalHex = { ...token.currentHex }
       
-      const movePromise = board.move('player', 10, 10) // Outside grid
+      const movePromise = board.move('player', 25, 25) // Outside the MAX_COORDINATE_RANGE of 20
       await movePromise
       
       // Token should not have moved
@@ -687,8 +687,8 @@ describe('BoardcastHexBoard - Visual Methods', () => {
       expect(svg.querySelectorAll('.caption-text').length).toBe(0)
       
       // Check internal state is cleared
-      const hexCells = (board as any).hexCells
-      hexCells.forEach((cell: any) => {
+      const allHexCells = (board as any).allHexCells as Map<string, any>
+      allHexCells.forEach((cell: any) => {
         expect(cell.highlighted).toBe(false)
         expect(cell.isBlinking).toBe(false)
         expect(cell.isPulsing).toBe(false)
@@ -703,17 +703,20 @@ describe('BoardcastHexBoard - Visual Methods', () => {
     describe('setGridSize method', () => {
       it('should change grid size while maintaining hex size', () => {
         const originalHexRadius = board.getGridConfig().hexRadius
-        const originalHexCount = (board as any).hexCells.length
+        const allHexCells = (board as any).allHexCells as Map<string, any>
+        const originalHexCount = allHexCells.size
         
         board.setGridSize(5) // Increase from default 3 to 5
         forceRender()
         
         const newConfig = board.getGridConfig()
-        const newHexCount = (board as any).hexCells.length
+        const newHexCount = allHexCells.size
         
         expect(newConfig.gridRadius).toBe(5)
         expect(newConfig.hexRadius).toBe(originalHexRadius) // Should stay same
-        expect(newHexCount).toBeGreaterThan(originalHexCount) // More hexes
+        // Note: allHexCells contains ALL possible hex coordinates, not just visible ones
+        // So the total count doesn't change, just the visible gridRadius
+        expect(newHexCount).toBe(originalHexCount)
       })
     })
 
