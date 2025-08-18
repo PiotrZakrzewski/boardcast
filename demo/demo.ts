@@ -130,13 +130,13 @@ async function lancerMovementTutorial(): Promise<void> {
   board.resetBoard();
   
   // CAPTION "In Lancer SPEED determines how far you can go" 3s
-  await board.caption('In Lancer SPEED determines how far you can go', 3000, 'bottom');
+  await board.caption('In Lancer SPEED determines how far you can go', 3000);
   
   // show a circle token with label "mech" on the origin
   board.token(0, 0, 'mech', 'circle', '#4444FF', 'mech');
   
   // CAPTION "This mech has speed 2"
-  await board.caption('This mech has speed 2', 2000, 'bottom');
+  await board.caption('This mech has speed 2', 2000);
   
   // show pulse on all coordinates in distance 2 from the origin
   // Distance 1 hexes
@@ -162,7 +162,7 @@ async function lancerMovementTutorial(): Promise<void> {
   board.pulse(-2, 2, '#4fc3f7');
   
   // CAPTION "The mech will now move by 2"
-  await board.caption('The mech will now move by 2', 2000, 'bottom');
+  await board.caption('The mech will now move by 2', 2000);
   
   // now move the mech token two hexes away
   await board.move('mech', 2, 0);
@@ -171,19 +171,19 @@ async function lancerMovementTutorial(): Promise<void> {
   board.clear(ClearType.PULSE);
   
   // CAPTION "It is out of move now..."
-  await board.caption('It is out of move now...', 2000, 'bottom');
+  await board.caption('It is out of move now...', 2000);
   
   // CAPTION "...but it can spend a quick action to move again"
-  await board.caption('...but it can spend a quick action to move again', 2000, 'bottom');
+  await board.caption('...but it can spend a quick action to move again', 2000);
   
   // move again two fields somewhere else
   await board.move('mech', 0, 2);
   
   // CAPTION "this is called a boost"
-  await board.caption('this is called a boost', 2000, 'bottom');
+  await board.caption('this is called a boost', 2000);
   
   // CAPTION "Terrain can make it harder to move"
-  await board.caption('Terrain can make it harder to move', 2000, 'bottom');
+  await board.caption('Terrain can make it harder to move', 2000);
   
   // highlight some hexes next to the mech in yellow, point arrow at them with label "difficult terrain"
   board.highlight(1, 1, '#FFFF44');
@@ -192,7 +192,7 @@ async function lancerMovementTutorial(): Promise<void> {
   board.point(1, 1, 'difficult terrain');
   
   // CAPTION "Moving through difficult terrain costs 2x speed"
-  await board.caption('Moving through difficult terrain costs 2x speed', 2000, 'bottom');
+  await board.caption('Moving through difficult terrain costs 2x speed', 2000);
   
   // clear the arrows
   board.clear(ClearType.POINT);
@@ -201,16 +201,16 @@ async function lancerMovementTutorial(): Promise<void> {
   await board.move('mech', 1, 1);
   
   // CAPTION "With Speed 2 this mech can move through only 1 difficult terrain"
-  await board.caption('With Speed 2 this mech can move through only 1 difficult terrain', 2000, 'bottom');
+  await board.caption('With Speed 2 this mech can move through only 1 difficult terrain', 2000);
   
   // clear the highlights
   board.clear(ClearType.HIGHLIGHT);
   
   // CAPTION "Dangerous terrain does not slow you down ..."
-  await board.caption('Dangerous terrain does not slow you down ...', 2000, 'bottom');
+  await board.caption('Dangerous terrain does not slow you down ...', 2000);
   
   // CAPTION "But may cause damage"
-  await board.caption('But may cause damage', 2000, 'bottom');
+  await board.caption('But may cause damage', 2000);
   
   // highlight some hexes near the mech in red, point at them with label dangerous terrain
   board.highlight(2, 1, '#FF4444');
@@ -228,13 +228,13 @@ async function lancerMovementTutorial(): Promise<void> {
   await board.move('mech', 2, 1);
   
   // CAPTION "When you move into dangerous terrain for the first time"
-  await board.caption('When you move into dangerous terrain for the first time', 2000, 'bottom');
+  await board.caption('When you move into dangerous terrain for the first time', 2000);
   
   // CAPTION "You must roll ENGINEERING, you get 5 damage if you fail"
-  await board.caption('You must roll ENGINEERING, you get 5 damage if you fail', 2000, 'bottom');
+  await board.caption('You must roll ENGINEERING, you get 5 damage if you fail', 2000);
   
   // CAPTION "The damage type depends on the terrain itself (up to GM)"
-  await board.caption('The damage type depends on the terrain itself (up to GM)', 2000, 'bottom');
+  await board.caption('The damage type depends on the terrain itself (up to GM)', 2000);
 }
 
 // Lancer Contrib Demo - Showcasing specialized Lancer methods
@@ -245,21 +245,21 @@ async function lancerContribDemo(): Promise<void> {
   const movement = new Lancer.LancerMovement(board);
   const combat = new Lancer.LancerCombat(board);
   
-  await board.caption('Lancer Contrib Library Demo', 3000, 'bottom');
-  await board.caption('Specialized methods for Lancer RPG mechanics', 3000, 'bottom');
+  await board.caption('Lancer Contrib Library Demo', 3000);
+  await board.caption('Specialized methods for Lancer RPG mechanics', 3000);
   
   // Place a mech at the center
   board.token(0, 0, 'mech', 'circle', Lancer.Colors.BLUE, 'Atlas');
   
   // Demo 1: Movement Range Calculation
-  await board.caption('Movement Range: Speed 4 Mech', 3000, 'bottom');
+  await board.caption('Movement Range: Speed 4 Mech', 3000);
   movement.showMovementRange(0, 0, 4);
   await sleep(4000);
   
   board.clear(ClearType.PULSE);
   
   // Demo 2: Terrain Effects
-  await board.caption('Terrain Types in Lancer', 3000, 'bottom');
+  await board.caption('Terrain Types in Lancer', 3000);
   
   // Show difficult terrain
   const difficultTerrain = [
@@ -282,11 +282,11 @@ async function lancerContribDemo(): Promise<void> {
   await sleep(3000);
   
   board.clear(ClearType.POINT);
-  await board.caption('Difficult terrain costs 2x movement', 2500, 'bottom');
-  await board.caption('Dangerous terrain causes damage', 2500, 'bottom');
+  await board.caption('Difficult terrain costs 2x movement', 2500);
+  await board.caption('Dangerous terrain causes damage', 2500);
   
   // Demo 3: Combat Mechanics
-  await board.caption('Combat: Engagement Zone', 3000, 'bottom');
+  await board.caption('Combat: Engagement Zone', 3000);
   board.clear(ClearType.HIGHLIGHT);
   
   // Show engagement zone
@@ -295,10 +295,10 @@ async function lancerContribDemo(): Promise<void> {
   
   // Add an enemy mech
   board.token(3, 1, 'enemy', 'triangle', Lancer.Colors.RED, 'Minotaur');
-  await board.caption('Enemy mech enters the battlefield', 2500, 'bottom');
+  await board.caption('Enemy mech enters the battlefield', 2500);
   
   // Demo 4: Weapon Range
-  await board.caption('Weapon Range: Assault Rifle (Range 10)', 3000, 'bottom');
+  await board.caption('Weapon Range: Assault Rifle (Range 10)', 3000);
   board.clear(ClearType.BLINK);
   
   const weapon: Lancer.LancerWeapon = {
@@ -313,7 +313,7 @@ async function lancerContribDemo(): Promise<void> {
   await sleep(4000);
   
   // Demo 5: Line of Sight and Cover
-  await board.caption('Cover Mechanics', 3000, 'bottom');
+  await board.caption('Cover Mechanics', 3000);
   board.clear(ClearType.PULSE);
   board.clear(ClearType.POINT);
   
@@ -321,7 +321,7 @@ async function lancerContribDemo(): Promise<void> {
   await sleep(4000);
   
   // Demo 6: Area of Effect Attack
-  await board.caption('Blast Template: Burst 2 Explosion', 3000, 'bottom');
+  await board.caption('Blast Template: Burst 2 Explosion', 3000);
   board.clear(ClearType.HIGHLIGHT);
   board.clear(ClearType.POINT);
   
@@ -329,7 +329,7 @@ async function lancerContribDemo(): Promise<void> {
   await sleep(4000);
   
   // Final demonstration - Complex scenario
-  await board.caption('Complex Scenario: Multiple Mechs', 3000, 'bottom');
+  await board.caption('Complex Scenario: Multiple Mechs', 3000);
   board.clear(ClearType.BLINK);
   
   // Add more mechs
@@ -340,16 +340,16 @@ async function lancerContribDemo(): Promise<void> {
   combat.showEngagementZone(-2, 2, Lancer.Colors.ENGAGEMENT_YELLOW);
   combat.showEngagementZone(1, -3, Lancer.Colors.ENGAGEMENT_YELLOW);
   
-  await board.caption('Multiple engagement zones create tactical complexity', 3000, 'bottom');
+  await board.caption('Multiple engagement zones create tactical complexity', 3000);
   await sleep(3000);
   
   // Show combined movement and combat
-  await board.caption('Movement + Combat: Positioning is key!', 3000, 'bottom');
+  await board.caption('Movement + Combat: Positioning is key!', 3000);
   movement.showMovementRange(-2, 2, 3);
   await sleep(4000);
   
-  await board.caption('Lancer Contrib Demo Complete!', 3000, 'bottom');
-  await board.caption('Use these methods to create your own Lancer tutorials', 3000, 'bottom');
+  await board.caption('Lancer Contrib Demo Complete!', 3000);
+  await board.caption('Use these methods to create your own Lancer tutorials', 3000);
 }
 
 // Utility function for async delays

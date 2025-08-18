@@ -246,7 +246,7 @@ describe('BoardcastHexBoard - Visual Methods', () => {
     })
 
     it('should position caption in center of board', () => {
-      board.caption('Centered Text')
+      board.caption('Centered Text', 2000, 'center')
       forceRender()
       
       const text = svg.querySelector('text.caption-text') as SVGTextElement

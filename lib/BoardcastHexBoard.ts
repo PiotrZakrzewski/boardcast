@@ -639,7 +639,7 @@ export class BoardcastHexBoard {
     }
   }
 
-  public async caption(text: string, duration: number = 2000, position: 'center' | 'bottom' = 'center'): Promise<void> {
+  public async caption(text: string, duration: number = 2000, position: 'center' | 'bottom' = 'bottom'): Promise<void> {
     const caption: GameCaption = {
       id: `caption-${Date.now()}-${Math.random()}`,
       text,
