@@ -1,0 +1,51 @@
+{
+  "name": "boardcast-cli",
+  "version": "1.0.0",
+  "description": "CLI tools for creating and recording animated hex board tutorials with Boardcast",
+  "type": "module",
+  "bin": {
+    "boardcast": "./bin/boardcast",
+    "boardcast-create": "./bin/boardcast-create",
+    "boardcast-record": "./bin/boardcast-record"
+  },
+  "main": "./lib/index.js",
+  "exports": {
+    ".": {
+      "import": "./lib/index.js"
+    }
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "runtime/",
+    "templates/"
+  ],
+  "scripts": {
+    "build": "echo 'No build step required - using ES modules'",
+    "test": "node lib/test.js"
+  },
+  "keywords": [
+    "boardcast",
+    "cli",
+    "hex",
+    "board",
+    "tutorial",
+    "animation",
+    "recording",
+    "tabletop"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "playwright": "^1.54.2"
+  },
+  "peerDependenciesMeta": {
+    "boardcast": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

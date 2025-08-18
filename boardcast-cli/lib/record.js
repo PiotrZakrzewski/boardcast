@@ -22,16 +22,34 @@ async function recordTutorial(tutorialFile) {
   
   console.log(`🎬 Recording tutorial: ${tutorialFile}`);
   
-  // Get paths
-  const projectRoot = path.resolve(__dirname, '..');
-  const runtimeDir = path.join(projectRoot, 'runtime');
-  const distDir = path.join(projectRoot, 'dist');
+  // Get paths - look for boardcast library in node_modules or peer dependency
   const tutorialPath = path.resolve(tutorialFile);
+  const cliRoot = path.resolve(__dirname, '..');
+  const runtimeDir = path.join(cliRoot, 'runtime');
   
-  // Check if dist directory exists (library must be built)
-  if (!fs.existsSync(distDir)) {
-    throw new Error('Boardcast library not built. Run "npm run build" first.');
+  // Try to find boardcast library
+  let boardcastPath;
+  const possiblePaths = [
+    // Try peer dependency in parent project
+    path.resolve(process.cwd(), 'node_modules/boardcast/dist'),
+    // Try in CLI package node_modules  
+    path.join(cliRoot, 'node_modules/boardcast/dist'),
+    // Try relative to working directory
+    path.resolve(process.cwd(), 'dist')
+  ];
+  
+  for (const testPath of possiblePaths) {
+    if (fs.existsSync(testPath)) {
+      boardcastPath = testPath;
+      break;
+    }
   }
+  
+  if (!boardcastPath) {
+    throw new Error('Boardcast library not found. Please install boardcast as a dependency or run "npm run build" in a boardcast project.');
+  }
+  
+  console.log(`📦 Using boardcast library from: ${boardcastPath}`);
   
   // Import tutorial to validate syntax and get config
   let tutorialConfig;
@@ -64,7 +82,7 @@ async function recordTutorial(tutorialFile) {
   app.use(express.static(runtimeDir));
   
   // Serve the built library files
-  app.use('/dist', express.static(distDir));
+  app.use('/dist', express.static(boardcastPath));
   
   // Serve the user's tutorial file
   app.get('/user-tutorial.js', (req, res) => {

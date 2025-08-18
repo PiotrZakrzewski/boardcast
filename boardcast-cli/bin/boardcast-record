@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+
+import { recordTutorial } from '../lib/record.js';
+
+const tutorialFile = process.argv[2];
+
+if (!tutorialFile) {
+  console.error('❌ Error: Please specify a tutorial file');
+  console.log('Usage: boardcast-record <filename.js>');
+  process.exit(1);
+}
+
+recordTutorial(tutorialFile).catch(error => {
+  console.error('❌ Error:', error.message);
+  process.exit(1);
+});

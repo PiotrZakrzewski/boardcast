@@ -21,6 +21,10 @@ Usage:
 Examples:
   boardcast create my-tutorial.js
   boardcast record my-tutorial.js
+
+Standalone commands:
+  boardcast-create <filename.js>    Direct create command
+  boardcast-record <filename.js>    Direct record command
   `);
 }
 
