@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lancer Movement Demo</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0a0a0a;
+            overflow: hidden;
+        }
+        
+        #chart {
+            background-color: #0a0a0a;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <svg id="chart" width="1000" height="700"></svg>
+
+    <!-- Use import map to resolve D3 -->
+    <script type="importmap">
+    {
+        "imports": {
+            "d3": "https://cdn.skypack.dev/d3@7"
+        }
+    }
+    </script>
+    
+    <script type="module">
+        // Import the Boardcast library from the built dist directory
+        import { BoardcastHexBoard } from '../dist/lib/index.js';
+        
+        // Status tracking
+        let demoComplete = false;
+        
+        function updateStatus(message, isComplete = false) {
+            console.log(message);
+            if (isComplete) {
+                demoComplete = true;
+                // Dispatch custom event for external listeners
+                window.dispatchEvent(new CustomEvent('lancerDemoComplete'));
+            }
+        }
+
+        // Initialize the board
+        const board = new BoardcastHexBoard('#chart', {
+            gridRadius: 8,
+            hexRadius: 25
+        });
+
+        // Wait for page to load, then start demo
+        window.addEventListener('load', async () => {
+            // Small delay to ensure everything is loaded
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            updateStatus('Starting Lancer Movement demonstration...');
+            
+            try {
+                // Run the Lancer Movement demo
+                await runLancerMovementDemo();
+                updateStatus('Demo complete! Recording can be stopped.', true);
+            } catch (error) {
+                console.error('Demo error:', error);
+                updateStatus('Demo encountered an error', true);
+            }
+        });
+
+        // Lancer Movement Demo Implementation
+        async function runLancerMovementDemo() {
+            updateStatus('Setting up battlefield terrain...');
+            
+            // Clear any existing state
+            board.clear();
+            
+            // Set up terrain
+            board.highlight(2, -1, '#8d6e63'); // Difficult terrain
+            board.highlight(3, -1, '#8d6e63');
+            board.highlight(2, 0, '#8d6e63');
+            board.highlight(3, 0, '#8d6e63');
+            
+            board.highlight(-2, 3, '#f44336'); // Dangerous terrain
+            board.highlight(-1, 2, '#f44336');
+            board.highlight(-1, 3, '#f44336');
+            
+            await sleep(2000);
+
+            updateStatus('Placing pilot and enemies...');
+            
+            // Place initial units
+            board.token(-3, 2, 'pilot', 'circle', '#4fc3f7', 'Pilot');
+            board.token(4, -2, 'enemy1', 'triangle', '#f44336', 'Enemy');
+            board.token(1, 3, 'cover', 'rect', '#795548', 'Cover');
+            
+            await sleep(2000);
+
+            // Caption: Introduction
+            board.caption('Lancer Movement Tutorial\nTactical positioning and terrain effects', 3000);
+            await sleep(3500);
+
+            updateStatus('Demonstrating basic movement...');
+            
+            // Show movement range
+            board.point(-3, 2, 'Start');
+            board.pulse(-2, 1, '#4fc3f7');
+            board.pulse(-1, 1, '#4fc3f7');
+            board.pulse(-2, 2, '#4fc3f7');
+            board.pulse(-1, 2, '#4fc3f7');
+            board.pulse(0, 1, '#4fc3f7');
+            
+            board.caption('Basic Movement\nPilots can move up to 4 hexes per turn', 2500);
+            await sleep(3000);
+
+            // Clear movement indicators
+            board.clear('PULSE');
+            board.clear('POINT');
+            
+            updateStatus('Moving through difficult terrain...');
+            
+            // Movement 1: Show difficult terrain effect
+            board.point(2, 0, 'Difficult');
+            board.caption('Difficult Terrain\nCosts 2 movement per hex', 2000);
+            await sleep(2500);
+            
+            board.move('pilot', -1, 1);
+            await sleep(1500);
+            board.move('pilot', 0, 1);
+            await sleep(1500);
+            board.move('pilot', 1, 0);
+            await sleep(1500);
+            
+            board.caption('Movement stopped:\nNot enough movement for difficult terrain', 2000);
+            await sleep(2500);
+
+            board.clear('POINT');
+            
+            updateStatus('Demonstrating cover mechanics...');
+            
+            // Movement 2: Use cover
+            board.point(1, 3, 'Cover');
+            board.caption('Using Cover\nPositioning behind obstacles for protection', 2000);
+            await sleep(2500);
+            
+            board.move('pilot', 1, 2);
+            await sleep(1500);
+            
+            board.caption('Pilot takes cover\nReduces incoming damage', 2000);
+            await sleep(2500);
+
+            board.clear('POINT');
+            
+            updateStatus('Avoiding dangerous terrain...');
+            
+            // Movement 3: Avoid dangerous terrain
+            board.point(-1, 3, 'Danger!');
+            board.caption('Dangerous Terrain\nDeals damage when entered', 2000);
+            await sleep(2500);
+            
+            board.move('pilot', 0, 2);
+            await sleep(1500);
+            board.move('pilot', -1, 1);
+            await sleep(1500);
+            
+            board.caption('Smart positioning:\nAvoided the dangerous area', 2000);
+            await sleep(2500);
+
+            board.clear('POINT');
+            
+            updateStatus('Final tactical positioning...');
+            
+            // Final positioning
+            board.point(4, -2, 'Enemy');
+            board.caption('Final Position\nOptimal angle for engagement', 2000);
+            await sleep(2500);
+            
+            // Show line of sight
+            board.blink(-1, 1, '#4fc3f7');
+            board.blink(0, 0, '#ffeb3b');
+            board.blink(1, -1, '#ffeb3b');
+            board.blink(2, -1, '#ffeb3b');
+            board.blink(3, -2, '#ffeb3b');
+            board.blink(4, -2, '#f44336');
+            
+            board.caption('Line of Sight Established\nReady for combat!', 3000);
+            await sleep(3500);
+
+            updateStatus('Tutorial complete!');
+            
+            // Final cleanup
+            board.clear('BLINK');
+            board.clear('POINT');
+            
+            await sleep(2000);
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Expose demo completion status for external scripts
+        window.isDemoComplete = () => demoComplete;
+    </script>
+</body>
+</html>
