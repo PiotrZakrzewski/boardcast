@@ -6,15 +6,17 @@
   "workspaces": [
     "boardcast",
     "boardcast-cli", 
-    "boardcast-contrib"
+    "boardcast-contrib",
+    "demo"
   ],
   "scripts": {
     "build": "npm run build --workspace=boardcast && npm run build --workspace=boardcast-contrib",
     "build:all": "npm run build --workspaces",
     "test": "npm run test --workspaces",
     "typecheck": "npm run typecheck --workspaces",
-    "dev": "npm run dev --workspace=boardcast",
-    "preview": "npm run preview --workspace=boardcast"
+    "dev": "npm run dev --workspace=demo",
+    "preview": "npm run preview --workspace=demo",
+    "build:demo": "npm run build --workspace=demo"
   },
   "keywords": [
     "animation",

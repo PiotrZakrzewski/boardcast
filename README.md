@@ -1,22 +1,55 @@
-# Boardcast
+# Boardcast Ecosystem
 
-**Animation library for creating educational hex-based game tutorials and demos.**
+**Complete toolkit for creating animated hex-based game tutorials and educational content.**
 
 [![npm version](https://badge.fury.io/js/boardcast.svg)](https://www.npmjs.com/package/boardcast)
 [![Demo](https://img.shields.io/badge/demo-live-blue)](https://piotrzakrzewski.github.io/boardcast/)
 
-Create smooth, professional animations for tabletop games, strategy games, and educational content on hexagonal grids.
+A monorepo containing three specialized packages for creating smooth, professional animations on hexagonal grids.
 
-## Installation
+## Packages
+
+### 📦 [boardcast](./boardcast/) - Core Library
+The main animation library for hex-based visualizations.
 
 ```bash
 npm install boardcast
 ```
 
-For creating and recording video tutorials, also install the CLI:
+### 🎮 [boardcast-contrib](./boardcast-contrib/) - Game System Extensions  
+Specialized mechanics for specific tabletop games (Lancer RPG, etc.).
+
+```bash
+npm install boardcast-contrib
+```
+
+### 🛠️ [boardcast-cli](./boardcast-cli/) - CLI Tools
+Command-line tools for creating and recording video tutorials.
 
 ```bash
 npm install -g boardcast-cli
+```
+
+## Quick Start
+
+```javascript
+import { BoardcastHexBoard } from 'boardcast';
+import { Lancer } from 'boardcast-contrib/lancer';
+
+// Create board
+const board = new BoardcastHexBoard('#my-svg', {
+  gridRadius: 6,
+  hexRadius: 30
+});
+
+// Use core animations
+board.highlight(0, 0, '#4fc3f7');
+board.token(1, 1, 'player', 'circle', '#00ff00', 'Player');
+await board.move('player', 2, 2);
+
+// Use game-specific mechanics
+const movement = new Lancer.LancerMovement(board);
+movement.showMovementRange(0, 0, 4); // Show speed 4 movement
 ```
 
 ## Quick Start
@@ -87,15 +120,34 @@ Uses axial coordinates where each hex has (q, r) coordinates:
 - Adjacent hexes differ by ±1 in one coordinate
 - Positive q extends right, positive r extends down-right
 
-## Game System Extensions
+## Development
 
-Import specialized game mechanics:
+This is a monorepo managed with npm workspaces. From the root directory:
 
-```javascript
-import { Lancer } from 'boardcast/contrib';
+```bash
+# Install all dependencies
+npm install
 
-// Access game-specific tutorials and mechanics
-const movement = new Lancer.LancerMovement(board);
+# Build all packages
+npm run build
+
+# Run tests
+npm run test
+
+# Start demo development server
+npm run dev
+
+# Type check all packages
+npm run typecheck
+```
+
+### Package Development
+
+```bash
+# Work on specific packages
+npm run build --workspace=boardcast
+npm run build --workspace=boardcast-contrib
+npm run test --workspace=boardcast
 ```
 
 ## Creating Video Tutorials

@@ -16,5 +16,5 @@ export type {
 } from './types.js';
 
 // Re-export commonly used types from core library for convenience
-export { Colors, ClearType } from '../../lib/types.js';
-export { BoardcastHexBoard } from '../../lib/BoardcastHexBoard.js';
+export { Colors, ClearType } from 'boardcast';
+export { BoardcastHexBoard } from 'boardcast';

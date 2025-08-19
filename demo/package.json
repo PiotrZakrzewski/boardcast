@@ -1,0 +1,23 @@
+{
+  "name": "boardcast-demo",
+  "version": "1.0.0",
+  "description": "Demo application showcasing Boardcast and Boardcast-Contrib",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vite --config vite.demo.config.ts",
+    "build": "vite build --config vite.demo.config.ts",
+    "preview": "vite preview --config vite.demo.config.ts",
+    "test": "echo 'No tests defined for demo'",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "boardcast": "*",
+    "boardcast-contrib": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.2.1",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.2"
+  }
+}

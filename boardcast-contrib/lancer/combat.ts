@@ -2,8 +2,8 @@
  * Lancer combat mechanics for Boardcast
  */
 
-import { BoardcastHexBoard } from '../../lib/BoardcastHexBoard.js';
-import { Colors } from '../../lib/types.js';
+import { BoardcastHexBoard } from 'boardcast';
+import { Colors } from 'boardcast';
 import type { EngagementZone, LancerWeapon } from './types.js';
 
 export class LancerCombat {

@@ -7,17 +7,18 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "declaration": true,
-    "declarationMap": true,
-    "outDir": "dist",
+    "noEmit": true,
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
+      "boardcast": ["../boardcast/lib"],
       "boardcast-contrib/*": ["../boardcast-contrib/*"]
     }
   },
-  "include": ["lib/**/*"]
+  "include": [
+    "**/*.ts"
+  ]
 }

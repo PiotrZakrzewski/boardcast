@@ -5,10 +5,9 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "noEmit": false,
     "jsx": "react-jsx",
     "strict": true,
     "noUnusedLocals": true,
@@ -19,7 +18,7 @@
     "rootDir": "./",
     "baseUrl": ".",
     "paths": {
-      "boardcast": ["../boardcast/lib"]
+      "boardcast": ["../boardcast/dist/lib/index.d.ts"]
     }
   },
   "include": [
@@ -27,6 +26,7 @@
   ],
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
+    "../boardcast"
   ]
 }

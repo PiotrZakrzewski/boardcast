@@ -20,5 +20,10 @@ export default defineConfig({
     },
     outDir: 'dist',
     emptyOutDir: true
+  },
+  resolve: {
+    alias: {
+      'boardcast': resolve(__dirname, '../boardcast/dist/lib/index.js')
+    }
   }
 })

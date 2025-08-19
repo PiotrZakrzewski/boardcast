@@ -4,25 +4,64 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Boardcast is a TypeScript library for creating animated demonstrations of tabletop game rules on hex-based boards. Built with D3.js for smooth animations and Vite for fast development.
+Boardcast is a monorepo ecosystem containing three packages for creating animated demonstrations of tabletop game rules on hex-based boards. Built with TypeScript, D3.js, and Vite.
+
+## Monorepo Structure
+
+This is an npm workspaces monorepo with the following packages:
+
+```
+/
+├── boardcast/              # Core library package
+│   ├── lib/               # Core library source code
+│   ├── dist/              # Built library files
+│   ├── package.json       # Core library config
+│   └── tsconfig.json      # TypeScript config
+├── boardcast-cli/          # CLI tools package
+│   ├── bin/               # CLI executables
+│   ├── lib/               # CLI implementation
+│   └── package.json       # CLI config
+├── boardcast-contrib/      # Game system extensions
+│   ├── lancer/            # Lancer RPG mechanics
+│   ├── dist/              # Built contrib files
+│   ├── package.json       # Contrib config
+│   └── tsconfig.json      # TypeScript config
+├── demo/                   # Demo application (uses all packages)
+│   ├── demo.ts            # Demo TypeScript using both packages
+│   ├── index.html         # Demo HTML
+│   ├── dist/              # Built demo files
+│   ├── package.json       # Demo config
+│   └── tsconfig.json      # TypeScript config
+└── package.json           # Workspace root configuration
+```
 
 ## Development Commands
 
+From the root directory:
+
 ```bash
-# Install dependencies
+# Install all dependencies
 npm install
 
-# Start development server (runs on localhost:3000)
+# Start demo development server (localhost:3000)
 npm run dev
 
-# Build for production
+# Build all packages
 npm run build
 
-# Preview production build
-npm run preview
+# Build specific package
+npm run build --workspace=boardcast
+npm run build --workspace=boardcast-contrib
+
+# Run tests
+npm run test
 
 # Type checking
 npm run typecheck
+
+# Demo commands
+npm run build:demo
+npm run preview
 ```
 
 ## Technology Stack
@@ -30,26 +69,56 @@ npm run typecheck
 - **TypeScript**: Primary language with strict type checking
 - **D3.js**: Data visualization and animation library
 - **Vite**: Build tool and development server
+- **npm workspaces**: Monorepo management
 - **ES Modules**: Modern JavaScript module system
 
-## Project Structure
+## Package Architecture
 
-```
-lib/                          # Library source code
-├── BoardcastHexBoard.ts         # Main library class
-├── types.ts                    # TypeScript interfaces
-└── index.ts                    # Library exports
-demo/                         # Demo application
-├── index.html                  # Demo HTML
-└── demo.ts                     # Demo TypeScript
-dist/                         # Built files (generated)
-├── lib/                        # Built library for npm
-└── demo/                       # Built demo for deployment
-package.json                  # Dependencies and scripts
-tsconfig.json                 # TypeScript configuration
-vite.lib.config.ts           # Vite config for library build
-vite.demo.config.ts          # Vite config for demo build
-```
+### 📦 Boardcast (Core Library)
+**Location**: `boardcast/`
+**Purpose**: Main animation library for hex-based visualizations
+
+Key Components:
+- `BoardcastHexBoard.ts`: Main library class
+- `types.ts`: TypeScript interfaces
+- `index.ts`: Library exports
+
+The core library provides:
+- Hex grid visualization
+- Animation methods (highlight, blink, pulse, point, caption)
+- Token management and movement
+- Clear/reset functionality
+
+### 🎮 Boardcast-Contrib (Game Extensions)
+**Location**: `boardcast-contrib/`
+**Purpose**: Game-specific mechanics and specialized visualizations
+
+Current modules:
+- `lancer/`: Lancer RPG mechanics (movement, combat, terrain)
+
+The contrib library provides:
+- Game-specific classes (LancerMovement, LancerCombat)
+- Specialized visualization methods
+- Pre-configured constants and types
+
+### 🛠️ Boardcast-CLI (Command Line Tools)
+**Location**: `boardcast-cli/`
+**Purpose**: Tools for creating and recording tutorials
+
+Features:
+- Template generation
+- Video recording with Playwright
+- Tutorial automation
+
+### 🖥️ Demo Application
+**Location**: `demo/`
+**Purpose**: Interactive showcase of all packages
+
+Features:
+- Demonstrates core library methods
+- Shows contrib package capabilities
+- Interactive buttons and tutorials
+- Live examples of API usage
 
 ## Key Architecture Patterns
 
@@ -58,222 +127,95 @@ vite.demo.config.ts          # Vite config for demo build
 - **Game Piece Management**: Entities that can be animated between hex positions
 - **Coordinate Display**: Toggle-able coordinate labels for development and education
 - **Smooth Animations**: Easing functions for natural piece movement between hexes
-- **Library/Demo Separation**: Clean separation between importable library and web demonstration
+- **Package Separation**: Clean separation between core, contrib, CLI, and demo
 
-## Library vs Demo
+## Cross-Package Dependencies
 
-**Library (`lib/`)**: 
-- Pure TypeScript classes and interfaces
-- No DOM initialization or event handlers
-- Requires SVG selector parameter in constructor
-- Designed for import by other projects
-- Exports: `BoardcastHexBoard`, `HexCell`, `GamePiece`, `GridConfig`
+```
+demo → boardcast (core animations)
+demo → boardcast-contrib (game mechanics)
+boardcast-contrib → boardcast (extends core)
+boardcast-cli → boardcast (creates tutorials)
+```
 
-**Demo (`demo/`)**:
-- Web application showcasing library features
-- HTML interface with buttons and controls
-- Event handlers and UI interactions
-- Initializes library with DOM elements
-- Serves as documentation and testing environment
+## Import Patterns
 
-## Library Components
+### Using Core Library
+```typescript
+import { BoardcastHexBoard, ClearType } from 'boardcast';
+```
 
-The `BoardcastHexBoard` class in `lib/BoardcastHexBoard.ts` provides the core functionality:
+### Using Contrib Extensions
+```typescript
+import { Lancer } from 'boardcast-contrib/lancer';
+const movement = new Lancer.LancerMovement(board);
+```
+
+### Demo Usage (Both Packages)
+```typescript
+import { BoardcastHexBoard, ClearType } from 'boardcast';
+import * as Lancer from 'boardcast-contrib/lancer';
+```
+
+## Core Library API
+
+The `BoardcastHexBoard` class provides the main functionality:
 
 ### Configuration Methods:
-- `new BoardcastHexBoard(config?)` - Initialize with optional GridConfig
-- `setGridSize(radius)` - Change number of hexes displayed (fixed hex size)
+- `new BoardcastHexBoard(selector, config?)` - Initialize with optional GridConfig
+- `setGridSize(radius)` - Change number of hexes displayed
 - `setGridSizeWithScaling(radius)` - Change grid size with auto-scaled hex size
-- `setHexSize(radius)` - Change size of individual hexes
 - `configure(config)` - Update multiple configuration options
-- `getGridConfig()` - Get current configuration
-
-### Display Methods:
-- `showCoordinates()` / `hideCoordinates()` - Toggle coordinate display
-- `resetBoard()` - Reset all pieces and effects
 
 ### Animation Methods:
 - `highlight(q, r, colour)` - Static hex highlighting
 - `blink(q, r, colour)` - Sharp blinking animation
 - `pulse(q, r, colour)` - Gradual color transitions
-- `point(q, r, label?)` - Display red arrows pointing at hexes with optional labels
-- `caption(text, duration?)` - Display large text overlays for instructions (default 2s)
-- `clear(type?)` - Selectively clear artifacts (ALL, HIGHLIGHT, BLINK, PULSE, POINT, TOKEN, CAPTION)
-- `token(q, r, name, shape, colour, label?)` - Place tokens with optional labels
+- `point(q, r, label?)` - Display arrows pointing at hexes
+- `caption(text, duration?)` - Display text overlays
+- `token(q, r, name, shape, colour, label?)` - Place tokens
 - `move(tokenName, q, r)` - Animate token movement
+- `clear(type?)` - Clear specific or all artifacts
 
-## Grid Configuration
+### Utility Methods:
+- `showCoordinates()` / `hideCoordinates()` - Toggle coordinate display
+- `resetBoard()` - Reset all pieces and effects
 
-The `gridRadius` parameter controls how many hexes are displayed from the center:
-- gridRadius = 3: Small grid (37 hexes total) - good for simple demos
-- gridRadius = 6: Medium grid (127 hexes total) - good for medium games  
-- gridRadius = 8: Default grid (217 hexes total) - good for complex games
-- gridRadius = 10: Large grid (331 hexes total) - good for large battle maps
+## Contrib Library Extensions
 
-**Auto-scaling**: Demo buttons use `setGridSizeWithScaling()` which automatically calculates optimal hex size to fill available space. Smaller grids get larger hexes, larger grids get smaller hexes to maintain good visual coverage.
+### Lancer Module (`boardcast-contrib/lancer`)
 
-Use smaller grids (3-5) for focused rule demonstrations, larger grids (8-12) for complex scenarios.
+Classes:
+- `LancerMovement`: Movement range calculation and visualization
+- `LancerCombat`: Combat mechanics (engagement zones, weapon ranges)
 
-## Hex Coordinate System
+Key Methods:
+- `showMovementRange(q, r, speed)` - Visualize movement options
+- `showEngagementZone(q, r)` - Display threat zones
+- `showWeaponRange(q, r, weapon)` - Weapon targeting
+- `showDifficultTerrain(hexes)` - Terrain effects
+- `showDangerousTerrain(hexes)` - Hazard visualization
 
-Uses axial coordinates where each hex has (q, r) coordinates:
-- Center hex is (0, 0)
-- Adjacent hexes differ by ±1 in one coordinate
-- `axialToPixel()` converts hex coordinates to screen positions
-- Grid spans from -gridRadius to +gridRadius in each direction
+## Development Workflow
 
-## Public API Implementation Plan
+1. **Core Changes**: Modify `boardcast/lib/` for new animation features
+2. **Game Extensions**: Add to `boardcast-contrib/` for game-specific mechanics
+3. **Demo Updates**: Update `demo/demo.ts` to showcase new features
+4. **CLI Tools**: Extend `boardcast-cli/` for new recording capabilities
 
-Based on the README.md specification, here's the plan to implement the public methods:
+## Build Process
 
-### 1. Highlight Method
-```javascript
-highlight(q, r, colour = '#4fc3f7')
-```
-**Implementation Status: ✅ COMPLETED**
-- Find hex cell by coordinates (q, r)
-- Update cell's fill color to specified colour
-- Added `highlightColor` property to HexCell interface
-- Modified render() to use highlightColor when present
-- Stores original color for restoration
+1. `boardcast` builds first (core dependency)
+2. `boardcast-contrib` builds next (depends on core)
+3. `demo` builds last (uses both packages)
+4. All packages use Vite for bundling
+5. TypeScript compilation generates declaration files
 
-### 2. Blink Method
-```javascript
-blink(q, r, colour = '#4fc3f7')
-```
-**Implementation Status: ✅ COMPLETED**
-- Added animation state tracking for blinking hexes
-- Created continuous animation loop that toggles between highlight and normal colors
-- Uses sin wave for smooth blinking transition
-- Stores blink state in HexCell (isBlinking, blinkColor, blinkPhase)
-- Animation loop handles blink timing automatically
+## Testing Strategy
 
-### 3. Pulse Method
-```javascript
-pulse(q, r, colour = '#4fc3f7')
-```
-**Implementation Status: ✅ COMPLETED**
-- Added pulse animation state tracking for gradual color transitions
-- Uses RGB color interpolation for smooth gradual transitions
-- Slower animation speed (0.8x) compared to blink for gentler effect
-- Stores pulse state in HexCell (isPulsing, pulseColor, pulsePhase)
-- Mutually exclusive with blink and highlight effects
+- Core library: Full test suite with Vitest
+- Contrib packages: Integration tests planned
+- Demo: Manual testing and visual verification
+- CLI: End-to-end automation testing
 
-### 4. Token Method
-```javascript
-token(q, r, tokenName, shape, colour, label?)
-```
-**Implementation Status: ✅ COMPLETED**
-- Extended GamePiece interface to include shape, tokenName, and optional label
-- Created shape rendering functions:
-  - `createRectPath()` for rectangles
-  - `createTrianglePath()` for triangles  
-  - `createStarPath()` for stars
-  - Circles supported via SVG circle elements
-- Added token registry to track tokens by name
-- Modified render() to handle different shapes and optional labels
-- Labels positioned below tokens with outline for readability
-- Position tokens at hex centers using axialToPixel()
-
-### 5. Point Method
-```javascript
-point(q, r, label?)
-```
-**Implementation Status: ✅ COMPLETED**
-- Added GamePointer interface to types.ts
-- Creates red arrows pointing from outside the grid toward specific hex coordinates
-- Calculates arrow positioning using geometric calculations from grid center
-- Generates SVG arrow paths with both line and arrowhead components
-- Supports optional labels positioned near arrow start
-- Automatically clears with resetBoard() method
-
-### 6. Caption Method
-```javascript
-caption(text, duration?)
-```
-**Implementation Status: ✅ COMPLETED**
-- Added GameCaption interface to types.ts
-- Displays large text overlays centered on the board
-- Semi-transparent background for text readability
-- Auto-removes caption after specified duration (default 2000ms)
-- Multiple captions can be queued with setTimeout for sequences
-- Automatically clears with resetBoard() method
-
-### 7. Clear Method
-```javascript
-clear(type?)
-```
-**Implementation Status: ✅ COMPLETED**
-- Added ClearType enum with ALL, HIGHLIGHT, BLINK, PULSE, POINT, TOKEN, CAPTION
-- Selective clearing of specific artifact types for precise control
-- Private helper methods for each artifact type (clearHighlights, clearBlinks, etc.)
-- Automatically triggers re-render after clearing
-- Defaults to clearing ALL artifacts if no type specified
-
-### 8. Move Method
-```javascript
-move(tokenName, q, r)
-```
-**Implementation Status: ✅ COMPLETED**
-- Find token by tokenName in registry
-- Get target hex coordinates and convert to pixel position
-- Uses smooth easing animation with requestAnimationFrame
-- Updates token's currentHex property
-- Returns Promise for chaining animations
-- Temporarily highlights target hex during movement
-- **Preserves existing highlights** - tokens render over terrain highlights
-
-## Implementation Status: ✅ ALL METHODS COMPLETED
-
-All public API methods from the README.md specification have been successfully implemented:
-
-### Key Features Added:
-
-1. **Enhanced HexCell Interface:** ✅
-   - Added highlightColor, isBlinking, blinkColor, blinkPhase properties
-   - Added original color storage for restoration
-
-2. **Enhanced GamePiece Interface:** ✅
-   - Added tokenName, shape, and optional label properties
-   - Support for different rendering based on shape type
-
-3. **GamePointer Interface:** ✅
-   - Added interface for arrow pointing system
-   - Arrow rendering with SVG paths for line and arrowhead
-   - Optional labels positioned near arrow start
-
-4. **GameCaption Interface:** ✅
-   - Added interface for text overlay system
-   - Large font text with semi-transparent background
-   - Auto-timed removal with configurable duration
-
-5. **Animation System:** ✅
-   - Continuous blink animation loop using sin waves
-   - Smooth token movement with easing functions
-   - Promise-based animation chaining for sequences
-
-6. **Shape Rendering:** ✅
-   - SVG path generators for rect, triangle, and star shapes
-   - Circle support via SVG circle elements
-   - Consistent sizing across all shape types
-
-7. **Token Registry:** ✅
-   - Map tokenName -> GamePiece for efficient lookup
-   - Automatic replacement of tokens with same name
-   - Label rendering with outline for readability
-
-9. **Demo System:** ✅
-   - Interactive demo buttons showcasing each API method
-   - Example usage with labeled tokens (Player, Guard, Enemy, Treasure)
-   - Point demo showing multiple arrows with labels
-   - Caption demo showing sequential text overlays
-   - Complete game tutorials combining multiple methods
-
-10. **Game Tutorials:** ✅
-   - Lancer Movement: Comprehensive RPG movement mechanics tutorial
-   - Terrain visualization using color-coded highlights
-   - Sequential storytelling with captions, movement, and visual cues
-   - Uses clear(ClearType.POINT) for clean arrow management
-   - Demonstrates real-world library usage for educational content
-
-The library maintains the existing coordinate system and rendering architecture while providing all the animation features specified in the README.md.
+The monorepo maintains clean separation while enabling rich cross-package integration for comprehensive hex-based game tutorials and educational content.

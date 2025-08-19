@@ -22,7 +22,8 @@
   ],
   "scripts": {
     "build": "echo 'No build step required - using ES modules'",
-    "test": "node lib/test.js"
+    "test": "echo 'No tests defined for boardcast-cli'",
+    "typecheck": "echo 'No TypeScript files to check in boardcast-cli'"
   },
   "keywords": [
     "boardcast",

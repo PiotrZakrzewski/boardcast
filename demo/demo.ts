@@ -1,5 +1,5 @@
-import { BoardcastHexBoard, ClearType } from '../lib/index';
-import { Lancer } from '../contrib/index';
+import { BoardcastHexBoard, ClearType } from 'boardcast';
+import * as Lancer from 'boardcast-contrib/lancer';
 
 // Initialize the boardcast demo when the DOM is loaded
 let board: BoardcastHexBoard;
