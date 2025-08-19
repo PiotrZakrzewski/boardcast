@@ -51,18 +51,31 @@ async function recordTutorial(tutorialFile) {
   
   console.log(`📦 Using boardcast library from: ${boardcastPath}`);
   
-  // Import tutorial to validate syntax and get config
+  // Basic tutorial file validation and config extraction
   let tutorialConfig;
   try {
-    // Dynamic import the tutorial file to validate it
-    const tutorialModule = require(tutorialPath);
-    if (!tutorialModule.runTutorial) {
+    const tutorialContent = fs.readFileSync(tutorialPath, 'utf8');
+    
+    // Basic syntax validation
+    if (!tutorialContent.includes('runTutorial')) {
       throw new Error('Tutorial file must export a runTutorial function');
     }
-    if (!tutorialModule.config) {
+    if (!tutorialContent.includes('config')) {
       throw new Error('Tutorial file must export a config object');
     }
-    tutorialConfig = tutorialModule.config;
+    
+    // Extract config using regex
+    const configMatch = tutorialContent.match(/export\s+const\s+config\s*=\s*({[^}]*})/);
+    if (configMatch) {
+      try {
+        tutorialConfig = JSON.parse(configMatch[1].replace(/'/g, '"'));
+      } catch {
+        tutorialConfig = { gridRadius: 8, title: "Tutorial" };
+      }
+    } else {
+      tutorialConfig = { gridRadius: 8, title: "Tutorial" };
+    }
+    
     console.log(`📋 Tutorial config:`, tutorialConfig);
   } catch (error) {
     throw new Error(`Tutorial file validation failed: ${error.message}`);
@@ -83,6 +96,15 @@ async function recordTutorial(tutorialFile) {
   
   // Serve the built library files
   app.use('/dist', express.static(boardcastPath));
+  
+  // Serve boardcast-contrib from the monorepo
+  const contribPath = path.resolve(process.cwd(), 'boardcast-contrib/dist');
+  if (fs.existsSync(contribPath)) {
+    app.use('/boardcast-contrib', express.static(contribPath));
+    console.log(`📦 Using boardcast-contrib from: ${contribPath}`);
+  } else {
+    console.log(`⚠️  boardcast-contrib not found at: ${contribPath}`);
+  }
   
   // Serve the user's tutorial file
   app.get('/user-tutorial.js', (req, res) => {
