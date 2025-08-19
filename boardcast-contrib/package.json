@@ -1,6 +1,6 @@
 {
   "name": "boardcast-contrib",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Community contributed game implementations for Boardcast hex board tutorials",
   "type": "module",
   "main": "dist/index.js",
@@ -39,7 +39,7 @@
   "author": "Boardcast Community",
   "license": "MIT",
   "dependencies": {
-    "boardcast": "^1.0.0"
+    "boardcast": "^1.1.0"
   },
   "devDependencies": {
     "@types/node": "^24.2.1",
@@ -48,7 +48,7 @@
     "vitest": "^3.2.4"
   },
   "peerDependencies": {
-    "boardcast": "^1.0.0"
+    "boardcast": "^1.1.0"
   },
   "repository": {
     "type": "git",

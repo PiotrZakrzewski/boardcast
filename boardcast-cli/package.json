@@ -1,6 +1,6 @@
 {
   "name": "boardcast-cli",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "CLI tools for creating and recording animated hex board tutorials with Boardcast",
   "type": "module",
   "bin": {
@@ -42,7 +42,7 @@
     "playwright": "^1.54.2"
   },
   "peerDependencies": {
-    "boardcast": "^1.0.0"
+    "boardcast": "^1.1.0"
   },
   "peerDependenciesMeta": {
     "boardcast": {

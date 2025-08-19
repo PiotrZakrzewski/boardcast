@@ -5,7 +5,7 @@
   "private": true,
   "workspaces": [
     "boardcast",
-    "boardcast-cli", 
+    "boardcast-cli",
     "boardcast-contrib",
     "demo"
   ],
@@ -20,7 +20,7 @@
   },
   "keywords": [
     "animation",
-    "hex", 
+    "hex",
     "board",
     "tabletop",
     "game",
