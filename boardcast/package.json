@@ -1,0 +1,65 @@
+{
+  "name": "boardcast",
+  "version": "1.0.0",
+  "description": "Animation library for tabletop game rules on hex boards",
+  "main": "dist/lib/index.js",
+  "types": "dist/lib/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/lib/index.js",
+      "types": "./dist/lib/index.d.ts"
+    }
+  },
+  "files": [
+    "dist/lib/**/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "dev": "vite --config vite.demo.config.ts",
+    "build": "tsc && vite build --config vite.lib.config.ts",
+    "build:lib": "tsc && vite build --config vite.lib.config.ts",
+    "build:demo": "vite build --config vite.demo.config.ts",
+    "preview": "vite preview --config vite.demo.config.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run"
+  },
+  "keywords": [
+    "animation",
+    "hex",
+    "board",
+    "tabletop",
+    "game",
+    "tutorial",
+    "d3",
+    "visualization",
+    "svg",
+    "hexagonal"
+  ],
+  "author": "Boardcast Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PiotrZakrzewski/boardcast.git"
+  },
+  "bugs": {
+    "url": "https://github.com/PiotrZakrzewski/boardcast/issues"
+  },
+  "homepage": "https://piotrzakrzewski.github.io/boardcast/",
+  "dependencies": {
+    "d3": "^7.9.0"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@types/d3": "^7.4.3",
+    "@types/node": "^24.2.1",
+    "@vitest/ui": "^3.2.4",
+    "jsdom": "^26.1.0",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.2",
+    "vitest": "^3.2.4"
+  }
+}

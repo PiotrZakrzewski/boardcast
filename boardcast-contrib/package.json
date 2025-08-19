@@ -1,0 +1,62 @@
+{
+  "name": "boardcast-contrib",
+  "version": "1.0.0",
+  "description": "Community contributed game implementations for Boardcast hex board tutorials",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./lancer": {
+      "import": "./dist/lancer/index.js",
+      "types": "./dist/lancer/index.d.ts"
+    }
+  },
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc && vite build --config vite.config.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:run": "vitest run"
+  },
+  "keywords": [
+    "boardcast",
+    "contrib",
+    "hex",
+    "board",
+    "tutorial",
+    "animation",
+    "tabletop",
+    "lancer",
+    "rpg"
+  ],
+  "author": "Boardcast Community",
+  "license": "MIT",
+  "dependencies": {
+    "boardcast": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.2.1",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.2",
+    "vitest": "^3.2.4"
+  },
+  "peerDependencies": {
+    "boardcast": "^1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PiotrZakrzewski/boardcast.git",
+    "directory": "boardcast-contrib"
+  },
+  "bugs": {
+    "url": "https://github.com/PiotrZakrzewski/boardcast/issues"
+  },
+  "homepage": "https://piotrzakrzewski.github.io/boardcast/"
+}

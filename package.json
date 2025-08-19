@@ -1,41 +1,24 @@
 {
-  "name": "boardcast",
+  "name": "boardcast-workspace",
   "version": "1.0.0",
-  "description": "Animation library for tabletop game rules on hex boards",
-  "main": "dist/lib/index.js",
-  "types": "dist/lib/index.d.ts",
-  "type": "module",
-  "exports": {
-    ".": {
-      "import": "./dist/lib/index.js",
-      "types": "./dist/lib/index.d.ts"
-    },
-    "./contrib": {
-      "import": "./dist/contrib/index.js",
-      "types": "./dist/contrib/index.d.ts"
-    }
-  },
-  "files": [
-    "dist/lib/**/*",
-    "dist/contrib/**/*",
-    "README.md",
-    "LICENSE"
+  "description": "Monorepo for Boardcast packages",
+  "private": true,
+  "workspaces": [
+    "boardcast",
+    "boardcast-cli", 
+    "boardcast-contrib"
   ],
   "scripts": {
-    "dev": "vite --config vite.demo.config.ts",
-    "build": "tsc && vite build --config vite.lib.config.ts && vite build --config vite.contrib.config.ts",
-    "build:lib": "tsc && vite build --config vite.lib.config.ts",
-    "build:contrib": "tsc && vite build --config vite.contrib.config.ts",
-    "build:demo": "vite build --config vite.demo.config.ts",
-    "preview": "vite preview --config vite.demo.config.ts",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest",
-    "test:ui": "vitest --ui",
-    "test:run": "vitest run"
+    "build": "npm run build --workspace=boardcast && npm run build --workspace=boardcast-contrib",
+    "build:all": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "typecheck": "npm run typecheck --workspaces",
+    "dev": "npm run dev --workspace=boardcast",
+    "preview": "npm run preview --workspace=boardcast"
   },
   "keywords": [
     "animation",
-    "hex",
+    "hex", 
     "board",
     "tabletop",
     "game",
@@ -54,18 +37,5 @@
   "bugs": {
     "url": "https://github.com/PiotrZakrzewski/boardcast/issues"
   },
-  "homepage": "https://piotrzakrzewski.github.io/boardcast/",
-  "dependencies": {
-    "d3": "^7.9.0"
-  },
-  "devDependencies": {
-    "@testing-library/dom": "^10.4.1",
-    "@types/d3": "^7.4.3",
-    "@types/node": "^24.2.1",
-    "@vitest/ui": "^3.2.4",
-    "jsdom": "^26.1.0",
-    "typescript": "^5.9.2",
-    "vite": "^7.1.2",
-    "vitest": "^3.2.4"
-  }
+  "homepage": "https://piotrzakrzewski.github.io/boardcast/"
 }
