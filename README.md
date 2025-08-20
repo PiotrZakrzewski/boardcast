@@ -1,11 +1,11 @@
-# Boardcast Ecosystem
+# Boardcast
 
-**Complete toolkit for creating animated hex-based game tutorials and educational content.**
+**Toolkit for creating animated tutorials for tabletop games.**
 
-[![npm version](https://badge.fury.io/js/boardcast.svg)](https://www.npmjs.com/package/boardcast)
 [![Demo](https://img.shields.io/badge/demo-live-blue)](https://piotrzakrzewski.github.io/boardcast/)
 
-A monorepo containing three specialized packages for creating smooth, professional animations on hexagonal grids.
+<video src="https://piotrzakrzewski.github.io/boardcast/lancer-engagement.webm" controls style="max-width: 100%; margin-top: 1em; border-radius: 8px; box-shadow: 0 2px 8px #0002;"></video>
+
 
 ## Packages
 
