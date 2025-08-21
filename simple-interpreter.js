@@ -118,97 +118,24 @@ async function startInterpreterServer(boardFile, port = 3001) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boardcast Interpreter</title>
+    <title>Boardcast - ${path.basename(boardFile)}</title>
     <style>
         body {
             margin: 0;
-            padding: 20px;
+            padding: 0;
             background: #1a1a1a;
-            color: white;
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .board-container {
             display: flex;
             justify-content: center;
-            margin: 20px 0;
+            align-items: center;
+            min-height: 100vh;
         }
         #chart {
-            border: 1px solid #444;
             background: #222;
-        }
-        .controls {
-            text-align: center;
-            margin: 20px 0;
-        }
-        button {
-            background: #4a90e2;
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            margin: 0 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background: #357abd;
-        }
-        .info {
-            text-align: center;
-            color: #ccc;
-            margin-top: 20px;
-        }
-        .status {
-            text-align: center;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-        }
-        .status.success {
-            background: #4CAF50;
-            color: white;
-        }
-        .status.error {
-            background: #f44336;
-            color: white;
-        }
-        .status.info {
-            background: #2196F3;
-            color: white;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Boardcast Interpreter</h1>
-            <p>File: <code>${path.basename(boardFile)}</code></p>
-        </div>
-        
-        <div id="status"></div>
-        
-        <div class="board-container">
-            <svg id="chart" width="1000" height="700"></svg>
-        </div>
-        
-        <div class="controls">
-            <button onclick="runScript()">Run Script</button>
-            <button onclick="resetBoard()">Reset Board</button>
-            <button onclick="location.reload()">Reload Page</button>
-        </div>
-        
-        <div class="info">
-            <p>The script will automatically execute when the page loads.</p>
-            <p>Use the controls above to re-run or reset the visualization.</p>
-        </div>
-    </div>
+    <svg id="chart" width="1000" height="700"></svg>
 
     <script type="importmap">
         {
@@ -233,36 +160,23 @@ async function startInterpreterServer(boardFile, port = 3001) {
             CAPTION: 'CAPTION'
         };
         
-        function showStatus(message, type = 'info') {
-            const statusDiv = document.getElementById('status');
-            statusDiv.innerHTML = \`<div class="status \${type}">\${message}</div>\`;
-            setTimeout(() => {
-                statusDiv.innerHTML = '';
-            }, 3000);
-        }
-        
         // Initialize when DOM is ready
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('Initializing Boardcast Interpreter...');
-            showStatus('Initializing Boardcast Interpreter...', 'info');
             
             try {
                 board = new BoardcastHexBoard('#chart');
-                window.board = board; // Make available globally
-                
-                showStatus('Board initialized successfully!', 'success');
+                console.log('Board initialized successfully!');
                 
                 // Auto-run the script
                 await runScript();
             } catch (error) {
                 console.error('Failed to initialize:', error);
-                showStatus('Failed to initialize: ' + error.message, 'error');
             }
         });
         
-        window.runScript = async function() {
+        async function runScript() {
             console.log('Running board script...');
-            showStatus('Running board script...', 'info');
             
             try {
                 board.resetBoard();
@@ -271,7 +185,7 @@ async function startInterpreterServer(boardFile, port = 3001) {
                 const response = await fetch('/board-commands');
                 const commands = await response.json();
                 
-                showStatus(\`Executing \${commands.length} commands...\`, 'info');
+                console.log(\`Executing \${commands.length} commands...\`);
                 
                 for (const command of commands) {
                     console.log('Executing:', command.method, command.args);
@@ -290,18 +204,11 @@ async function startInterpreterServer(boardFile, port = 3001) {
                     }
                 }
                 
-                console.log('Script execution completed!');
-                showStatus('Script execution completed successfully!', 'success');
+                console.log('Script execution completed successfully!');
             } catch (error) {
                 console.error('Error running script:', error);
-                showStatus('Error running script: ' + error.message, 'error');
             }
-        };
-        
-        window.resetBoard = function() {
-            board.resetBoard();
-            showStatus('Board reset', 'info');
-        };
+        }
     </script>
 </body>
 </html>`;

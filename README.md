@@ -30,6 +30,20 @@ Command-line tools for creating and recording video tutorials.
 npm install -g boardcast-cli
 ```
 
+### 📄 Boardcast Interpreter
+Simple interpreter for executing Boardcast commands from `.board` files via HTTP server.
+
+```bash
+# Create a .board file with commands
+echo 'token(0, 0, "player", "circle", "#4444FF", "Player")' > demo.board
+echo 'highlight(1, 0, "#4fc3f7")' >> demo.board
+echo 'caption("Hello Boardcast!", 3000)' >> demo.board
+
+# Run the interpreter
+node simple-interpreter.js demo.board
+# Open http://localhost:3001 to see the visualization
+```
+
 ## Quick Start
 
 ```javascript
@@ -50,24 +64,6 @@ await board.move('player', 2, 2);
 // Use game-specific mechanics
 const movement = new Lancer.LancerMovement(board);
 movement.showMovementRange(0, 0, 4); // Show speed 4 movement
-```
-
-## Quick Start
-
-```javascript
-import { BoardcastHexBoard } from 'boardcast';
-
-// Create board in your HTML
-const board = new BoardcastHexBoard('#my-svg', {
-  gridRadius: 6,
-  hexRadius: 30
-});
-
-// Add animations
-board.highlight(0, 0, '#4fc3f7');
-board.token(1, 1, 'player', 'circle', '#00ff00', 'Player');
-await board.move('player', 2, 2);
-board.caption('Player moves forward', 2000);
 ```
 
 ## Core API
@@ -149,6 +145,69 @@ npm run build --workspace=boardcast
 npm run build --workspace=boardcast-contrib
 npm run test --workspace=boardcast
 ```
+
+## Boardcast Interpreter
+
+The Boardcast Interpreter allows you to execute Boardcast commands from simple text files and view them in a web browser. Perfect for creating shareable demos or scripted tutorials.
+
+### `.board` File Format
+
+Create text files with `.board` extension containing one Boardcast method call per line:
+
+```board
+# Comments start with #
+setGridSizeWithScaling(5)
+showCoordinates()
+
+# Place tokens
+token(0, 0, "mech", "circle", "#4444FF", "Mech")
+token(2, 1, "enemy", "triangle", "#FF4444", "Enemy")
+
+# Add effects
+highlight(1, 0, "#4fc3f7")
+pulse(-1, 1, "#ff6b6b")
+point(2, 1, "Target")
+
+# Animate
+caption("Battle begins!", 3000)
+move("mech", 1, 0)
+clear("HIGHLIGHT")
+```
+
+### Supported Methods
+
+All public Boardcast methods are supported:
+- `showCoordinates()` / `hideCoordinates()`
+- `highlight(q, r, color)`, `blink(q, r, color)`, `pulse(q, r, color)`
+- `point(q, r, label)`, `caption(text, duration)`
+- `token(q, r, name, shape, color, label)`, `move(tokenName, q, r)`
+- `clear(type)`, `resetBoard()`, `setGridSizeWithScaling(radius)`
+
+### Parameter Types
+
+- **Numbers**: `42`, `-1`, `3.14`
+- **Strings**: `"text"`, `'text'`
+- **Booleans**: `true`, `false`
+- **ClearType**: `"HIGHLIGHT"`, `"PULSE"`, `"ALL"`, etc.
+
+### Running the Interpreter
+
+```bash
+# Run with default port (3001)
+node simple-interpreter.js your-script.board
+
+# Run with custom port
+node simple-interpreter.js your-script.board 8080
+
+# Then open http://localhost:3001 (or your custom port) in browser
+```
+
+The interpreter will:
+1. Parse your `.board` file
+2. Start an HTTP server
+3. Serve an interactive web page
+4. Automatically execute all commands in sequence
+5. Properly await async methods like `caption()` and `move()`
 
 ## Creating Video Tutorials
 
