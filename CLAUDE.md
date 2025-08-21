@@ -4,40 +4,40 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Boardcast is a monorepo ecosystem containing three packages for creating animated demonstrations of tabletop game rules on hex-based boards. Built with TypeScript, D3.js, and Vite.
+Boardcast is a unified package for creating animated demonstrations of tabletop game rules on hex-based boards. Built with TypeScript, D3.js, and Vite.
 
-## Monorepo Structure
+## Package Structure
 
-This is an npm workspaces monorepo with the following packages:
+This is a single npm package with the following structure:
 
 ```
-/
-├── boardcast/              # Core library package
-│   ├── lib/               # Core library source code
-│   ├── dist/              # Built library files
-│   ├── package.json       # Core library config
-│   └── tsconfig.json      # TypeScript config
-├── boardcast-cli/          # CLI tools package
+boardcast/
+├── lib/                    # Core library source code
+│   ├── BoardcastHexBoard.ts # Main library class
+│   ├── types.ts           # TypeScript interfaces
+│   └── index.ts           # Library exports
+├── contrib/               # Game system extensions
+│   └── lancer/            # Lancer RPG mechanics
+│       ├── movement.ts    # Movement mechanics
+│       ├── combat.ts      # Combat mechanics
+│       ├── types.ts       # Lancer-specific types
+│       └── index.ts       # Lancer exports
+├── cli/                   # CLI tools
 │   ├── bin/               # CLI executables
 │   ├── lib/               # CLI implementation
-│   └── package.json       # CLI config
-├── boardcast-contrib/      # Game system extensions
-│   ├── lancer/            # Lancer RPG mechanics
-│   ├── dist/              # Built contrib files
-│   ├── package.json       # Contrib config
-│   └── tsconfig.json      # TypeScript config
-├── demo/                   # Demo application (uses all packages)
-│   ├── demo.ts            # Demo TypeScript using both packages
+│   └── runtime/           # Runtime files for tutorials
+├── demo/                  # Demo application
+│   ├── demo.ts            # Demo TypeScript
 │   ├── index.html         # Demo HTML
-│   ├── dist/              # Built demo files
-│   ├── package.json       # Demo config
-│   └── tsconfig.json      # TypeScript config
-└── package.json           # Workspace root configuration
+│   └── dist/              # Built demo files
+├── dist/                  # Built library files
+├── package.json           # Single package configuration
+└── tsconfig.json          # Single TypeScript config
 ```
 
 ## Development Commands
 
-From the root directory:
+From the boardcast directory:
 
 ```bash
 # Install all dependencies
@@ -46,12 +46,16 @@ npm install
 # Start demo development server (localhost:3000)
 npm run dev
 
-# Build all packages
+# Build library and contrib packages
 npm run build
 
-# Build specific package
-npm run build --workspace=boardcast
-npm run build --workspace=boardcast-contrib
+# Build everything including demo
+npm run build:all
+
+# Build specific components
+npm run build:lib        # Core library only
+npm run build:contrib    # Contrib packages only
+npm run build:demo       # Demo only
 
 # Run tests
 npm run test
@@ -59,8 +63,7 @@ npm run test
 # Type checking
 npm run typecheck
 
-# Demo commands
-npm run build:demo
+# Preview demo
 npm run preview
 ```
 
@@ -69,13 +72,11 @@ npm run preview
 - **TypeScript**: Primary language with strict type checking
 - **D3.js**: Data visualization and animation library
 - **Vite**: Build tool and development server
-- **npm workspaces**: Monorepo management
 - **ES Modules**: Modern JavaScript module system
 
 ## Package Architecture
 
-### 📦 Boardcast (Core Library)
-**Location**: `boardcast/`
+### 📦 Core Library (`lib/`)
 **Purpose**: Main animation library for hex-based visualizations
 
 Key Components:
@@ -89,8 +90,7 @@ The core library provides:
 - Token management and movement
 - Clear/reset functionality
 
-### 🎮 Boardcast-Contrib (Game Extensions)
-**Location**: `boardcast-contrib/`
+### 🎮 Game Extensions (`contrib/`)
 **Purpose**: Game-specific mechanics and specialized visualizations
 
 Current modules:
@@ -101,8 +101,7 @@ The contrib library provides:
 - Specialized visualization methods
 - Pre-configured constants and types
 
-### 🛠️ Boardcast-CLI (Command Line Tools)
-**Location**: `boardcast-cli/`
+### 🛠️ CLI Tools (`cli/`)
 **Purpose**: Tools for creating and recording tutorials
 
 Features:
@@ -110,9 +109,8 @@ Features:
 - Video recording with Playwright
 - Tutorial automation
 
-### 🖥️ Demo Application
-**Location**: `demo/`
-**Purpose**: Interactive showcase of all packages
+### 🖥️ Demo Application (`demo/`)
+**Purpose**: Interactive showcase of all functionality
 
 Features:
 - Demonstrates core library methods
@@ -127,16 +125,7 @@ Features:
 - **Game Piece Management**: Entities that can be animated between hex positions
 - **Coordinate Display**: Toggle-able coordinate labels for development and education
 - **Smooth Animations**: Easing functions for natural piece movement between hexes
-- **Package Separation**: Clean separation between core, contrib, CLI, and demo
-
-## Cross-Package Dependencies
-
-```
-demo → boardcast (core animations)
-demo → boardcast-contrib (game mechanics)
-boardcast-contrib → boardcast (extends core)
-boardcast-cli → boardcast (creates tutorials)
-```
+- **Unified Package**: All functionality in one package with clean exports
 
 ## Import Patterns
 
@@ -147,14 +136,19 @@ import { BoardcastHexBoard, ClearType } from 'boardcast';
 
 ### Using Contrib Extensions
 ```typescript
-import { Lancer } from 'boardcast-contrib/lancer';
+import { Lancer } from 'boardcast/contrib/lancer';
 const movement = new Lancer.LancerMovement(board);
 ```
 
-### Demo Usage (Both Packages)
+### Using CLI Tools
+```typescript
+import { createTutorial, recordVideo } from 'boardcast/cli';
+```
+
+### Demo Usage (All Features)
 ```typescript
 import { BoardcastHexBoard, ClearType } from 'boardcast';
-import * as Lancer from 'boardcast-contrib/lancer';
+import * as Lancer from 'boardcast/contrib/lancer';
 ```
 
 ## Core Library API
@@ -183,7 +177,7 @@ The `BoardcastHexBoard` class provides the main functionality:
 
 ## Contrib Library Extensions
 
-### Lancer Module (`boardcast-contrib/lancer`)
+### Lancer Module (`contrib/lancer`)
 
 Classes:
 - `LancerMovement`: Movement range calculation and visualization
@@ -198,17 +192,17 @@ Key Methods:
 
 ## Development Workflow
 
-1. **Core Changes**: Modify `boardcast/lib/` for new animation features
-2. **Game Extensions**: Add to `boardcast-contrib/` for game-specific mechanics
+1. **Core Changes**: Modify `lib/` for new animation features
+2. **Game Extensions**: Add to `contrib/` for game-specific mechanics
 3. **Demo Updates**: Update `demo/demo.ts` to showcase new features
-4. **CLI Tools**: Extend `boardcast-cli/` for new recording capabilities
+4. **CLI Tools**: Extend `cli/` for new recording capabilities
 
 ## Build Process
 
-1. `boardcast` builds first (core dependency)
-2. `boardcast-contrib` builds next (depends on core)
-3. `demo` builds last (uses both packages)
-4. All packages use Vite for bundling
+1. Core library builds first (TypeScript compilation + Vite bundling)
+2. Contrib packages build next (depends on core)
+3. Demo builds last (uses both lib and contrib)
+4. All components use Vite for bundling
 5. TypeScript compilation generates declaration files
 
 ## Testing Strategy
@@ -218,4 +212,4 @@ Key Methods:
 - Demo: Manual testing and visual verification
 - CLI: End-to-end automation testing
 
-The monorepo maintains clean separation while enabling rich cross-package integration for comprehensive hex-based game tutorials and educational content.
+The unified package maintains clean separation while enabling rich integration for comprehensive hex-based game tutorials and educational content.

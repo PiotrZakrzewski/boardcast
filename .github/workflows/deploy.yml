@@ -28,10 +28,10 @@ jobs:
         cache: 'npm'
 
     - name: Install dependencies
-      run: npm ci
+      run: cd boardcast && npm install
 
     - name: Build demo
-      run: npm run build && npm run build:demo
+      run: cd boardcast && npm run build:all
 
     - name: Setup Pages
       uses: actions/configure-pages@v4
@@ -39,7 +39,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
       with:
-        path: './demo/dist'
+        path: './boardcast/demo/dist'
 
     - name: Deploy to GitHub Pages
       id: deployment

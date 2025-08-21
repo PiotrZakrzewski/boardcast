@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { recordTutorial } from '../lib/record.js';
+import { recordTutorial } from '../lib/record-simple.js';
 
 const tutorialFile = process.argv[2];
 

@@ -33,18 +33,18 @@
     {
         "imports": {
             "d3": "https://cdn.skypack.dev/d3@7",
-            "boardcast": "/dist/lib/index.js",
-            "boardcast-contrib/": "/boardcast-contrib/"
+            "boardcast": "/boardcast/dist/lib/index.js",
+            "boardcast-contrib/": "/boardcast/boardcast-contrib/"
         }
     }
     </script>
     
     <script type="module">
         // Import the Boardcast library from the built dist directory
-        import { BoardcastHexBoard } from '/dist/lib/index.js';
+        import { BoardcastHexBoard } from '/boardcast/dist/lib/index.js';
         
         // Import the user's tutorial (will be dynamically set by server)
-        import { runTutorial, config } from '/user-tutorial.js';
+        import { runTutorial, config } from '/boardcast/user-tutorial.js';
         
         // Tutorial completion tracking
         let tutorialComplete = false;

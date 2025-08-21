@@ -16,8 +16,18 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "boardcast-contrib/*": ["../boardcast-contrib/*"]
+      "boardcast": ["./lib/index.ts"],
+      "boardcast-contrib/*": ["./contrib/*"]
     }
   },
-  "include": ["lib/**/*"]
+  "include": [
+    "lib/**/*",
+    "contrib/**/*",
+    "demo/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "cli/**/*"
+  ]
 }

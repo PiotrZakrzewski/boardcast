@@ -23,7 +23,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      'boardcast': resolve(__dirname, '../boardcast/dist/lib/index.js')
+      'boardcast': resolve(__dirname, '../lib/index.ts')
     }
   }
 })

@@ -1,22 +1,16 @@
 {
   "name": "boardcast-workspace",
   "version": "1.0.0",
-  "description": "Monorepo for Boardcast packages",
+  "description": "Boardcast - Animation library for tabletop game rules on hex boards",
   "private": true,
-  "workspaces": [
-    "boardcast",
-    "boardcast-cli",
-    "boardcast-contrib",
-    "demo"
-  ],
   "scripts": {
-    "build": "npm run build --workspace=boardcast && npm run build --workspace=boardcast-contrib",
-    "build:all": "npm run build --workspaces",
-    "test": "npm run test --workspaces",
-    "typecheck": "npm run typecheck --workspaces",
-    "dev": "npm run dev --workspace=demo",
-    "preview": "npm run preview --workspace=demo",
-    "build:demo": "npm run build --workspace=demo"
+    "install": "cd boardcast && npm install",
+    "build": "cd boardcast && npm run build",
+    "build:all": "cd boardcast && npm run build:all",
+    "test": "cd boardcast && npm run test",
+    "typecheck": "cd boardcast && npm run typecheck",
+    "dev": "cd boardcast && npm run dev",
+    "preview": "cd boardcast && npm run preview"
   },
   "keywords": [
     "animation",

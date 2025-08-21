@@ -91,16 +91,19 @@ async function recordTutorial(tutorialFile) {
   const app = express();
   const port = 3001;
 
-  // Serve runtime files (HTML template)
+  // Serve runtime files (HTML template) - both at root and /boardcast/ path
   app.use(express.static(runtimeDir));
+  app.use('/boardcast', express.static(runtimeDir));
   
-  // Serve the built library files
+  // Serve the built library files - boardcastPath already points to dist/
   app.use('/dist', express.static(boardcastPath));
+  app.use('/boardcast/dist/lib', express.static(path.join(boardcastPath, 'lib')));
   
-  // Serve boardcast-contrib from the monorepo
-  const contribPath = path.resolve(process.cwd(), 'boardcast-contrib/dist');
+  // Serve boardcast-contrib from the built dist directory
+  const contribPath = path.resolve(boardcastPath, '../dist/contrib');
   if (fs.existsSync(contribPath)) {
     app.use('/boardcast-contrib', express.static(contribPath));
+    app.use('/boardcast/boardcast-contrib', express.static(contribPath));
     console.log(`📦 Using boardcast-contrib from: ${contribPath}`);
   } else {
     console.log(`⚠️  boardcast-contrib not found at: ${contribPath}`);
@@ -108,6 +111,9 @@ async function recordTutorial(tutorialFile) {
   
   // Serve the user's tutorial file
   app.get('/user-tutorial.js', (req, res) => {
+    res.sendFile(tutorialPath);
+  });
+  app.get('/boardcast/user-tutorial.js', (req, res) => {
     res.sendFile(tutorialPath);
   });
 
@@ -132,7 +138,7 @@ async function recordTutorial(tutorialFile) {
 
   try {
     console.log('📱 Loading tutorial...');
-    await page.goto(`http://localhost:${port}/tutorial-runner.html`);
+    await page.goto(`http://localhost:${port}/boardcast/tutorial-runner.html`);
     
     // Wait for the page to load
     await page.waitForSelector('#chart', { state: 'visible' });
