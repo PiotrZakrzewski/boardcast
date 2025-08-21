@@ -1,0 +1,38 @@
+# Example Boardcast script
+# This demonstrates basic Boardcast functionality
+
+# Setup the board
+setGridSizeWithScaling(5)
+showCoordinates()
+
+# Place a mech token in the center
+token(0, 0, "mech", "circle", "#4444FF", "Mech2")
+
+# Show movement range
+highlight(1, 0, "#4fc3f7")
+highlight(-1, 0, "#4fc3f7")
+highlight(0, 1, "#4fc3f7")
+highlight(0, -1, "#4fc3f7")
+highlight(1, -1, "#4fc3f7")
+highlight(-1, 1, "#4fc3f7")
+
+# Add caption
+caption("Welcome to Boardcast Interpreter!", 3000)
+
+# Move the mech
+move("mech", 2, 0)
+
+# Clear highlights
+clear("HIGHLIGHT")
+
+# Add some pulse effects
+pulse(2, 1, "#ff6b6b")
+pulse(1, 2, "#4ecdc4")
+pulse(-1, 1, "#feca57")
+
+# Point to important locations
+point(2, 1, "Target A")
+point(-2, -1, "Target B")
+
+# Final caption
+caption("Demo complete! Script executed successfully.", 2000)
