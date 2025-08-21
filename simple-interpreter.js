@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs';
+import { readFileSync, watch } from 'fs';
 import { createServer } from 'http';
 import path from 'path';
 
@@ -112,6 +112,42 @@ function loadBoardFile(filePath) {
  * Start HTTP server to display the visualization
  */
 async function startInterpreterServer(boardFile, port = 3001) {
+  // Track SSE clients for file change notifications
+  const sseClients = new Set();
+  
+  // File watching with debouncing
+  let reloadTimeout;
+  const watcher = watch(boardFile, (eventType) => {
+    if (eventType === 'change') {
+      // Debounce rapid file changes (editors often save multiple times)
+      clearTimeout(reloadTimeout);
+      reloadTimeout = setTimeout(() => {
+        console.log(`File changed: ${boardFile} - notifying clients`);
+        // Notify all connected SSE clients
+        for (const client of sseClients) {
+          try {
+            client.write('data: reload\n\n');
+          } catch (error) {
+            // Remove disconnected clients
+            sseClients.delete(client);
+          }
+        }
+      }, 100); // 100ms debounce
+    }
+  });
+  
+  // Cleanup on exit
+  process.on('SIGINT', () => {
+    watcher.close();
+    for (const client of sseClients) {
+      try {
+        client.end();
+      } catch (error) {
+        // Ignore errors on cleanup
+      }
+    }
+    process.exit(0);
+  });
   const htmlContent = `
 <!DOCTYPE html>
 <html lang="en">
@@ -168,7 +204,23 @@ async function startInterpreterServer(boardFile, port = 3001) {
                 board = new BoardcastHexBoard('#chart');
                 console.log('Board initialized successfully!');
                 
-                // Auto-run the script
+                // Set up Server-Sent Events for file change notifications
+                const eventSource = new EventSource('/events');
+                
+                eventSource.onmessage = function(event) {
+                    if (event.data === 'reload') {
+                        console.log('File changed - reloading script...');
+                        runScript();
+                    } else if (event.data === 'connected') {
+                        console.log('File watching connected');
+                    }
+                };
+                
+                eventSource.onerror = function(error) {
+                    console.log('SSE connection error:', error);
+                };
+                
+                // Auto-run the script initially
                 await runScript();
             } catch (error) {
                 console.error('Failed to initialize:', error);
@@ -240,6 +292,25 @@ async function startInterpreterServer(boardFile, port = 3001) {
         // Serve d3 as ES module from CDN
         res.writeHead(302, { 'Location': 'https://cdn.skypack.dev/d3@7' });
         res.end();
+      } else if (url === '/events') {
+        // Server-Sent Events endpoint for file change notifications
+        res.writeHead(200, {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+          'Access-Control-Allow-Origin': '*'
+        });
+        
+        // Add client to SSE clients set
+        sseClients.add(res);
+        
+        // Send initial connection event
+        res.write('data: connected\n\n');
+        
+        // Remove client when connection closes
+        req.on('close', () => {
+          sseClients.delete(res);
+        });
       } else {
         res.writeHead(404);
         res.end('Not Found');
