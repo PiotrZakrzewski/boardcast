@@ -1,13 +1,271 @@
 # Boardcast
 
-**Toolkit for creating animated tutorials for tabletop games.**
+**Complete toolkit for creating animated tutorials for tabletop games.**
 
 [![Demo](https://img.shields.io/badge/demo-live-blue)](https://piotrzakrzewski.github.io/boardcast/)
 
 <video src="https://piotrzakrzewski.github.io/boardcast/lancer-engagement.webm" controls style="max-width: 100%; margin-top: 1em; border-radius: 8px; box-shadow: 0 2px 8px #0002;"></video>
 
+## 🚀 Quick Start with Boardcast DSL
 
-## Packages
+Create animated tutorials using simple `.board` files:
+
+```bash
+# 1. Create a tutorial file
+echo 'setGridSizeWithScaling(5)
+showCoordinates()
+token(0, 0, "mech", "circle", "#4444FF", "Mech")
+highlight(1, 0, "#4fc3f7")
+caption("Hello Boardcast!", 3000)
+move("mech", 1, 0)' > my-tutorial.board
+
+# 2. Validate and compile
+node boardcast-toolchain.js build my-tutorial.board
+
+# 3. Record video (requires playwright)
+npm install playwright
+node boardcast-toolchain.js record my-tutorial.board
+```
+
+That's it! Your tutorial is now a video in the `videos/` folder.
+
+## 📁 Architecture Overview
+
+Boardcast provides multiple ways to create animated tutorials:
+
+### 🔥 **NEW: Boardcast DSL Toolchain** (Recommended)
+**Simple text files → Animated videos**
+
+```
+.board files → Chevrotain Parser → JavaScript → boardcast-cli → Videos
+```
+
+### 🎮 **JavaScript API** (Advanced)
+**Direct JavaScript programming**
+
+### 🌐 **Simple Interpreter** (Live Preview)
+**Real-time preview in browser**
+
+## 🛠️ Complete Testing Guide
+
+Follow these steps to test the new Boardcast toolchain:
+
+### Prerequisites
+
+```bash
+# Clone and setup
+git clone <repository>
+cd boardcast
+npm install
+
+# Install Chevrotain (if not already installed)
+npm install chevrotain
+
+# Install Playwright for video recording
+npm install playwright
+```
+
+### Step 1: Test DSL Validation
+
+```bash
+# Test with the included example
+node boardcast-toolchain.js validate example.board
+# Should output: ✅ Board file is valid!
+
+# Test error handling
+echo 'invalid_method(1, 2, 3)' > test-invalid.board
+node boardcast-toolchain.js validate test-invalid.board
+# Should output: ❌ Unknown method: "invalid_method". Did you mean: move, token, point?
+
+# Clean up
+rm test-invalid.board
+```
+
+### Step 2: Test Compilation
+
+```bash
+# Compile the example board file
+node boardcast-toolchain.js compile example.board
+
+# Check the generated JavaScript
+cat example.js
+# Should see properly formatted JavaScript with:
+# - export const config = { gridRadius: 5, title: "example" };
+# - export async function runTutorial(board) { ... }
+# - Proper board method calls with timing
+```
+
+### Step 3: Test Complete Build Pipeline
+
+```bash
+# Build (validate + compile) in one command
+rm example.js  # Remove previous file
+node boardcast-toolchain.js build example.board
+
+# Verify build output
+ls -la example.js
+# Should show the generated JavaScript file
+```
+
+### Step 4: Test with Custom Board File
+
+```bash
+# Create a simple test tutorial
+cat > test-tutorial.board << 'EOF'
+# Test Tutorial
+setGridSizeWithScaling(4)
+showCoordinates()
+
+# Place some pieces
+token(-1, 0, "player", "circle", "#00ff00", "Player")
+token(1, 1, "enemy", "triangle", "#ff0000", "Enemy")
+
+# Add effects
+highlight(0, 0, "#4fc3f7")
+pulse(1, 0, "#ffff00")
+point(-1, 0, "Start Here")
+
+# Animate
+caption("Tutorial Starting!", 2000)
+move("player", 0, 0)
+clear("HIGHLIGHT")
+caption("Tutorial Complete!", 1500)
+EOF
+
+# Build the tutorial
+node boardcast-toolchain.js build test-tutorial.board
+
+# Check the output
+cat test-tutorial.js
+```
+
+### Step 5: Test Video Recording (Optional)
+
+**Note**: This requires Playwright and may take a few minutes
+
+```bash
+# Record the example tutorial
+node boardcast-toolchain.js record example.board
+
+# Check for video output
+ls videos/
+# Should show: example-YYYYMMDDTHHMMSS.webm
+
+# Or test with boardcast-cli directly
+cd boardcast/cli
+node bin/boardcast record ../../example.js
+```
+
+### Step 6: Test Error Handling
+
+```bash
+# Test various error conditions
+echo 'highlight(25, 0, "#ff0000")' > test-errors.board  # Coordinate out of range
+node boardcast-toolchain.js validate test-errors.board
+
+echo 'token(0, 0, "test")' > test-errors.board  # Missing arguments
+node boardcast-toolchain.js validate test-errors.board
+
+echo 'highlight(0, 0, "notacolor")' > test-errors.board  # Invalid color
+node boardcast-toolchain.js validate test-errors.board
+
+echo 'token(0, 0, "test", "invalidshape", "#ff0000")' > test-errors.board  # Invalid shape
+node boardcast-toolchain.js validate test-errors.board
+
+# Clean up
+rm test-errors.board
+```
+
+### Step 7: Test CLI Help System
+
+```bash
+# Test help commands
+node boardcast-toolchain.js help
+node boardcast-toolchain.js help validate
+node boardcast-toolchain.js help compile
+node boardcast-toolchain.js help build
+node boardcast-toolchain.js help record
+```
+
+### Step 8: Test with Larger File
+
+```bash
+# Create a comprehensive test
+cat > complex-tutorial.board << 'EOF'
+# Complex Tutorial Test
+setGridSizeWithScaling(6)
+showCoordinates()
+
+# Setup terrain
+highlight(-2, 2, "#8d6e63")
+highlight(-1, 2, "#8d6e63")
+highlight(2, -1, "#f44336")
+highlight(3, -1, "#f44336")
+
+# Place multiple units
+token(-3, 1, "player1", "circle", "#4fc3f7", "Hero")
+token(-2, 0, "player2", "rect", "#4caf50", "Tank")
+token(2, 1, "enemy1", "triangle", "#f44336", "Orc")
+token(3, 0, "enemy2", "star", "#ff9800", "Boss")
+
+# Add visual effects
+point(-3, 1, "Start")
+pulse(0, 0, "#ffeb3b")
+blink(1, 1, "#e91e63")
+
+# Captions and movement
+caption("Battle Setup Complete", 2000)
+move("player1", -1, 0)
+move("player2", 0, 1)
+caption("Players Advance", 2000)
+
+# Clear and finale
+clear("POINT")
+clear("PULSE")
+caption("Tutorial Complete!", 2000)
+EOF
+
+# Build and validate
+node boardcast-toolchain.js build complex-tutorial.board
+
+# Check line count and complexity
+wc -l complex-tutorial.js
+grep "board\." complex-tutorial.js | wc -l
+```
+
+### Step 9: Verify Package Integration
+
+```bash
+# Test that generated files work with existing CLI
+cd boardcast && npm run build  # Ensure library is built
+
+# Test the generated file directly with CLI
+cd cli
+node bin/boardcast record ../../complex-tutorial.js
+# This may take a few minutes and opens a browser window
+```
+
+### Step 10: Clean Up Test Files
+
+```bash
+# Remove test files
+rm -f test-tutorial.board test-tutorial.js
+rm -f complex-tutorial.board complex-tutorial.js
+rm -f example.js  # Keep example.board for future testing
+```
+
+## Expected Test Results
+
+If everything works correctly, you should see:
+
+✅ **Validation**: Syntax and semantic errors caught with helpful messages  
+✅ **Compilation**: Clean JavaScript files generated with proper structure  
+✅ **Build Pipeline**: Seamless validate → compile workflow  
+✅ **Error Handling**: Clear error messages with suggestions  
+✅ **CLI Integration**: Generated files work with existing boardcast-cli  
+✅ **Video Recording**: Optional video generation (requires Playwright)  
+
+## 📦 Packages
 
 ### 📦 [boardcast](./boardcast/) - Core Library
 The main animation library for hex-based visualizations.
@@ -30,21 +288,88 @@ Command-line tools for creating and recording video tutorials.
 npm install -g boardcast-cli
 ```
 
-### 📄 Boardcast Interpreter
-Simple interpreter for executing Boardcast commands from `.board` files via HTTP server.
+### 🆕 **Boardcast DSL Toolchain** - Complete Workflow
+Simple text files to animated videos with validation and compilation.
 
 ```bash
-# Create a .board file with commands
-echo 'token(0, 0, "player", "circle", "#4444FF", "Player")' > demo.board
-echo 'highlight(1, 0, "#4fc3f7")' >> demo.board
-echo 'caption("Hello Boardcast!", 3000)' >> demo.board
-
-# Run the interpreter
-node simple-interpreter.js demo.board
-# Open http://localhost:3001 to see the visualization
+# All tools included in this repository
+node boardcast-toolchain.js --help
 ```
 
-## Quick Start
+## 🎯 Boardcast DSL Reference
+
+### File Format
+Create `.board` files with one command per line:
+
+```board
+# Comments start with #
+setGridSizeWithScaling(5)
+showCoordinates()
+
+# Place tokens
+token(0, 0, "player", "circle", "#4444FF", "Player")
+token(1, 1, "enemy", "triangle", "#FF4444", "Enemy")
+
+# Visual effects
+highlight(q, r, color)    # Static highlight
+blink(q, r, color)       # Blinking effect
+pulse(q, r, color)       # Pulsing effect
+point(q, r, label)       # Arrow pointer
+caption(text, duration)  # Text overlay
+
+# Animation
+move(tokenName, newQ, newR)  # Animate movement
+
+# Cleanup
+clear(type)              # Clear effects: "ALL", "HIGHLIGHT", "PULSE", etc.
+resetBoard()             # Clear everything
+```
+
+### Coordinate System
+- **Axial coordinates**: (q, r) where center is (0, 0)
+- **Range**: -20 to +20 for both q and r
+- **Adjacent hexes**: Differ by ±1 in one coordinate
+
+### Data Types
+- **Numbers**: `42`, `-1`, `3.14`
+- **Strings**: `"text"` or `'text'`
+- **Colors**: `"#FF0000"`, `"#4fc3f7"`, or `Colors.RED`
+- **Shapes**: `"circle"`, `"rect"`, `"triangle"`, `"star"`
+- **Clear Types**: `"ALL"`, `"HIGHLIGHT"`, `"BLINK"`, `"PULSE"`, `"POINT"`, `"TOKEN"`, `"CAPTION"`
+
+### Toolchain Commands
+
+```bash
+# Validate syntax and semantics
+node boardcast-toolchain.js validate tutorial.board
+
+# Compile to JavaScript
+node boardcast-toolchain.js compile tutorial.board [output.js]
+
+# Validate and compile
+node boardcast-toolchain.js build tutorial.board
+
+# Full pipeline: validate, compile, and record
+node boardcast-toolchain.js record tutorial.board
+
+# Help
+node boardcast-toolchain.js help [command]
+```
+
+## 🚀 Development Workflow
+
+### For Content Creators
+1. Write `.board` file with simple commands
+2. Validate: `node boardcast-toolchain.js validate tutorial.board`
+3. Build: `node boardcast-toolchain.js build tutorial.board`
+4. Record: `node boardcast-toolchain.js record tutorial.board`
+
+### For Developers
+1. Use JavaScript API directly
+2. Import boardcast libraries
+3. Build custom animations programmatically
+
+## 🔧 JavaScript API (Advanced)
 
 ```javascript
 import { BoardcastHexBoard } from 'boardcast';
@@ -66,9 +391,9 @@ const movement = new Lancer.LancerMovement(board);
 movement.showMovementRange(0, 0, 4); // Show speed 4 movement
 ```
 
-## Core API
+### Core API
 
-### Visual Effects
+#### Visual Effects
 ```javascript
 board.highlight(q, r, color);           // Static highlight
 board.blink(q, r, color);              // Blinking highlight  
@@ -77,7 +402,7 @@ board.point(q, r, label?);             // Arrow pointing at hex
 board.caption(text, duration?);        // Large text overlay
 ```
 
-### Game Pieces
+#### Game Pieces
 ```javascript
 // Place tokens with different shapes
 board.token(q, r, name, shape, color, label?);
@@ -87,38 +412,16 @@ board.token(q, r, name, shape, color, label?);
 await board.move(tokenName, newQ, newR);
 ```
 
-### Board Management
+#### Board Management
 ```javascript
 board.clear();                         // Clear everything
 board.clear('HIGHLIGHT');              // Clear specific type
 // Types: 'HIGHLIGHT', 'BLINK', 'PULSE', 'POINT', 'TOKEN', 'CAPTION'
 ```
 
-### Configuration
-```javascript
-const board = new BoardcastHexBoard('#svg', {
-  gridRadius: 8,      // Number of hex rings
-  hexRadius: 25,      // Size of individual hexes
-  width: 800,         // SVG width
-  height: 600         // SVG height
-});
+## 🏗️ Development Setup
 
-// Runtime changes
-board.setGridSize(5);                    // Change grid size
-board.setGridSizeWithScaling(5);         // Auto-scale hex size
-board.configure({ gridRadius: 8, hexRadius: 20 });
-```
-
-## Coordinate System
-
-Uses axial coordinates where each hex has (q, r) coordinates:
-- Center hex is (0, 0)  
-- Adjacent hexes differ by ±1 in one coordinate
-- Positive q extends right, positive r extends down-right
-
-## Development
-
-This is a monorepo managed with npm workspaces. From the root directory:
+This is a monorepo managed with npm workspaces:
 
 ```bash
 # Install all dependencies
@@ -146,86 +449,7 @@ npm run build --workspace=boardcast-contrib
 npm run test --workspace=boardcast
 ```
 
-## Boardcast Interpreter
-
-The Boardcast Interpreter allows you to execute Boardcast commands from simple text files and view them in a web browser. Perfect for creating shareable demos or scripted tutorials.
-
-### `.board` File Format
-
-Create text files with `.board` extension containing one Boardcast method call per line:
-
-```board
-# Comments start with #
-setGridSizeWithScaling(5)
-showCoordinates()
-
-# Place tokens
-token(0, 0, "mech", "circle", "#4444FF", "Mech")
-token(2, 1, "enemy", "triangle", "#FF4444", "Enemy")
-
-# Add effects
-highlight(1, 0, "#4fc3f7")
-pulse(-1, 1, "#ff6b6b")
-point(2, 1, "Target")
-
-# Animate
-caption("Battle begins!", 3000)
-move("mech", 1, 0)
-clear("HIGHLIGHT")
-```
-
-### Supported Methods
-
-All public Boardcast methods are supported:
-- `showCoordinates()` / `hideCoordinates()`
-- `highlight(q, r, color)`, `blink(q, r, color)`, `pulse(q, r, color)`
-- `point(q, r, label)`, `caption(text, duration)`
-- `token(q, r, name, shape, color, label)`, `move(tokenName, q, r)`
-- `clear(type)`, `resetBoard()`, `setGridSizeWithScaling(radius)`
-
-### Parameter Types
-
-- **Numbers**: `42`, `-1`, `3.14`
-- **Strings**: `"text"`, `'text'`
-- **Booleans**: `true`, `false`
-- **ClearType**: `"HIGHLIGHT"`, `"PULSE"`, `"ALL"`, etc.
-
-### Running the Interpreter
-
-```bash
-# Run with default port (3001)
-node simple-interpreter.js your-script.board
-
-# Run with custom port
-node simple-interpreter.js your-script.board 8080
-
-# Then open http://localhost:3001 (or your custom port) in browser
-```
-
-The interpreter will:
-1. Parse your `.board` file
-2. Start an HTTP server
-3. Serve an interactive web page
-4. Automatically execute all commands in sequence
-5. Properly await async methods like `caption()` and `move()`
-
-## Creating Video Tutorials
-
-For recording animations as videos, use the CLI:
-
-```bash
-npm install -g boardcast-cli
-
-# Create tutorial template  
-boardcast create my-tutorial.js
-
-# Record to video
-boardcast record my-tutorial.js
-```
-
-See [boardcast-cli](https://www.npmjs.com/package/boardcast-cli) for full CLI documentation.
-
-## Examples
+## 📚 Examples
 
 ### Basic Game Demo
 ```javascript
@@ -258,21 +482,21 @@ document.addEventListener('click', async (event) => {
 });
 ```
 
-## Browser Support
+## 🌍 Browser Support
 
 - Modern browsers with SVG support
 - ES6 modules
 - Tested in Chrome, Firefox, Safari, Edge
 
-## Live Demo
+## 🎬 Live Demo
 
 See working examples at: https://piotrzakrzewski.github.io/boardcast/
 
-## License
+## 📄 License
 
 MIT License - see [LICENSE](LICENSE) file for details.
 
-## Contributing
+## 🤝 Contributing
 
 Contributions welcome! See the [GitHub repository](https://github.com/PiotrZakrzewski/boardcast) for issues and development setup.
 
@@ -281,3 +505,24 @@ Perfect for:
 - 📚 Educational content creators  
 - 💻 Developers building game interfaces
 - 🎬 Content creators making tutorials
+
+---
+
+## 🔍 Troubleshooting
+
+### Common Issues
+
+**Module warnings**: Add `"type": "module"` to package.json to eliminate ES module warnings.
+
+**Missing Playwright**: Install with `npm install playwright` for video recording.
+
+**Build errors**: Ensure `npm run build` completes successfully in the boardcast package.
+
+**Permission errors**: Make toolchain executable with `chmod +x boardcast-toolchain.js`.
+
+### Getting Help
+
+1. Check the generated JavaScript file structure
+2. Validate `.board` file syntax with the validator
+3. Test individual commands in the simple interpreter
+4. Review error messages for specific guidance
