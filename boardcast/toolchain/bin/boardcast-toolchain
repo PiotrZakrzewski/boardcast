@@ -1,0 +1,8 @@
+#!/usr/bin/env node
+
+import { main } from '../boardcast-toolchain.js';
+
+main().catch(error => {
+  console.error(`❌ Unexpected error: ${error.message}`);
+  process.exit(1);
+});

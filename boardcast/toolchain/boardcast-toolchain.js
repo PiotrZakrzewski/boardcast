@@ -299,7 +299,7 @@ async function serveCommand(args) {
         
       } else if (url === '/boardcast.js') {
         // Serve the built boardcast library
-        const boardcastPath = path.join(process.cwd(), 'boardcast/dist/lib/index.js');
+        const boardcastPath = path.join(import.meta.dirname, '../dist/lib/index.js');
         try {
           const content = readFileSync(boardcastPath, 'utf-8');
           res.writeHead(200, { 'Content-Type': 'application/javascript' });

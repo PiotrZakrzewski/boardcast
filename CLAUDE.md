@@ -22,10 +22,16 @@ boardcast/
 │       ├── combat.ts      # Combat mechanics
 │       ├── types.ts       # Lancer-specific types
 │       └── index.ts       # Lancer exports
-├── cli/                   # CLI tools
+├── cli/                   # CLI tools for recording
 │   ├── bin/               # CLI executables
 │   ├── lib/               # CLI implementation
 │   └── runtime/           # Runtime files for tutorials
+├── toolchain/             # DSL toolchain for .board files
+│   ├── bin/               # Toolchain CLI executable
+│   ├── board-parser.js    # Chevrotain-based parser
+│   ├── board-to-js.js     # Compiler (.board → JS)
+│   ├── board-validator-chevrotain.js # DSL validator
+│   └── boardcast-toolchain.js # Main toolchain CLI
 ├── demo/                  # Demo application
 │   ├── demo.ts            # Demo TypeScript
 │   ├── index.html         # Demo HTML
@@ -65,6 +71,12 @@ npm run typecheck
 
 # Preview demo
 npm run preview
+
+# DSL Toolchain Commands (from project root)
+node boardcast/toolchain/bin/boardcast-toolchain validate tutorial.board
+node boardcast/toolchain/bin/boardcast-toolchain serve tutorial.board
+node boardcast/toolchain/bin/boardcast-toolchain build tutorial.board
+node boardcast/toolchain/bin/boardcast-toolchain record tutorial.board
 ```
 
 ## Technology Stack
@@ -73,6 +85,8 @@ npm run preview
 - **D3.js**: Data visualization and animation library
 - **Vite**: Build tool and development server
 - **ES Modules**: Modern JavaScript module system
+- **Chevrotain**: Parser library for DSL toolchain
+- **Node.js**: Runtime for CLI tools and development server
 
 ## Package Architecture
 
@@ -108,6 +122,33 @@ Features:
 - Template generation
 - Video recording with Playwright
 - Tutorial automation
+
+### 🔥 DSL Toolchain (`toolchain/`)
+**Purpose**: Complete workflow for .board files with Chevrotain-based parsing
+
+Features:
+- Robust parsing with Chevrotain lexer/parser
+- Syntax and semantic validation
+- Compilation to JavaScript
+- Live development server with hot reload
+- Real-time error display
+- File watching and automatic recompilation
+
+Components:
+- `board-parser.js`: Chevrotain-based lexer and parser
+- `board-validator-chevrotain.js`: Comprehensive validation with suggestions
+- `board-to-js.js`: Compiler that outputs boardcast-cli compatible JavaScript
+- `boardcast-toolchain.js`: Main CLI with validate, compile, build, serve, record commands
+- `bin/boardcast-toolchain`: Executable CLI entry point
+
+Usage:
+```bash
+# Available via package bin
+boardcast-toolchain validate tutorial.board
+boardcast-toolchain serve tutorial.board    # Live development server
+boardcast-toolchain build tutorial.board
+boardcast-toolchain record tutorial.board
+```
 
 ### 🖥️ Demo Application (`demo/`)
 **Purpose**: Interactive showcase of all functionality
@@ -192,10 +233,19 @@ Key Methods:
 
 ## Development Workflow
 
+### For DSL Content Creation
+1. **Create**: Write `.board` files using the Boardcast DSL
+2. **Develop**: Use `boardcast-toolchain serve` for live preview with hot reload
+3. **Validate**: Use `boardcast-toolchain validate` for syntax checking
+4. **Build**: Use `boardcast-toolchain build` for production compilation
+5. **Record**: Use `boardcast-toolchain record` for video generation
+
+### For Core Development
 1. **Core Changes**: Modify `lib/` for new animation features
 2. **Game Extensions**: Add to `contrib/` for game-specific mechanics
 3. **Demo Updates**: Update `demo/demo.ts` to showcase new features
 4. **CLI Tools**: Extend `cli/` for new recording capabilities
+5. **Toolchain**: Extend `toolchain/` for DSL parser improvements
 
 ## Build Process
 

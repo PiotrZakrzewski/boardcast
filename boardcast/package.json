@@ -8,7 +8,8 @@
   "bin": {
     "boardcast": "./cli/bin/boardcast",
     "boardcast-create": "./cli/bin/boardcast-create",
-    "boardcast-record": "./cli/bin/boardcast-record"
+    "boardcast-record": "./cli/bin/boardcast-record",
+    "boardcast-toolchain": "./toolchain/bin/boardcast-toolchain"
   },
   "exports": {
     ".": {
@@ -32,6 +33,7 @@
     "cli/bin/**/*",
     "cli/lib/**/*",
     "cli/runtime/**/*",
+    "toolchain/**/*",
     "README.md",
     "LICENSE"
   ],
@@ -62,7 +64,10 @@
     "cli",
     "contrib",
     "lancer",
-    "rpg"
+    "rpg",
+    "dsl",
+    "toolchain",
+    "parser"
   ],
   "author": "Boardcast Team",
   "license": "MIT",
@@ -75,6 +80,7 @@
   },
   "homepage": "https://piotrzakrzewski.github.io/boardcast/",
   "dependencies": {
+    "chevrotain": "^11.0.3",
     "d3": "^7.9.0"
   },
   "optionalDependencies": {
