@@ -1,7 +1,7 @@
 // Generated from example.board
 // Tutorial Configuration
 export const config = {
-  gridRadius: 5,
+  gridRadius: 3,
   title: "example"
 };
 
@@ -12,9 +12,9 @@ export async function runTutorial(board) {
   // Clear any existing state
   board.resetBoard();
   
-  board.setGridSizeWithScaling(5);
+  board.setGridSizeWithScaling(3);
   board.showCoordinates();
-  board.token(0, 0, "mech", "circle", "#4444FF", "Mech3");
+  board.token(0, 0, "mech", "circle", "#4444FF", "Mech5");
   board.highlight(1, 0, "#4fc3f7");
   board.highlight(-1, 0, "#4fc3f7");
   board.highlight(0, 1, "#4fc3f7");

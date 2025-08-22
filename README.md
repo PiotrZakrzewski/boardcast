@@ -19,10 +19,14 @@ highlight(1, 0, "#4fc3f7")
 caption("Hello Boardcast!", 3000)
 move("mech", 1, 0)' > my-tutorial.board
 
-# 2. Validate and compile
+# 2. Live development server (optional - for real-time preview)
+node boardcast-toolchain.js serve my-tutorial.board
+# Opens http://localhost:3001 with live reload on file changes
+
+# 3. Validate and compile
 node boardcast-toolchain.js build my-tutorial.board
 
-# 3. Record video (requires playwright)
+# 4. Record video (requires playwright)
 npm install playwright
 node boardcast-toolchain.js record my-tutorial.board
 ```
@@ -107,7 +111,30 @@ ls -la example.js
 # Should show the generated JavaScript file
 ```
 
-### Step 4: Test with Custom Board File
+### Step 4: Test Development Server (Live Preview)
+
+```bash
+# Start the development server with live reload
+node boardcast-toolchain.js serve example.board
+
+# This will:
+# - Start a local server at http://localhost:3001
+# - Watch for changes to the .board file
+# - Automatically validate and compile on changes
+# - Reload the browser in real-time
+# - Display errors in the browser if validation fails
+
+# In another terminal, try modifying the board file:
+echo '# Modified example
+setGridSizeWithScaling(4)
+showCoordinates()
+token(0, 0, "mech", "circle", "#ff0000", "Updated Mech")
+caption("Live reload test!", 2000)' > example.board
+
+# The browser should automatically reload with your changes!
+```
+
+### Step 5: Test with Custom Board File
 
 ```bash
 # Create a simple test tutorial
@@ -139,7 +166,7 @@ node boardcast-toolchain.js build test-tutorial.board
 cat test-tutorial.js
 ```
 
-### Step 5: Test Video Recording (Optional)
+### Step 6: Test Video Recording (Optional)
 
 **Note**: This requires Playwright and may take a few minutes
 
@@ -156,7 +183,7 @@ cd boardcast/cli
 node bin/boardcast record ../../example.js
 ```
 
-### Step 6: Test Error Handling
+### Step 7: Test Error Handling
 
 ```bash
 # Test various error conditions
@@ -176,7 +203,7 @@ node boardcast-toolchain.js validate test-errors.board
 rm test-errors.board
 ```
 
-### Step 7: Test CLI Help System
+### Step 8: Test CLI Help System
 
 ```bash
 # Test help commands
@@ -184,10 +211,11 @@ node boardcast-toolchain.js help
 node boardcast-toolchain.js help validate
 node boardcast-toolchain.js help compile
 node boardcast-toolchain.js help build
+node boardcast-toolchain.js help serve
 node boardcast-toolchain.js help record
 ```
 
-### Step 8: Test with Larger File
+### Step 9: Test with Larger File
 
 ```bash
 # Create a comprehensive test
@@ -233,7 +261,7 @@ wc -l complex-tutorial.js
 grep "board\." complex-tutorial.js | wc -l
 ```
 
-### Step 9: Verify Package Integration
+### Step 10: Verify Package Integration
 
 ```bash
 # Test that generated files work with existing CLI
@@ -245,7 +273,7 @@ node bin/boardcast record ../../complex-tutorial.js
 # This may take a few minutes and opens a browser window
 ```
 
-### Step 10: Clean Up Test Files
+### Step 11: Clean Up Test Files
 
 ```bash
 # Remove test files
@@ -349,6 +377,9 @@ node boardcast-toolchain.js compile tutorial.board [output.js]
 # Validate and compile
 node boardcast-toolchain.js build tutorial.board
 
+# Live development server with auto-reload
+node boardcast-toolchain.js serve tutorial.board [port]
+
 # Full pipeline: validate, compile, and record
 node boardcast-toolchain.js record tutorial.board
 
@@ -360,9 +391,10 @@ node boardcast-toolchain.js help [command]
 
 ### For Content Creators
 1. Write `.board` file with simple commands
-2. Validate: `node boardcast-toolchain.js validate tutorial.board`
-3. Build: `node boardcast-toolchain.js build tutorial.board`
-4. Record: `node boardcast-toolchain.js record tutorial.board`
+2. **Develop**: `node boardcast-toolchain.js serve tutorial.board` (live preview with auto-reload)
+3. Validate: `node boardcast-toolchain.js validate tutorial.board`
+4. Build: `node boardcast-toolchain.js build tutorial.board`
+5. Record: `node boardcast-toolchain.js record tutorial.board`
 
 ### For Developers
 1. Use JavaScript API directly

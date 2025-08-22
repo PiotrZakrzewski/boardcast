@@ -2,11 +2,11 @@
 # This demonstrates basic Boardcast functionality
 
 # Setup the board
-setGridSizeWithScaling(5)
+setGridSizeWithScaling(3)
 showCoordinates()
 
 # Place a mech token in the center
-token(0, 0, "mech", "circle", "#4444FF", "Mech3")
+token(0, 0, "mech", "circle", "#4444FF", "Mech5")
 
 # Show movement range
 highlight(1, 0, "#4fc3f7")
