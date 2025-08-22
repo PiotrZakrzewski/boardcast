@@ -14,17 +14,29 @@ function showHelp() {
   console.log(`
 Boardcast CLI - Create animated hex board tutorials
 
-Usage:
-  boardcast create <filename.js>    Create new tutorial boilerplate
-  boardcast record <filename.js>    Record tutorial to WebM video
+DSL Commands (.board files):
+  boardcast validate <file.board>      Validate .board file syntax
+  boardcast compile <file.board>       Compile .board to JavaScript  
+  boardcast build <file.board>         Validate and compile .board file
+  boardcast serve <file.board>         Live development server with hot reload
+  boardcast record <file.board>        Build and record .board file to video
+
+JavaScript Commands (.js files):
+  boardcast create <filename.js>       Create new tutorial boilerplate
+  boardcast record <filename.js>       Record JavaScript tutorial to video
 
 Examples:
-  boardcast create my-tutorial.js
-  boardcast record my-tutorial.js
+  boardcast serve my-tutorial.board    # Live development
+  boardcast build my-tutorial.board    # Build for production
+  boardcast record my-tutorial.board   # Create video
+
+  boardcast create my-tutorial.js      # Create JS boilerplate
+  boardcast record my-tutorial.js      # Record JS tutorial
 
 Standalone commands:
-  boardcast-create <filename.js>    Direct create command
-  boardcast-record <filename.js>    Direct record command
+  boardcast-create <filename.js>       Direct create command
+  boardcast-record <filename.js>       Direct record command
+  boardcast-toolchain <command>        Direct DSL toolchain access
   `);
 }
 
@@ -34,6 +46,29 @@ async function main() {
     return;
   }
 
+  // Check if this is a DSL command by looking at file extension or command type
+  const isDSLCommand = ['validate', 'compile', 'build', 'serve'].includes(command) || 
+                       (arg && arg.endsWith('.board'));
+
+  // Handle DSL commands by delegating to toolchain
+  if (isDSLCommand && ['validate', 'compile', 'build', 'serve', 'record'].includes(command)) {
+    const { main: toolchainMain } = await import('../../toolchain/boardcast-toolchain.js');
+    // Set up argv for toolchain: [node, script, command, ...args]
+    const originalArgv = process.argv;
+    process.argv = ['node', 'boardcast-toolchain', command, ...process.argv.slice(3)];
+    
+    try {
+      await toolchainMain();
+    } catch (error) {
+      console.error(`❌ Command failed: ${error.message}`);
+      process.exit(1);
+    } finally {
+      process.argv = originalArgv;
+    }
+    return;
+  }
+
+  // Handle JavaScript-based commands (legacy)
   switch (command) {
     case 'create':
       if (!arg) {
@@ -51,8 +86,24 @@ async function main() {
         console.log('Usage: boardcast record <filename.js>');
         process.exit(1);
       }
-      const { recordTutorial } = await import('./record.js');
-      await recordTutorial(arg);
+      
+      // Check file extension to determine which record command to use
+      if (arg.endsWith('.board')) {
+        // Use toolchain for .board files
+        const { main: toolchainMain } = await import('../../toolchain/boardcast-toolchain.js');
+        const originalArgv = process.argv;
+        process.argv = ['node', 'boardcast-toolchain', 'record', arg];
+        
+        try {
+          await toolchainMain();
+        } finally {
+          process.argv = originalArgv;
+        }
+      } else {
+        // Use traditional record for .js files
+        const { recordTutorial } = await import('./record.js');
+        await recordTutorial(arg);
+      }
       break;
 
     default:

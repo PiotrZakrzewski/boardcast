@@ -3,8 +3,12 @@
 import { readFileSync, watch, writeFileSync } from 'fs';
 import { createServer } from 'http';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { compileBoardFile } from './board-to-js.js';
 import { validateBoardFile } from './board-validator-chevrotain.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**
  * Unified Boardcast Toolchain CLI
@@ -299,7 +303,7 @@ async function serveCommand(args) {
         
       } else if (url === '/boardcast.js') {
         // Serve the built boardcast library
-        const boardcastPath = path.join(import.meta.dirname, '../dist/lib/index.js');
+        const boardcastPath = path.join(__dirname, '../dist/lib/index.js');
         try {
           const content = readFileSync(boardcastPath, 'utf-8');
           res.writeHead(200, { 'Content-Type': 'application/javascript' });

@@ -11,7 +11,10 @@
 Create animated tutorials using simple `.board` files:
 
 ```bash
-# 1. Create a tutorial file
+# 1. Install Boardcast
+npm install -g boardcast
+
+# 2. Create a tutorial file
 echo 'setGridSizeWithScaling(5)
 showCoordinates()
 token(0, 0, "mech", "circle", "#4444FF", "Mech")
@@ -19,16 +22,16 @@ highlight(1, 0, "#4fc3f7")
 caption("Hello Boardcast!", 3000)
 move("mech", 1, 0)' > my-tutorial.board
 
-# 2. Live development server (optional - for real-time preview)
-node boardcast/toolchain/bin/boardcast-toolchain serve my-tutorial.board
+# 3. Live development server (optional - for real-time preview)
+boardcast serve my-tutorial.board
 # Opens http://localhost:3001 with live reload on file changes
 
-# 3. Validate and compile
-node boardcast/toolchain/bin/boardcast-toolchain build my-tutorial.board
+# 4. Validate and compile
+boardcast build my-tutorial.board
 
-# 4. Record video (requires playwright)
+# 5. Record video (requires playwright)
 npm install playwright
-node boardcast/toolchain/bin/boardcast-toolchain record my-tutorial.board
+boardcast record my-tutorial.board
 ```
 
 That's it! Your tutorial is now a video in the `videos/` folder.
@@ -50,72 +53,80 @@ Boardcast provides multiple ways to create animated tutorials:
 ### 🌐 **Simple Interpreter** (Live Preview)
 **Real-time preview in browser**
 
-## 🛠️ Complete Testing Guide
+## 🛠️ Complete Usage Guide
 
-Follow these steps to test the new Boardcast toolchain:
+Follow these steps to use Boardcast for creating animated tutorials:
 
-### Prerequisites
+### Installation
 
 ```bash
-# Clone and setup
-git clone <repository>
-cd boardcast
-npm install
+# Install Boardcast globally
+npm install -g boardcast
 
-# Install Chevrotain (if not already installed)
-npm install chevrotain
+# Or install in your project
+npm install boardcast
 
-# Install Playwright for video recording
-npm install playwright
+# Optional: Install Playwright for video recording
+npm install -g playwright
 ```
 
-### Step 1: Test DSL Validation
+### Step 1: Create Your First Tutorial
 
 ```bash
-# Test with the included example
-node boardcast/toolchain/bin/boardcast-toolchain validate example.board
+# Create a simple tutorial file
+echo 'setGridSizeWithScaling(4)
+showCoordinates()
+token(0, 0, "player", "circle", "#4444FF", "Player")
+highlight(1, 0, "#4fc3f7")
+highlight(-1, 0, "#4fc3f7")
+caption("Welcome to Boardcast!", 2000)
+move("player", 1, 0)
+caption("Tutorial complete!", 1000)' > my-first-tutorial.board
+
+# Validate the tutorial
+boardcast validate my-first-tutorial.board
 # Should output: ✅ Board file is valid!
 
 # Test error handling
 echo 'invalid_method(1, 2, 3)' > test-invalid.board
-node boardcast/toolchain/bin/boardcast-toolchain validate test-invalid.board
+boardcast validate test-invalid.board
 # Should output: ❌ Unknown method: "invalid_method". Did you mean: move, token, point?
 
 # Clean up
 rm test-invalid.board
 ```
 
-### Step 2: Test Compilation
+### Step 2: Compile to JavaScript
 
 ```bash
-# Compile the example board file
-node boardcast/toolchain/bin/boardcast-toolchain compile example.board
+# Compile your tutorial to JavaScript
+boardcast compile my-first-tutorial.board
 
 # Check the generated JavaScript
-cat example.js
+cat my-first-tutorial.js
 # Should see properly formatted JavaScript with:
-# - export const config = { gridRadius: 3, title: "example" };
+# - export const config = { gridRadius: 4, title: "my-first-tutorial" };
 # - export async function runTutorial(board) { ... }
 # - Proper board method calls with timing
 ```
 
-### Step 3: Test Complete Build Pipeline
+### Step 3: Build Complete Tutorial
 
 ```bash
 # Build (validate + compile) in one command
-rm example.js  # Remove previous file
-node boardcast/toolchain/bin/boardcast-toolchain build example.board
+rm my-first-tutorial.js  # Remove previous file
+boardcast build my-first-tutorial.board
 
 # Verify build output
-ls -la example.js
+ls -la my-first-tutorial.js
 # Should show the generated JavaScript file
 ```
 
-### Step 4: Test Development Server (Live Preview)
+### Step 4: Live Development Server
 
 ```bash
 # Start the development server with live reload
-node boardcast/toolchain/bin/boardcast-toolchain serve example.board
+boardcast serve my-first-tutorial.board
 
 # This will:
 # - Start a local server at http://localhost:3001
@@ -125,62 +136,69 @@ node boardcast/toolchain/bin/boardcast-toolchain serve example.board
 # - Display errors in the browser if validation fails
 
 # In another terminal, try modifying the board file:
-echo '# Modified example
-setGridSizeWithScaling(4)
+echo '# Modified tutorial
+setGridSizeWithScaling(5)
 showCoordinates()
-token(0, 0, "mech", "circle", "#ff0000", "Updated Mech")
-caption("Live reload test!", 2000)' > example.board
+token(0, 0, "hero", "star", "#ff0000", "Hero")
+caption("Live reload test!", 2000)' > my-first-tutorial.board
 
 # The browser should automatically reload with your changes!
 ```
 
-### Step 5: Test with Custom Board File
+### Step 5: Create Advanced Tutorial
 
 ```bash
-# Create a simple test tutorial
-cat > test-tutorial.board << 'EOF'
-# Test Tutorial
-setGridSizeWithScaling(4)
+# Create a more complex tutorial
+cat > advanced-tutorial.board << 'EOF'
+# Advanced Tutorial - Combat Demo
+setGridSizeWithScaling(6)
 showCoordinates()
 
-# Place some pieces
-token(-1, 0, "player", "circle", "#00ff00", "Player")
-token(1, 1, "enemy", "triangle", "#ff0000", "Enemy")
+# Place terrain
+highlight(-2, 2, "#8d6e63")  # Difficult terrain
+highlight(2, -1, "#f44336")  # Dangerous terrain
 
-# Add effects
-highlight(0, 0, "#4fc3f7")
-pulse(1, 0, "#ffff00")
-point(-1, 0, "Start Here")
+# Place units
+token(-3, 1, "player", "circle", "#4fc3f7", "Hero")
+token(-2, 0, "ally", "rect", "#4caf50", "Tank")
+token(2, 1, "enemy1", "triangle", "#f44336", "Orc")
+token(3, 0, "enemy2", "star", "#ff9800", "Boss")
 
-# Animate
-caption("Tutorial Starting!", 2000)
-move("player", 0, 0)
-clear("HIGHLIGHT")
-caption("Tutorial Complete!", 1500)
+# Combat sequence
+caption("Battle Setup Complete", 2000)
+pulse(0, 0, "#ffeb3b")
+point(-3, 1, "Start")
+move("player", -1, 0)
+move("ally", 0, 1)
+caption("Heroes Advance!", 2000)
+clear("POINT")
+caption("Victory!", 2000)
 EOF
 
-# Build the tutorial
-node boardcast/toolchain/bin/boardcast-toolchain build test-tutorial.board
+# Build the advanced tutorial
+boardcast build advanced-tutorial.board
 
 # Check the output
-cat test-tutorial.js
+cat advanced-tutorial.js
 ```
 
-### Step 6: Test Video Recording (Optional)
+### Step 6: Record Video (Optional)
 
 **Note**: This requires Playwright and may take a few minutes
 
 ```bash
-# Record the example tutorial
-node boardcast/toolchain/bin/boardcast-toolchain record example.board
+# Make sure Playwright is installed
+npm install -g playwright
+
+# Record your tutorial to video
+boardcast record my-first-tutorial.board
 
 # Check for video output
 ls videos/
-# Should show: example-YYYYMMDDTHHMMSS.webm
+# Should show: my-first-tutorial-YYYYMMDDTHHMMSS.webm
 
-# Or test with boardcast-cli directly
-cd boardcast/cli
-node bin/boardcast record ../../example.js
+# Record the advanced tutorial
+boardcast record advanced-tutorial.board
 ```
 
 ### Step 7: Test Error Handling
@@ -188,16 +206,16 @@ node bin/boardcast record ../../example.js
 ```bash
 # Test various error conditions
 echo 'highlight(25, 0, "#ff0000")' > test-errors.board  # Coordinate out of range
-node boardcast/toolchain/bin/boardcast-toolchain validate test-errors.board
+boardcast validate test-errors.board
 
 echo 'token(0, 0, "test")' > test-errors.board  # Missing arguments
-node boardcast/toolchain/bin/boardcast-toolchain validate test-errors.board
+boardcast validate test-errors.board
 
 echo 'highlight(0, 0, "notacolor")' > test-errors.board  # Invalid color
-node boardcast/toolchain/bin/boardcast-toolchain validate test-errors.board
+boardcast validate test-errors.board
 
 echo 'token(0, 0, "test", "invalidshape", "#ff0000")' > test-errors.board  # Invalid shape
-node boardcast/toolchain/bin/boardcast-toolchain validate test-errors.board
+boardcast validate test-errors.board
 
 # Clean up
 rm test-errors.board
@@ -207,12 +225,12 @@ rm test-errors.board
 
 ```bash
 # Test help commands
-node boardcast/toolchain/bin/boardcast-toolchain help
-node boardcast/toolchain/bin/boardcast-toolchain help validate
-node boardcast/toolchain/bin/boardcast-toolchain help compile
-node boardcast/toolchain/bin/boardcast-toolchain help build
-node boardcast/toolchain/bin/boardcast-toolchain help serve
-node boardcast/toolchain/bin/boardcast-toolchain help record
+boardcast help
+boardcast help validate
+boardcast help compile
+boardcast help build
+boardcast help serve
+boardcast help record
 ```
 
 ### Step 9: Test with Larger File
@@ -254,7 +272,7 @@ caption("Tutorial Complete!", 2000)
 EOF
 
 # Build and validate
-node boardcast/toolchain/bin/boardcast-toolchain build complex-tutorial.board
+boardcast build complex-tutorial.board
 
 # Check line count and complexity
 wc -l complex-tutorial.js
@@ -277,9 +295,9 @@ node bin/boardcast record ../../complex-tutorial.js
 
 ```bash
 # Remove test files
-rm -f test-tutorial.board test-tutorial.js
+rm -f my-first-tutorial.board my-first-tutorial.js
+rm -f advanced-tutorial.board advanced-tutorial.js
 rm -f complex-tutorial.board complex-tutorial.js
-rm -f example.js  # Keep example.board for future testing
 ```
 
 ## Expected Test Results
@@ -320,8 +338,9 @@ npm install -g boardcast-cli
 Simple text files to animated videos with validation and compilation.
 
 ```bash
-# All tools included in the boardcast package
-node boardcast/toolchain/bin/boardcast-toolchain --help
+# Install globally and use anywhere
+npm install -g boardcast
+boardcast --help
 ```
 
 ## 🎯 Boardcast DSL Reference
@@ -369,32 +388,32 @@ resetBoard()             # Clear everything
 
 ```bash
 # Validate syntax and semantics
-node boardcast/toolchain/bin/boardcast-toolchain validate tutorial.board
+boardcast validate tutorial.board
 
 # Compile to JavaScript
-node boardcast/toolchain/bin/boardcast-toolchain compile tutorial.board [output.js]
+boardcast compile tutorial.board [output.js]
 
 # Validate and compile
-node boardcast/toolchain/bin/boardcast-toolchain build tutorial.board
+boardcast build tutorial.board
 
 # Live development server with auto-reload
-node boardcast/toolchain/bin/boardcast-toolchain serve tutorial.board [port]
+boardcast serve tutorial.board [port]
 
 # Full pipeline: validate, compile, and record
-node boardcast/toolchain/bin/boardcast-toolchain record tutorial.board
+boardcast record tutorial.board
 
 # Help
-node boardcast/toolchain/bin/boardcast-toolchain help [command]
+boardcast help [command]
 ```
 
 ## 🚀 Development Workflow
 
 ### For Content Creators
 1. Write `.board` file with simple commands
-2. **Develop**: `node boardcast/toolchain/bin/boardcast-toolchain serve tutorial.board` (live preview with auto-reload)
-3. Validate: `node boardcast/toolchain/bin/boardcast-toolchain validate tutorial.board`
-4. Build: `node boardcast/toolchain/bin/boardcast-toolchain build tutorial.board`
-5. Record: `node boardcast/toolchain/bin/boardcast-toolchain record tutorial.board`
+2. **Develop**: `boardcast serve tutorial.board` (live preview with auto-reload)
+3. Validate: `boardcast validate tutorial.board`
+4. Build: `boardcast build tutorial.board`
+5. Record: `boardcast record tutorial.board`
 
 ### For Developers
 1. Use JavaScript API directly

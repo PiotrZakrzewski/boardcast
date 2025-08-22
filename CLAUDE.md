@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Boardcast is a unified package for creating animated demonstrations of tabletop game rules on hex-based boards. Built with TypeScript, D3.js, and Vite.
+Boardcast is a unified npm package for creating animated demonstrations of tabletop game rules on hex-based boards. Built with TypeScript, D3.js, and Vite. It provides both a DSL toolchain for content creators and JavaScript APIs for developers.
 
 ## Package Structure
 
@@ -72,11 +72,16 @@ npm run typecheck
 # Preview demo
 npm run preview
 
-# DSL Toolchain Commands (from project root)
-node boardcast/toolchain/bin/boardcast-toolchain validate tutorial.board
-node boardcast/toolchain/bin/boardcast-toolchain serve tutorial.board
-node boardcast/toolchain/bin/boardcast-toolchain build tutorial.board
-node boardcast/toolchain/bin/boardcast-toolchain record tutorial.board
+# DSL Toolchain Commands (after npm install -g boardcast)
+boardcast validate tutorial.board
+boardcast serve tutorial.board
+boardcast build tutorial.board
+boardcast record tutorial.board
+
+# Development commands (from project root)
+npm run build        # Build all packages
+npm run dev          # Start demo development server
+npm run test         # Run tests
 ```
 
 ## Technology Stack
@@ -143,11 +148,19 @@ Components:
 
 Usage:
 ```bash
-# Available via package bin
-boardcast-toolchain validate tutorial.board
-boardcast-toolchain serve tutorial.board    # Live development server
-boardcast-toolchain build tutorial.board
-boardcast-toolchain record tutorial.board
+# Install globally
+npm install -g boardcast
+
+# Available commands (primary interface)
+boardcast validate tutorial.board
+boardcast serve tutorial.board    # Live development server
+boardcast build tutorial.board
+boardcast record tutorial.board
+
+# Also available as standalone commands
+boardcast-toolchain validate tutorial.board  # Direct toolchain access
+boardcast-create my-tutorial.js             # JavaScript boilerplate
+boardcast-record my-tutorial.js             # JavaScript recording
 ```
 
 ### 🖥️ Demo Application (`demo/`)
@@ -233,12 +246,13 @@ Key Methods:
 
 ## Development Workflow
 
-### For DSL Content Creation
-1. **Create**: Write `.board` files using the Boardcast DSL
-2. **Develop**: Use `boardcast-toolchain serve` for live preview with hot reload
-3. **Validate**: Use `boardcast-toolchain validate` for syntax checking
-4. **Build**: Use `boardcast-toolchain build` for production compilation
-5. **Record**: Use `boardcast-toolchain record` for video generation
+### For DSL Content Creation (End Users)
+1. **Install**: `npm install -g boardcast`
+2. **Create**: Write `.board` files using the Boardcast DSL
+3. **Develop**: Use `boardcast serve` for live preview with hot reload
+4. **Validate**: Use `boardcast validate` for syntax checking
+5. **Build**: Use `boardcast build` for production compilation
+6. **Record**: Use `boardcast record` for video generation
 
 ### For Core Development
 1. **Core Changes**: Modify `lib/` for new animation features

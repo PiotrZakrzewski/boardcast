@@ -1,6 +1,6 @@
 {
   "name": "boardcast",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Animation library for tabletop game rules on hex boards with CLI tools and game extensions",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
