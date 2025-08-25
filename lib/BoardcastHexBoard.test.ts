@@ -864,13 +864,26 @@ describe('BoardcastHexBoard - Visual Methods', () => {
 
       it('should validate minimum number values', () => {
         const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
-        
+
         board.dice('d6', 0) // Invalid - under 1
         forceRender()
-        
+
         expect(consoleSpy).toHaveBeenCalledWith('Invalid number 0 for d6. Must be between 1 and 6.')
         expect(svg.querySelectorAll('.dice').length).toBe(0)
-        
+
+        consoleSpy.mockRestore()
+      })
+
+      it('should warn and not render dice for out-of-range values', () => {
+        const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+        board.dice('d6', 7)
+        board.dice('d20', 21)
+        forceRender()
+
+        expect(consoleSpy).toHaveBeenCalled()
+        expect(svg.querySelectorAll('.dice').length).toBe(0)
+
         consoleSpy.mockRestore()
       })
 
