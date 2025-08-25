@@ -1,5 +1,6 @@
 import { describe, test, expect, beforeEach } from 'vitest';
 import { readFileSync, existsSync } from 'fs';
+import { execSync } from 'child_process';
 import path from 'path';
 
 /**
@@ -10,6 +11,17 @@ import path from 'path';
 describe('New Method Integration', () => {
   test('built library contains dice method', () => {
     const libPath = path.join(process.cwd(), 'dist/lib/index.js');
+    
+    // Build library if it doesn't exist (for CI environments)
+    if (!existsSync(libPath)) {
+      console.log('Built library not found, running build...');
+      try {
+        execSync('npm run build:lib', { stdio: 'pipe' });
+      } catch (error) {
+        console.error('Build failed:', error.message);
+        throw error;
+      }
+    }
     
     // Verify the built library file exists
     expect(existsSync(libPath)).toBe(true);
@@ -46,6 +58,18 @@ describe('New Method Integration', () => {
       'dist/lib/index.js',
       'dist/lib/index.js.map'
     ];
+    
+    // Build library if dist directory doesn't exist
+    const distLibPath = path.join(process.cwd(), 'dist/lib');
+    if (!existsSync(distLibPath)) {
+      console.log('dist/lib directory not found, running build...');
+      try {
+        execSync('npm run build:lib', { stdio: 'pipe' });
+      } catch (error) {
+        console.error('Build failed:', error.message);
+        throw error;
+      }
+    }
     
     expectedPaths.forEach(relativePath => {
       const fullPath = path.join(process.cwd(), relativePath);
