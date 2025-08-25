@@ -806,5 +806,120 @@ describe('BoardcastHexBoard - Visual Methods', () => {
         expect(config.hexRadius).toBe(40)
       })
     })
+
+    describe('dice method', () => {
+      it('should render d6 dice with square shape', () => {
+        board.dice('d6', 3)
+        forceRender()
+        
+        const diceElements = svg.querySelectorAll('.dice')
+        const diceNumbers = svg.querySelectorAll('.dice-number')
+        
+        expect(diceElements.length).toBe(1)
+        expect(diceNumbers.length).toBe(1)
+        expect(diceNumbers[0].textContent).toBe('3')
+        
+        // Check it's a rect (square for d6)
+        expect(diceElements[0].tagName.toLowerCase()).toBe('rect')
+      })
+
+      it('should render d20 dice with diamond shape', () => {
+        board.dice('d20', 15)
+        forceRender()
+        
+        const diceElements = svg.querySelectorAll('.dice')
+        const diceNumbers = svg.querySelectorAll('.dice-number')
+        
+        expect(diceElements.length).toBe(1)
+        expect(diceNumbers.length).toBe(1)
+        expect(diceNumbers[0].textContent).toBe('15')
+        
+        // Check it's a polygon (diamond for d20)
+        expect(diceElements[0].tagName.toLowerCase()).toBe('polygon')
+      })
+
+      it('should validate d6 number range', () => {
+        const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+        
+        board.dice('d6', 7) // Invalid - over 6
+        forceRender()
+        
+        expect(consoleSpy).toHaveBeenCalledWith('Invalid number 7 for d6. Must be between 1 and 6.')
+        expect(svg.querySelectorAll('.dice').length).toBe(0)
+        
+        consoleSpy.mockRestore()
+      })
+
+      it('should validate d20 number range', () => {
+        const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+        
+        board.dice('d20', 21) // Invalid - over 20
+        forceRender()
+        
+        expect(consoleSpy).toHaveBeenCalledWith('Invalid number 21 for d20. Must be between 1 and 20.')
+        expect(svg.querySelectorAll('.dice').length).toBe(0)
+        
+        consoleSpy.mockRestore()
+      })
+
+      it('should validate minimum number values', () => {
+        const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+        
+        board.dice('d6', 0) // Invalid - under 1
+        forceRender()
+        
+        expect(consoleSpy).toHaveBeenCalledWith('Invalid number 0 for d6. Must be between 1 and 6.')
+        expect(svg.querySelectorAll('.dice').length).toBe(0)
+        
+        consoleSpy.mockRestore()
+      })
+
+      it('should clear previous dice when showing new dice', () => {
+        board.dice('d6', 3)
+        forceRender()
+        
+        expect(svg.querySelectorAll('.dice').length).toBe(1)
+        expect(svg.querySelectorAll('.dice-number')[0].textContent).toBe('3')
+        
+        board.dice('d20', 18)
+        forceRender()
+        
+        expect(svg.querySelectorAll('.dice').length).toBe(1) // Only one die
+        expect(svg.querySelectorAll('.dice-number')[0].textContent).toBe('18')
+      })
+
+      it('should be cleared by ClearType.DICE', () => {
+        board.dice('d6', 4)
+        forceRender()
+        
+        expect(svg.querySelectorAll('.dice').length).toBe(1)
+        
+        board.clear(ClearType.DICE)
+        
+        expect(svg.querySelectorAll('.dice').length).toBe(0)
+      })
+
+      it('should be cleared by ClearType.ALL', () => {
+        board.dice('d20', 12)
+        forceRender()
+        
+        expect(svg.querySelectorAll('.dice').length).toBe(1)
+        
+        board.clear(ClearType.ALL)
+        
+        expect(svg.querySelectorAll('.dice').length).toBe(0)
+      })
+
+      it('should be cleared by resetBoard', () => {
+        board.dice('d6', 6)
+        forceRender()
+        
+        expect(svg.querySelectorAll('.dice').length).toBe(1)
+        
+        board.resetBoard()
+        
+        expect(svg.querySelectorAll('.dice').length).toBe(0)
+      })
+    })
   })
 })

@@ -48,6 +48,13 @@ export interface GameCaption {
   position: 'center' | 'bottom';
 }
 
+export interface GameDice {
+  id: string;
+  dieType: 'd6' | 'd20';
+  displayedNumber: number;
+  visible: boolean;
+}
+
 export enum ClearType {
   ALL = 'ALL',
   HIGHLIGHT = 'HIGHLIGHT',
@@ -55,7 +62,8 @@ export enum ClearType {
   PULSE = 'PULSE',
   POINT = 'POINT',
   TOKEN = 'TOKEN',
-  CAPTION = 'CAPTION'
+  CAPTION = 'CAPTION',
+  DICE = 'DICE'
 }
 
 export const Colors = {

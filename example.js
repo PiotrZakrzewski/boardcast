@@ -14,6 +14,7 @@ export async function runTutorial(board) {
   
   board.setGridSizeWithScaling(3);
   board.showCoordinates();
+  board.dice("d6", 2);
   board.token(0, 0, "mech", "circle", "#4444FF", "Mech6");
   board.highlight(1, 0, "#4fc3f7");
   board.highlight(-1, 0, "#4fc3f7");

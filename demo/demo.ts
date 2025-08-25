@@ -26,6 +26,7 @@ function setupDemoEventListeners(): void {
   const demoPulseBtn = document.getElementById('demo-pulse');
   const demoPointBtn = document.getElementById('demo-point');
   const demoCaptionBtn = document.getElementById('demo-caption');
+  const demoDiceBtn = document.getElementById('demo-dice');
   const demoClearBtn = document.getElementById('demo-clear');
   const demoTokensBtn = document.getElementById('demo-tokens');
   const demoMovementBtn = document.getElementById('demo-movement');
@@ -74,6 +75,32 @@ function setupDemoEventListeners(): void {
     await board.caption('Welcome to Boardcast!', 3000);
     await board.caption('This demonstrates caption overlays', 2500);
     await board.caption('Perfect for explaining game rules!', 2000);
+  });
+
+  demoDiceBtn?.addEventListener('click', async () => {
+    board.resetBoard();
+    await board.caption('Rolling dice...', 1000);
+    
+    // Show different d6 rolls
+    board.dice('d6', 1);
+    await sleep(1500);
+    board.dice('d6', 3);
+    await sleep(1500);
+    board.dice('d6', 6);
+    await sleep(1500);
+    
+    // Clear and show d20 rolls
+    board.clear();
+    await board.caption('Now rolling d20...', 1000);
+    board.dice('d20', 1);
+    await sleep(1500);
+    board.dice('d20', 10);
+    await sleep(1500);
+    board.dice('d20', 20);
+    await sleep(1500);
+    
+    board.clear();
+    await board.caption('Notice the visual difference between d6 and d20!', 2000);
   });
 
   demoClearBtn?.addEventListener('click', async () => {

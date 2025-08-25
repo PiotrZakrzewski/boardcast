@@ -66,6 +66,9 @@ npm run build:demo       # Demo only
 # Run tests
 npm run test
 
+# Test toolchain integration (builds lib + tests)
+npm run test:toolchain
+
 # Type checking
 npm run typecheck
 

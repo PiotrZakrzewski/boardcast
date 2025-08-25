@@ -48,7 +48,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "test:toolchain": "npm run build:lib && npm run test:run -- test/dice-method.test.js"
   },
   "keywords": [
     "animation",

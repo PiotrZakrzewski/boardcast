@@ -46,6 +46,11 @@ const VALID_METHODS = {
     types: [['string'], ['string', 'number'], ['string', 'number', 'string']], 
     description: 'caption(text, duration?, position?)' 
   },
+  dice: {
+    args: 2,
+    types: ['string', 'number'],
+    description: 'dice(dieType, displayedNumber)'
+  },
   
   // Game pieces
   token: { 

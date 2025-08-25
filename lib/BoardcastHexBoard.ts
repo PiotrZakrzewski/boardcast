@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { HexCell, GamePiece, GamePointer, GameCaption, GridConfig, ClearType } from './types.js';
+import { HexCell, GamePiece, GamePointer, GameCaption, GameDice, GridConfig, ClearType } from './types.js';
 
 export class BoardcastHexBoard {
   private static readonly MAX_COORDINATE_RANGE = 20; // Fixed coordinate space -20 to +20
@@ -9,6 +9,7 @@ export class BoardcastHexBoard {
   private gamePieces: GamePiece[] = [];
   private gamePointers: GamePointer[] = [];
   private gameCaptions: GameCaption[] = [];
+  private gameDice: GameDice[] = [];
   private tokenRegistry: Map<string, GamePiece> = new Map();
   private width: number = 1000;
   private height: number = 700;
@@ -436,6 +437,59 @@ export class BoardcastHexBoard {
           .text(caption.text);
       }
     });
+
+    // Render dice
+    this.gameDice.forEach(dice => {
+      if (dice.visible) {
+        const centerX = this.width / 2;
+        const centerY = this.height / 2;
+        const diceSize = 80;
+        
+        // Different styling for d6 vs d20
+        if (dice.dieType === 'd6') {
+          // Square die for d6
+          this.svg.append('rect')
+            .attr('class', 'dice')
+            .attr('x', centerX - diceSize/2)
+            .attr('y', centerY - diceSize/2)
+            .attr('width', diceSize)
+            .attr('height', diceSize)
+            .attr('rx', 8)
+            .attr('ry', 8)
+            .attr('fill', '#ffffff')
+            .attr('stroke', '#333333')
+            .attr('stroke-width', 3);
+        } else {
+          // Diamond shape for d20
+          const points = [
+            [centerX, centerY - diceSize/2],
+            [centerX + diceSize/2, centerY],
+            [centerX, centerY + diceSize/2],
+            [centerX - diceSize/2, centerY]
+          ];
+          
+          this.svg.append('polygon')
+            .attr('class', 'dice')
+            .attr('points', points.map(p => `${p[0]},${p[1]}`).join(' '))
+            .attr('fill', '#ffffff')
+            .attr('stroke', '#333333')
+            .attr('stroke-width', 3);
+        }
+        
+        // Render the number
+        this.svg.append('text')
+          .attr('class', 'dice-number')
+          .attr('x', centerX)
+          .attr('y', centerY)
+          .attr('text-anchor', 'middle')
+          .attr('dominant-baseline', 'middle')
+          .attr('fill', '#333333')
+          .attr('font-size', '36px')
+          .attr('font-family', 'sans-serif')
+          .attr('font-weight', 'bold')
+          .text(dice.displayedNumber.toString());
+      }
+    });
   }
 
   private getHexFillColor(cell: HexCell): string {
@@ -667,6 +721,28 @@ export class BoardcastHexBoard {
     });
   }
 
+  public dice(dieType: 'd6' | 'd20', displayedNumber: number): void {
+    // Validate the displayedNumber range based on die type
+    const maxValue = dieType === 'd6' ? 6 : 20;
+    if (displayedNumber < 1 || displayedNumber > maxValue) {
+      console.warn(`Invalid number ${displayedNumber} for ${dieType}. Must be between 1 and ${maxValue}.`);
+      return;
+    }
+
+    // Clear existing dice before showing new one
+    this.gameDice = [];
+
+    const dice: GameDice = {
+      id: `dice-${Date.now()}-${Math.random()}`,
+      dieType,
+      displayedNumber,
+      visible: true
+    };
+
+    this.gameDice.push(dice);
+    this.render();
+  }
+
   public clear(type: ClearType = ClearType.ALL): void {
     switch (type) {
       case ClearType.ALL:
@@ -676,6 +752,7 @@ export class BoardcastHexBoard {
         this.clearPointers();
         this.clearTokens();
         this.clearCaptions();
+        this.clearDice();
         break;
       
       case ClearType.HIGHLIGHT:
@@ -700,6 +777,10 @@ export class BoardcastHexBoard {
       
       case ClearType.CAPTION:
         this.clearCaptions();
+        break;
+      
+      case ClearType.DICE:
+        this.clearDice();
         break;
     }
     
@@ -740,6 +821,10 @@ export class BoardcastHexBoard {
 
   private clearCaptions(): void {
     this.gameCaptions = [];
+  }
+
+  private clearDice(): void {
+    this.gameDice = [];
   }
 
   public token(q: number, r: number, tokenName: string, shape: 'rect' | 'circle' | 'triangle' | 'star', colour: string, label?: string): void {
@@ -845,10 +930,11 @@ export class BoardcastHexBoard {
       cell.pulseColor = undefined;
     });
     
-    // Clear all tokens, pointers, and captions
+    // Clear all tokens, pointers, captions, and dice
     this.gamePieces = [];
     this.gamePointers = [];
     this.gameCaptions = [];
+    this.gameDice = [];
     this.tokenRegistry.clear();
     
     this.render();
