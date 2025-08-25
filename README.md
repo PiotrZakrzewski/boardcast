@@ -309,7 +309,7 @@ If everything works correctly, you should see:
 ✅ **Compilation**: Clean JavaScript files generated with proper structure  
 ✅ **Build Pipeline**: Seamless validate → compile workflow  
 ✅ **Error Handling**: Clear error messages with suggestions  
-✅ **CLI Integration**: Generated files work with existing boardcast-cli  
+✅ **CLI Integration**: Generated files work with the included boardcast CLI
 ✅ **Video Recording**: Optional video generation (requires Playwright)  
 
 ## 📦 Package Structure
