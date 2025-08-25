@@ -1,24 +1,24 @@
 # Boardcast CLI
 
-CLI tools for creating and recording animated hex board tutorials with Boardcast.
+CLI tools for creating and recording animated hex board tutorials with Boardcast. These tools are bundled with the main `boardcast` package.
 
 ## Installation
 
 ```bash
-npm install -g boardcast-cli
+npm install -g boardcast
 ```
 
 Or use locally in a project:
 
 ```bash
-npm install boardcast-cli
+npm install boardcast
 npx boardcast --help
 ```
 
 ## Requirements
 
 - Node.js 18+
-- The `boardcast` library must be available as a peer dependency or built locally
+- Install the `boardcast` package globally or locally to access the CLI
 
 ## Commands
 
@@ -118,7 +118,7 @@ npm install boardcast
 
 ## Development
 
-To work on this package:
+To work on the CLI locally:
 
 ```bash
 # Install dependencies
