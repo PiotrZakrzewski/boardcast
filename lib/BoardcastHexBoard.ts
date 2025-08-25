@@ -41,21 +41,25 @@ export class BoardcastHexBoard {
   /**
    * Resolves color constants (e.g., "Colors.BLUE") to hex color codes.
    * If the input is already a hex color or not a color constant, returns it unchanged.
-   */
+  */
   private resolveColor(colorInput: string): string {
-    // Check if it's a Colors constant (e.g., "Colors.BLUE", "BLUE")
-    if (colorInput.startsWith('Colors.')) {
-      const colorName = colorInput.slice(7) as keyof typeof Colors;
-      return Colors[colorName] || colorInput;
+    const input = colorInput.trim();
+
+    // Check if it's a Colors constant (e.g., "Colors.BLUE") - case insensitive
+    const lower = input.toLowerCase();
+    if (lower.startsWith('colors.')) {
+      const colorName = input.slice(7).trim().toUpperCase() as keyof typeof Colors;
+      return Colors[colorName] || input;
     }
-    
-    // Check if it's just the color name (e.g., "BLUE")
-    if (colorInput in Colors) {
-      return Colors[colorInput as keyof typeof Colors];
+
+    // Check if it's just the color name (e.g., "BLUE") - case insensitive
+    const upper = input.toUpperCase();
+    if (upper in Colors) {
+      return Colors[upper as keyof typeof Colors];
     }
-    
+
     // Otherwise, assume it's already a hex color or valid CSS color
-    return colorInput;
+    return input;
   }
 
   private axialToPixel(q: number, r: number): { x: number; y: number } {
