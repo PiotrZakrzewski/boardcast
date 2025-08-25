@@ -1093,12 +1093,12 @@ describe('BoardcastHexBoard - Visual Methods', () => {
           ['WHITE', '#FFFFFF'], ['BLACK', '#000000'], ['GRAY', '#757575']
         ]
         
-        paletteColors.forEach(([colorName, expectedHex], i) => {
+        paletteColors.forEach(([colorName], i) => {
           board.highlight(i, 0, colorName)
         })
         forceRender()
         
-        paletteColors.forEach(([colorName, expectedHex]) => {
+        paletteColors.forEach(([, expectedHex]) => {
           const element = svg.querySelector(`[fill="${expectedHex}"]`)
           expect(element).toBeTruthy()
         })
