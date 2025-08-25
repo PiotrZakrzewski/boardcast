@@ -1,16 +1,54 @@
 {
-  "name": "boardcast-workspace",
-  "version": "1.0.0",
-  "description": "Boardcast - Animation library for tabletop game rules on hex boards",
-  "private": true,
+  "name": "boardcast",
+  "version": "1.2.2",
+  "description": "Animation library for tabletop game rules on hex boards with CLI tools and game extensions",
+  "main": "dist/lib/index.js",
+  "types": "dist/lib/index.d.ts",
+  "type": "module",
+  "bin": {
+    "boardcast": "./cli/bin/boardcast",
+    "boardcast-create": "./cli/bin/boardcast-create",
+    "boardcast-record": "./cli/bin/boardcast-record",
+    "boardcast-toolchain": "./toolchain/bin/boardcast-toolchain"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/lib/index.js",
+      "types": "./dist/lib/index.d.ts"
+    },
+    "./contrib": {
+      "import": "./dist/contrib/index.js",
+      "types": "./dist/contrib/index.d.ts"
+    },
+    "./contrib/lancer": {
+      "import": "./dist/contrib/lancer/index.js",
+      "types": "./dist/contrib/lancer/index.d.ts"
+    },
+    "./cli": {
+      "import": "./cli/lib/index.js"
+    }
+  },
+  "files": [
+    "dist/**/*",
+    "cli/bin/**/*",
+    "cli/lib/**/*",
+    "cli/runtime/**/*",
+    "toolchain/**/*",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
-    "install": "cd boardcast && npm install",
-    "build": "cd boardcast && npm run build",
-    "build:all": "cd boardcast && npm run build:all",
-    "test": "cd boardcast && npm run test",
-    "typecheck": "cd boardcast && npm run typecheck",
-    "dev": "cd boardcast && npm run dev",
-    "preview": "cd boardcast && npm run preview"
+    "dev": "vite --config demo/vite.demo.config.ts",
+    "build": "npm run build:lib && npm run build:contrib",
+    "build:lib": "tsc && vite build --config vite.lib.config.ts",
+    "build:contrib": "vite build --config contrib/vite.config.ts",
+    "build:demo": "vite build --config demo/vite.demo.config.ts",
+    "build:all": "npm run build && npm run build:demo",
+    "preview": "vite preview --config demo/vite.demo.config.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run"
   },
   "keywords": [
     "animation",
@@ -22,7 +60,14 @@
     "d3",
     "visualization",
     "svg",
-    "hexagonal"
+    "hexagonal",
+    "cli",
+    "contrib",
+    "lancer",
+    "rpg",
+    "dsl",
+    "toolchain",
+    "parser"
   ],
   "author": "Boardcast Team",
   "license": "MIT",
@@ -35,6 +80,24 @@
   },
   "homepage": "https://piotrzakrzewski.github.io/boardcast/",
   "dependencies": {
-    "chevrotain": "^11.0.3"
+    "chevrotain": "^11.0.3",
+    "d3": "^7.9.0"
+  },
+  "optionalDependencies": {
+    "express": "^5.1.0",
+    "playwright": "^1.54.2"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@types/d3": "^7.4.3",
+    "@types/node": "^24.2.1",
+    "@vitest/ui": "^3.2.4",
+    "jsdom": "^26.1.0",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.2",
+    "vitest": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
