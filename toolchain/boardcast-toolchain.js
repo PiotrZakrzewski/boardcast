@@ -20,7 +20,7 @@ const VERSION = packageJson.version;
  * Provides a complete workflow for .board files:
  * - Validation
  * - Compilation to JavaScript
- * - Integration with boardcast-cli for recording
+ * - Built-in recording support
  */
 
 const COMMANDS = {
@@ -50,7 +50,7 @@ const COMMANDS = {
     action: serveCommand
   },
   record: {
-    description: 'Compile and record .board file (requires boardcast-cli)',
+    description: 'Compile and record .board file',
     usage: 'record <file.board> [output.js]',
     action: recordCommand
   },
@@ -667,7 +667,7 @@ function createDevelopmentHTML(jsFileName, port) {
 }
 
 /**
- * Record command (build + record with boardcast-cli)
+ * Record command (build + record)
  */
 async function recordCommand(args) {
   printVersion();
@@ -676,53 +676,30 @@ async function recordCommand(args) {
     console.error('Usage: boardcast-toolchain record <file.board> [output.js]');
     process.exit(1);
   }
-  
+
   console.log('🎬 Recording board file tutorial...');
   console.log('');
-  
+
   // First build the file
   const buildResult = await buildCommand(args);
   if (!buildResult.success) {
     process.exit(1);
   }
-  
-  // Check if boardcast-cli is available
-  const { spawn } = await import('child_process');
-  
+
   console.log('');
-  console.log('🎥 Starting recording with boardcast-cli...');
-  
-  // Try to run boardcast record
-  const boardcastProcess = spawn('npx', ['boardcast', 'record', buildResult.outputFile], {
-    stdio: 'inherit',
-    shell: true
-  });
-  
-  return new Promise((resolve, reject) => {
-    boardcastProcess.on('close', (code) => {
-      if (code === 0) {
-        console.log('');
-        console.log('✅ Recording complete!');
-        resolve({ success: true });
-      } else {
-        console.error('');
-        console.error('❌ Recording failed. Make sure boardcast-cli is installed:');
-        console.error('   npm install -g boardcast-cli');
-        console.error('   or ensure you are in a project with boardcast as a dependency');
-        reject(new Error(`boardcast-cli exited with code ${code}`));
-      }
-    });
-    
-    boardcastProcess.on('error', (error) => {
-      console.error('');
-      console.error('❌ Failed to start boardcast-cli:');
-      console.error(`   ${error.message}`);
-      console.error('');
-      console.error('Make sure boardcast-cli is installed:');
-      console.error('   npm install -g boardcast-cli');
-      reject(error);
-    });
-  });
+  console.log('🎥 Starting recording...');
+
+  try {
+    const { recordTutorial } = await import('../cli/lib/record.js');
+    await recordTutorial(buildResult.outputFile);
+    console.log('');
+    console.log('✅ Recording complete!');
+    return { success: true };
+  } catch (error) {
+    console.error('');
+    console.error(`❌ Recording failed: ${error.message}`);
+    process.exit(1);
+  }
 }
 
 /**
@@ -755,7 +732,7 @@ async function helpCommand(args) {
           console.log('  boardcast-toolchain compile tutorial.board my-tutorial.js');
           console.log('');
           console.log('This command converts a .board file to JavaScript compatible with');
-          console.log('boardcast-cli for recording and playback.');
+          console.log('the boardcast CLI for recording and playback.');
           break;
           
         case 'build':
@@ -781,8 +758,7 @@ async function helpCommand(args) {
           console.log('Examples:');
           console.log('  boardcast-toolchain record tutorial.board');
           console.log('');
-          console.log('This command builds the .board file and records it using boardcast-cli.');
-          console.log('Requires boardcast-cli to be installed and available.');
+          console.log('This command builds the .board file and records it.');
           break;
       }
     } else {

@@ -145,7 +145,7 @@ Features:
 Components:
 - `board-parser.js`: Chevrotain-based lexer and parser
 - `board-validator-chevrotain.js`: Comprehensive validation with suggestions
-- `board-to-js.js`: Compiler that outputs boardcast-cli compatible JavaScript
+- `board-to-js.js`: Compiler that outputs boardcast CLI compatible JavaScript
 - `boardcast-toolchain.js`: Main CLI with validate, compile, build, serve, record commands
 - `bin/boardcast-toolchain`: Executable CLI entry point
 

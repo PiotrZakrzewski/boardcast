@@ -4,7 +4,7 @@ import { parseBoardContent, formatParsingError } from './board-parser.js';
 
 /**
  * Board to JavaScript Compiler
- * Converts .board files to JavaScript files compatible with boardcast-cli
+ * Converts .board files to JavaScript files compatible with the boardcast CLI
  */
 
 /**
@@ -252,7 +252,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   if (args.length === 0) {
     console.error('Usage: node board-to-js.js <input.board> [output.js]');
     console.error('');
-    console.error('Compiles a .board file to JavaScript compatible with boardcast-cli');
+    console.error('Compiles a .board file to JavaScript compatible with the boardcast CLI');
     console.error('');
     console.error('Options:');
     console.error('  input.board   Input .board file');
@@ -262,7 +262,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.error('  node board-to-js.js tutorial.board');
     console.error('  node board-to-js.js tutorial.board my-tutorial.js');
     console.error('');
-    console.error('Generated files can be used with boardcast-cli:');
+    console.error('Generated files can be used with the boardcast CLI:');
     console.error('  boardcast record tutorial.js');
     process.exit(1);
   }
