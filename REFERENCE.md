@@ -127,6 +127,26 @@ caption("Welcome to the tutorial!", 3000)
 caption("Important message", 2000, "center")
 ```
 
+#### `dice(dieType, displayedNumber, color)`
+Displays dice with specified type, number, and color. Multiple calls add dice horizontally.
+
+**Die Types**: `"d6"`, `"d20"`
+**Numbers**: 1-6 for d6, 1-20 for d20
+**Colors**: Hex color (optional, default: `"#f0f0f0"`)
+```
+dice("d6", 4)                           # Gray d6 showing 4
+dice("d20", 15, "#ff6b6b")             # Red d20 showing 15
+dice("d6", 2, "#4fc3f7")               # Blue d6 showing 2
+# Multiple dice appear side by side
+```
+
+#### `sleep(milliseconds)`
+Pauses execution for the specified duration before continuing with the next command.
+```
+sleep(1000)                            # Wait 1 second
+sleep(500)                             # Wait half a second
+```
+
 ### Clearing Effects
 
 #### `clear(type)`
@@ -140,10 +160,12 @@ Removes specific types of effects or all effects.
 - `ClearType.POINT` or `"POINT"` - Arrows/pointers only
 - `ClearType.TOKEN` or `"TOKEN"` - Game pieces only
 - `ClearType.CAPTION` or `"CAPTION"` - Text overlays only
+- `ClearType.DICE` or `"DICE"` - Dice displays only
 
 ```
 clear("ALL")
 clear("HIGHLIGHT")
+clear("DICE")
 clear(ClearType.TOKEN)
 ```
 
@@ -242,7 +264,15 @@ pulse(2, -2, "#ffff00")
 
 caption("Yellow shows engagement zone", 2000)
 
+# Show dice rolls
+dice("d20", 18, "#4fc3f7")
+caption("Initiative roll: 18!", 2000)
+sleep(1000)
+dice("d6", 3, "#ff6b6b")
+caption("Damage roll: 3", 1500)
+
 # Cleanup
+clear("DICE")
 clear("ALL")
 caption("Tutorial complete!", 1500)
 ```

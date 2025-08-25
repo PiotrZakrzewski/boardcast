@@ -20,6 +20,8 @@ showCoordinates()
 token(0, 0, "mech", "circle", "#4444FF", "Mech")
 highlight(1, 0, "#4fc3f7")
 caption("Hello Boardcast!", 3000)
+dice("d20", 15, "#4fc3f7")
+sleep(2000)
 move("mech", 1, 0)' > my-tutorial.board
 
 # 3. Live development server (optional - for real-time preview)
@@ -352,12 +354,14 @@ blink(q, r, color)       # Blinking effect
 pulse(q, r, color)       # Pulsing effect
 point(q, r, label)       # Arrow pointer
 caption(text, duration)  # Text overlay
+dice(dieType, number, color)  # Display dice ("d6" or "d20")
 
-# Animation
+# Animation & Timing
 move(tokenName, newQ, newR)  # Animate movement
+sleep(milliseconds)      # Pause execution
 
 # Cleanup
-clear(type)              # Clear effects: "ALL", "HIGHLIGHT", "PULSE", etc.
+clear(type)              # Clear effects: "ALL", "HIGHLIGHT", "PULSE", "DICE", etc.
 resetBoard()             # Clear everything
 ```
 
@@ -440,6 +444,7 @@ board.blink(q, r, color);              // Blinking highlight
 board.pulse(q, r, color);              // Pulsing highlight
 board.point(q, r, label?);             // Arrow pointing at hex
 board.caption(text, duration?);        // Large text overlay
+board.dice(dieType, number, color?);   // Display dice ('d6' or 'd20')
 ```
 
 #### Game Pieces
@@ -456,7 +461,7 @@ await board.move(tokenName, newQ, newR);
 ```javascript
 board.clear();                         // Clear everything
 board.clear('HIGHLIGHT');              // Clear specific type
-// Types: 'HIGHLIGHT', 'BLINK', 'PULSE', 'POINT', 'TOKEN', 'CAPTION'
+// Types: 'HIGHLIGHT', 'BLINK', 'PULSE', 'POINT', 'TOKEN', 'CAPTION', 'DICE'
 ```
 
 ## 🏗️ Development Setup
@@ -554,11 +559,14 @@ board.highlight(-2, 3, '#f44336'); // Dangerous terrain
 board.token(-3, 2, 'player', 'circle', '#4fc3f7', 'Hero');
 board.token(4, -2, 'enemy', 'triangle', '#f44336', 'Enemy');
 
-// Show movement
+// Show movement roll
+board.dice('d20', 15, '#4fc3f7');
+board.caption('Movement roll: 15', 2000);
 board.point(-3, 2, 'Start');
 board.pulse(-2, 1, '#4fc3f7'); // Show range
 await board.move('player', -1, 1);
-board.caption('Hero advances tactically', 2000);
+board.dice('d6', 4, '#ff6b6b'); // Add damage roll
+board.caption('Hero advances and attacks for 4 damage!', 2000);
 ```
 
 ### Interactive Demo

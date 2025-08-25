@@ -79,28 +79,43 @@ function setupDemoEventListeners(): void {
 
   demoDiceBtn?.addEventListener('click', async () => {
     board.resetBoard();
-    await board.caption('Rolling dice...', 1000);
+    await board.caption('Rolling multiple dice...', 1500);
     
-    // Show different d6 rolls with colors
-    board.dice('d6', 1, '#ff6b6b'); // Red
-    await sleep(1500);
-    board.dice('d6', 3, '#4ecdc4'); // Teal
-    await sleep(1500);
-    board.dice('d6', 6, '#feca57'); // Yellow
-    await sleep(1500);
+    // Add dice one by one to show multiple dice feature
+    board.dice('d6', 1, '#ff6b6b'); // Red d6
+    await sleep(800);
+    board.dice('d20', 15, '#4ecdc4'); // Teal d20
+    await sleep(800);
+    board.dice('d6', 6, '#feca57'); // Yellow d6
+    await sleep(800);
+    board.dice('d20', 3, '#ff9ff3'); // Pink d20
+    await sleep(1000);
     
-    // Clear and show d20 rolls
+    await board.caption('Multiple dice display side by side!', 2000);
+    await sleep(500);
+    
+    // Add more dice to show positioning
+    board.dice('d6', 4, '#54a0ff'); // Blue d6
+    await sleep(800);
+    board.dice('d20', 20, '#5f27cd'); // Purple d20
+    await sleep(1000);
+    
+    await board.caption('New dice appear on the right, old ones shift left', 2500);
+    
+    // Clear all and show mixed dice rapidly
     board.clear();
-    await board.caption('Now rolling d20 with colors...', 1000);
-    board.dice('d20', 1, '#ff9ff3'); // Pink
-    await sleep(1500);
-    board.dice('d20', 10, '#54a0ff'); // Blue
-    await sleep(1500);
-    board.dice('d20', 20, '#5f27cd'); // Purple
-    await sleep(1500);
+    await board.caption('Rapid dice rolling...', 1000);
     
-    board.clear();
-    await board.caption('Dice now support custom colors!', 2000);
+    const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c'];
+    for (let i = 0; i < 6; i++) {
+      const dieType = Math.random() > 0.5 ? 'd6' : 'd20';
+      const number = dieType === 'd6' ? Math.ceil(Math.random() * 6) : Math.ceil(Math.random() * 20);
+      board.dice(dieType, number, colors[i]);
+      await sleep(600);
+    }
+    
+    await sleep(1000);
+    await board.caption('Each die keeps its own type, number, and color!', 2500);
   });
 
   demoClearBtn?.addEventListener('click', async () => {

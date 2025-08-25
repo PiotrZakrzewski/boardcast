@@ -224,6 +224,7 @@ The `BoardcastHexBoard` class provides the main functionality:
 - `pulse(q, r, colour)` - Gradual color transitions
 - `point(q, r, label?)` - Display arrows pointing at hexes
 - `caption(text, duration?)` - Display text overlays
+- `dice(dieType, displayedNumber, color?)` - Display dice (multiple supported)
 - `token(q, r, name, shape, colour, label?)` - Place tokens
 - `move(tokenName, q, r)` - Animate token movement
 - `clear(type?)` - Clear specific or all artifacts

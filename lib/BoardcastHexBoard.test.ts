@@ -874,7 +874,7 @@ describe('BoardcastHexBoard - Visual Methods', () => {
         consoleSpy.mockRestore()
       })
 
-      it('should clear previous dice when showing new dice', () => {
+      it('should add multiple dice instead of replacing', () => {
         board.dice('d6', 3)
         forceRender()
         
@@ -884,15 +884,76 @@ describe('BoardcastHexBoard - Visual Methods', () => {
         board.dice('d20', 18)
         forceRender()
         
-        expect(svg.querySelectorAll('.dice').length).toBe(1) // Only one die
-        expect(svg.querySelectorAll('.dice-number')[0].textContent).toBe('18')
+        expect(svg.querySelectorAll('.dice').length).toBe(2) // Two dice now
+        const numbers = Array.from(svg.querySelectorAll('.dice-number')).map(el => el.textContent)
+        expect(numbers).toContain('3')
+        expect(numbers).toContain('18')
+      })
+
+      it('should position multiple dice horizontally', () => {
+        board.dice('d6', 1)
+        board.dice('d6', 2)
+        board.dice('d6', 3)
+        forceRender()
+        
+        const diceElements = svg.querySelectorAll('.dice')
+        expect(diceElements.length).toBe(3)
+        
+        // Check that dice are positioned at different x coordinates
+        const positions = Array.from(diceElements).map(el => {
+          if (el.tagName.toLowerCase() === 'rect') {
+            return parseFloat(el.getAttribute('x') || '0')
+          } else {
+            // For polygon, get first point x coordinate
+            const points = el.getAttribute('points') || ''
+            return parseFloat(points.split(',')[0])
+          }
+        })
+        
+        // All positions should be different
+        expect(positions[0]).not.toBe(positions[1])
+        expect(positions[1]).not.toBe(positions[2])
+        expect(positions[0]).not.toBe(positions[2])
+        
+        // They should be in ascending order (left to right)
+        expect(positions[0]).toBeLessThan(positions[1])
+        expect(positions[1]).toBeLessThan(positions[2])
+      })
+
+      it('should support mixed die types with different colors', () => {
+        board.dice('d6', 4, '#ff0000')   // Red d6
+        board.dice('d20', 15, '#00ff00') // Green d20
+        board.dice('d6', 6, '#0000ff')   // Blue d6
+        forceRender()
+        
+        const diceElements = svg.querySelectorAll('.dice')
+        const numberElements = svg.querySelectorAll('.dice-number')
+        
+        expect(diceElements.length).toBe(3)
+        expect(numberElements.length).toBe(3)
+        
+        // Check colors
+        expect(diceElements[0].getAttribute('fill')).toBe('#ff0000')
+        expect(diceElements[1].getAttribute('fill')).toBe('#00ff00')
+        expect(diceElements[2].getAttribute('fill')).toBe('#0000ff')
+        
+        // Check numbers
+        const numbers = Array.from(numberElements).map(el => el.textContent)
+        expect(numbers).toEqual(['4', '15', '6'])
+        
+        // Check shapes (d6=rect, d20=polygon)
+        expect(diceElements[0].tagName.toLowerCase()).toBe('rect')
+        expect(diceElements[1].tagName.toLowerCase()).toBe('polygon')
+        expect(diceElements[2].tagName.toLowerCase()).toBe('rect')
       })
 
       it('should be cleared by ClearType.DICE', () => {
         board.dice('d6', 4)
+        board.dice('d20', 15)
+        board.dice('d6', 2)
         forceRender()
         
-        expect(svg.querySelectorAll('.dice').length).toBe(1)
+        expect(svg.querySelectorAll('.dice').length).toBe(3)
         
         board.clear(ClearType.DICE)
         
@@ -901,9 +962,10 @@ describe('BoardcastHexBoard - Visual Methods', () => {
 
       it('should be cleared by ClearType.ALL', () => {
         board.dice('d20', 12)
+        board.dice('d6', 5)
         forceRender()
         
-        expect(svg.querySelectorAll('.dice').length).toBe(1)
+        expect(svg.querySelectorAll('.dice').length).toBe(2)
         
         board.clear(ClearType.ALL)
         
@@ -912,9 +974,10 @@ describe('BoardcastHexBoard - Visual Methods', () => {
 
       it('should be cleared by resetBoard', () => {
         board.dice('d6', 6)
+        board.dice('d20', 20)
         forceRender()
         
-        expect(svg.querySelectorAll('.dice').length).toBe(1)
+        expect(svg.querySelectorAll('.dice').length).toBe(2)
         
         board.resetBoard()
         
@@ -948,17 +1011,20 @@ describe('BoardcastHexBoard - Visual Methods', () => {
         expect(diceElement!.getAttribute('fill')).toBe('#4ecdc4')
       })
 
-      it('should override previous dice color', () => {
+      it('should show multiple dice with different colors', () => {
         board.dice('d6', 1, '#ff0000')
         forceRender()
         
+        expect(svg.querySelectorAll('.dice').length).toBe(1)
         expect(svg.querySelector('.dice')!.getAttribute('fill')).toBe('#ff0000')
         
         board.dice('d6', 6, '#00ff00')
         forceRender()
         
-        expect(svg.querySelectorAll('.dice').length).toBe(1) // Only one die
-        expect(svg.querySelector('.dice')!.getAttribute('fill')).toBe('#00ff00')
+        expect(svg.querySelectorAll('.dice').length).toBe(2) // Two dice now
+        const diceElements = Array.from(svg.querySelectorAll('.dice'))
+        expect(diceElements[0].getAttribute('fill')).toBe('#ff0000') // First die red
+        expect(diceElements[1].getAttribute('fill')).toBe('#00ff00') // Second die green
       })
     })
   })

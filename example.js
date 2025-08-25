@@ -16,6 +16,8 @@ export async function runTutorial(board) {
   board.showCoordinates();
   board.dice("d6", 2, "#ff6b6b");
   await sleep(1100);
+  board.dice("d20", 20, "#ffffff");
+  await sleep(1100);
   board.clear("DICE");
   await sleep(1000);
   board.token(0, 0, "mech", "circle", "#4444FF", "Mech6");

@@ -439,11 +439,17 @@ export class BoardcastHexBoard {
     });
 
     // Render dice
-    this.gameDice.forEach(dice => {
-      if (dice.visible) {
-        const centerX = this.width / 2;
-        const centerY = this.height / 2;
-        const diceSize = 80;
+    const visibleDice = this.gameDice.filter(dice => dice.visible);
+    
+    if (visibleDice.length > 0) {
+      const diceSize = 80;
+      const spacing = 20;
+      const totalWidth = (visibleDice.length * diceSize) + ((visibleDice.length - 1) * spacing);
+      const startX = (this.width / 2) - (totalWidth / 2);
+      const centerY = this.height / 2;
+      
+      visibleDice.forEach((dice, index) => {
+        const diceX = startX + (index * (diceSize + spacing)) + (diceSize / 2);
         
         // Different styling for d6 vs d20
         const diceColor = dice.color || '#f0f0f0';
@@ -452,7 +458,7 @@ export class BoardcastHexBoard {
           // Square die for d6
           this.svg.append('rect')
             .attr('class', 'dice')
-            .attr('x', centerX - diceSize/2)
+            .attr('x', diceX - diceSize/2)
             .attr('y', centerY - diceSize/2)
             .attr('width', diceSize)
             .attr('height', diceSize)
@@ -464,10 +470,10 @@ export class BoardcastHexBoard {
         } else {
           // Diamond shape for d20
           const points = [
-            [centerX, centerY - diceSize/2],
-            [centerX + diceSize/2, centerY],
-            [centerX, centerY + diceSize/2],
-            [centerX - diceSize/2, centerY]
+            [diceX, centerY - diceSize/2],
+            [diceX + diceSize/2, centerY],
+            [diceX, centerY + diceSize/2],
+            [diceX - diceSize/2, centerY]
           ];
           
           this.svg.append('polygon')
@@ -481,7 +487,7 @@ export class BoardcastHexBoard {
         // Render the number
         this.svg.append('text')
           .attr('class', 'dice-number')
-          .attr('x', centerX)
+          .attr('x', diceX)
           .attr('y', centerY)
           .attr('text-anchor', 'middle')
           .attr('dominant-baseline', 'middle')
@@ -490,8 +496,8 @@ export class BoardcastHexBoard {
           .attr('font-family', 'sans-serif')
           .attr('font-weight', 'bold')
           .text(dice.displayedNumber.toString());
-      }
-    });
+      });
+    }
   }
 
   private getHexFillColor(cell: HexCell): string {
@@ -730,9 +736,6 @@ export class BoardcastHexBoard {
       console.warn(`Invalid number ${displayedNumber} for ${dieType}. Must be between 1 and ${maxValue}.`);
       return;
     }
-
-    // Clear existing dice before showing new one
-    this.gameDice = [];
 
     const dice: GameDice = {
       id: `dice-${Date.now()}-${Math.random()}`,
