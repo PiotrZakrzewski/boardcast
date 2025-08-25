@@ -69,6 +69,13 @@ const VALID_METHODS = {
     args: [0, 1], 
     types: [[], ['string']], 
     description: 'clear(type?)' 
+  },
+  
+  // Timing
+  sleep: {
+    args: 1,
+    types: ['number'],
+    description: 'sleep(milliseconds)'
   }
 };
 
@@ -77,7 +84,7 @@ const VALID_METHODS = {
  */
 const VALID_VALUES = {
   shapes: ['circle', 'rect', 'triangle', 'star'],
-  clearTypes: ['ALL', 'HIGHLIGHT', 'BLINK', 'PULSE', 'POINT', 'TOKEN', 'CAPTION'],
+  clearTypes: ['ALL', 'HIGHLIGHT', 'BLINK', 'PULSE', 'POINT', 'TOKEN', 'CAPTION', 'DICE'],
   positions: ['center', 'bottom']
 };
 

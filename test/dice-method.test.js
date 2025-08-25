@@ -3,11 +3,11 @@ import { readFileSync, existsSync } from 'fs';
 import path from 'path';
 
 /**
- * Test that verifies dice method integration
+ * Test that verifies new method integrations
  * Ensures the toolchain dependencies are properly maintained
  */
 
-describe('Dice Method Integration', () => {
+describe('New Method Integration', () => {
   test('built library contains dice method', () => {
     const libPath = path.join(process.cwd(), 'dist/lib/index.js');
     
@@ -22,7 +22,7 @@ describe('Dice Method Integration', () => {
     expect(content).toContain('BoardcastHexBoard');
   });
 
-  test('dice method validation is in toolchain validator', () => {
+  test('new methods validation is in toolchain validator', () => {
     const validatorPath = path.join(process.cwd(), 'toolchain/board-validator-chevrotain.js');
     
     expect(existsSync(validatorPath)).toBe(true);
@@ -32,6 +32,13 @@ describe('Dice Method Integration', () => {
     // Verify dice method is in VALID_METHODS
     expect(content).toContain('dice:');
     expect(content).toContain('dieType, displayedNumber');
+    
+    // Verify DICE clear type is supported
+    expect(content).toContain("'DICE'");
+    
+    // Verify sleep method is supported
+    expect(content).toContain('sleep:');
+    expect(content).toContain('sleep(milliseconds)');
   });
 
   test('library build outputs to expected location', () => {

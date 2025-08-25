@@ -6,6 +6,8 @@ setGridSizeWithScaling(3)
 showCoordinates()
 
 dice("d6", 2)
+sleep(1100)
+clear("DICE")
 
 # Place a mech token in the center
 token(0, 0, "mech", "circle", "#4444FF", "Mech6")

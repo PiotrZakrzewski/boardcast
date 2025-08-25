@@ -69,6 +69,12 @@ function argumentToJS(arg) {
  * Convert a command to JavaScript code
  */
 function commandToJS(command, isAsync = false) {
+  // Special handling for sleep method
+  if (command.method === 'sleep') {
+    const args = command.args.map(argumentToJS).join(', ');
+    return `  await sleep(${args});`;
+  }
+  
   const args = command.args.map(argumentToJS).join(', ');
   const methodCall = `board.${command.method}(${args})`;
   
@@ -92,7 +98,7 @@ function analyzeCommands(commands) {
     const nextCommand = commands[i + 1];
     
     // Check if this command might need to be awaited
-    const isAsyncCommand = ['move', 'caption'].includes(command.method);
+    const isAsyncCommand = ['move', 'caption', 'sleep'].includes(command.method);
     
     jsLines.push(commandToJS(command, isAsyncCommand));
     
