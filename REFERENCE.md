@@ -171,30 +171,99 @@ clear(ClearType.TOKEN)
 
 ## Color Reference
 
-### Predefined Colors
-You can use hex color codes or these predefined constants:
+Boardcast provides a comprehensive color palette optimized for dark backgrounds and accessible visualization.
 
+### Using Color Constants
+
+You can specify colors in three ways:
+
+```board
+# Direct color constants (recommended)
+highlight(0, 0, BLUE)
+token(1, 0, "hero", "circle", ALLY)
+
+# Colors namespace syntax
+highlight(0, 0, Colors.BLUE) 
+token(1, 0, "hero", "circle", Colors.ALLY)
+
+# Traditional hex colors
+highlight(0, 0, "#4FC3F7")
+token(1, 0, "hero", "circle", "#4CAF50")
 ```
-Colors.RED          #FF4444
-Colors.DARK_RED     #CC3333
-Colors.GREEN        #44FF44
-Colors.DARK_GREEN   #33CC33
-Colors.BLUE         #4444FF
-Colors.DARK_BLUE    #3333CC
-Colors.YELLOW       #FFFF44
-Colors.DARK_YELLOW  #CCCC33
-Colors.ORANGE       #FFA500
-Colors.DARK_ORANGE  #CC8400
-Colors.PURPLE       #FF44FF
-Colors.DARK_PURPLE  #CC33CC
-Colors.CYAN         #44FFFF
-Colors.DARK_CYAN    #33CCCC
-Colors.WHITE        #FFFFFF
-Colors.LIGHT_GRAY   #CCCCCC
-Colors.GRAY         #888888
-Colors.DARK_GRAY    #666666
-Colors.BLACK        #000000
-Colors.HIGHLIGHT_BLUE  #4FC3F7
+
+### Complete Color Palette
+
+#### Primary Colors (Bright & Vibrant)
+```
+BLUE       #4FC3F7    Bright cyan-blue (primary highlight)
+RED        #FF6B6B    Soft red (danger/enemy)
+GREEN      #4CAF50    Material green (ally/success)
+YELLOW     #FFD54F    Warm yellow (attention/movement)
+PURPLE     #BA68C8    Light purple (special effects)
+ORANGE     #FF9800    Bright orange (warning/boss)
+CYAN       #4DD0E1    Light cyan (water/ice)
+PINK       #F48FB1    Light pink (charm/healing)
+```
+
+#### Secondary Colors (Darker Variants)
+```
+DARK_BLUE    #1976D2    Darker blue for subtle elements
+DARK_RED     #D32F2F    Darker red for muted danger
+DARK_GREEN   #388E3C    Darker green for backgrounds
+DARK_YELLOW  #F57C00    Amber/darker yellow
+DARK_PURPLE  #7B1FA2    Darker purple for contrast
+DARK_ORANGE  #E65100    Darker orange for accents
+DARK_CYAN    #00838F    Darker cyan for depth
+DARK_PINK    #C2185B    Darker pink for contrast
+```
+
+#### Neutral Colors
+```
+WHITE        #FFFFFF    Pure white (high contrast text)
+LIGHT_GRAY   #BDBDBD    Light gray (disabled/secondary)
+GRAY         #757575    Medium gray (borders/lines)
+DARK_GRAY    #424242    Dark gray (backgrounds)
+BLACK        #000000    Pure black (void/hidden)
+```
+
+#### Semantic Game Colors
+```
+ALLY         #4CAF50    Green for friendly units
+ENEMY        #FF6B6B    Red for hostile units  
+NEUTRAL      #FFD54F    Yellow for neutral/movement
+HIGHLIGHT    #4FC3F7    Blue for selection/focus
+DANGER       #FF5722    Orange-red for hazardous terrain
+DIFFICULT    #8D6E63    Brown for difficult terrain
+ENGAGEMENT   #FFEB3B    Bright yellow for threat zones
+```
+
+### Color Usage Patterns
+
+#### Terrain Types
+```board
+# Different terrain effects
+highlight(0, 0, DIFFICULT)    # Brown for difficult terrain
+highlight(1, 0, DANGER)       # Orange-red for hazards
+highlight(2, 0, NEUTRAL)      # Yellow for open ground
+highlight(3, 0, ALLY)         # Green for safe zones
+```
+
+#### Unit Classifications  
+```board
+# Clear visual distinction between unit types
+token(0, 0, "hero", "circle", ALLY)      # Green allies
+token(1, 0, "enemy", "triangle", ENEMY)  # Red enemies
+token(2, 0, "npc", "rect", NEUTRAL)      # Yellow neutrals
+token(3, 0, "boss", "star", ORANGE)      # Orange bosses
+```
+
+#### Visual Effects by Purpose
+```board
+# Use colors that match the effect's meaning
+blink(0, 0, RED)           # Red for urgent attention
+pulse(1, 0, ENGAGEMENT)    # Yellow for threat zones  
+highlight(2, 0, HIGHLIGHT) # Blue for selections
+point(3, 0, "Target")      # Uses default RED for arrows
 ```
 
 ## Common Coordinate Patterns
@@ -202,25 +271,25 @@ Colors.HIGHLIGHT_BLUE  #4FC3F7
 ### Adjacent Hexes (Ring 1)
 ```
 # Six hexes around center (0,0)
-highlight(0, -1, "#4fc3f7")  # North
-highlight(1, -1, "#4fc3f7")  # Northeast
-highlight(1, 0, "#4fc3f7")   # Southeast
-highlight(0, 1, "#4fc3f7")   # South
-highlight(-1, 1, "#4fc3f7")  # Southwest
-highlight(-1, 0, "#4fc3f7")  # Northwest
+highlight(0, -1, BLUE)      # North
+highlight(1, -1, BLUE)      # Northeast
+highlight(1, 0, BLUE)       # Southeast
+highlight(0, 1, BLUE)       # South
+highlight(-1, 1, BLUE)      # Southwest
+highlight(-1, 0, BLUE)      # Northwest
 ```
 
 ### Extended Range (Ring 2)
 ```
 # Hexes at distance 2 from center
-highlight(0, -2, "#ff6b6b")   # North 2
-highlight(1, -2, "#ff6b6b")   # Northeast 2
-highlight(2, -1, "#ff6b6b")   # East 2
-highlight(2, 0, "#ff6b6b")    # Southeast 2
-highlight(0, 2, "#ff6b6b")    # South 2
-highlight(-1, 2, "#ff6b6b")   # Southwest 2
-highlight(-2, 1, "#ff6b6b")   # West 2
-highlight(-2, 0, "#ff6b6b")   # Northwest 2
+highlight(0, -2, RED)       # North 2
+highlight(1, -2, RED)       # Northeast 2
+highlight(2, -1, RED)       # East 2
+highlight(2, 0, RED)        # Southeast 2
+highlight(0, 2, RED)        # South 2
+highlight(-1, 2, RED)       # Southwest 2
+highlight(-2, 1, RED)       # West 2
+highlight(-2, 0, RED)       # Northwest 2
 ```
 
 ## Example Tutorial Script
@@ -235,17 +304,17 @@ showCoordinates()
 caption("Lancer Movement Tutorial", 2000)
 
 # Place mech in center
-token(0, 0, "mech", "circle", "#0066ff", "Everest")
+token(0, 0, "mech", "circle", BLUE, "Everest")
 
 # Show movement range (speed 4)
-highlight(1, 0, "#4fc3f7")
-highlight(-1, 0, "#4fc3f7")
-highlight(0, 1, "#4fc3f7")
-highlight(0, -1, "#4fc3f7")
-highlight(1, -1, "#4fc3f7")
-highlight(-1, 1, "#4fc3f7")
-highlight(2, 0, "#4fc3f7")
-highlight(-2, 0, "#4fc3f7")
+highlight(1, 0, HIGHLIGHT)
+highlight(-1, 0, HIGHLIGHT)
+highlight(0, 1, HIGHLIGHT)
+highlight(0, -1, HIGHLIGHT)
+highlight(1, -1, HIGHLIGHT)
+highlight(-1, 1, HIGHLIGHT)
+highlight(2, 0, HIGHLIGHT)
+highlight(-2, 0, HIGHLIGHT)
 
 caption("Blue hexes show movement range", 3000)
 
@@ -256,19 +325,19 @@ clear("POINT")
 clear("HIGHLIGHT")
 
 # Show engagement zone
-pulse(1, -1, "#ffff00")
-pulse(2, 0, "#ffff00")
-pulse(3, -1, "#ffff00")
-pulse(1, 0, "#ffff00")
-pulse(2, -2, "#ffff00")
+pulse(1, -1, ENGAGEMENT)
+pulse(2, 0, ENGAGEMENT)
+pulse(3, -1, ENGAGEMENT)
+pulse(1, 0, ENGAGEMENT)
+pulse(2, -2, ENGAGEMENT)
 
 caption("Yellow shows engagement zone", 2000)
 
 # Show dice rolls
-dice("d20", 18, "#4fc3f7")
+dice("d20", 18, CYAN)
 caption("Initiative roll: 18!", 2000)
 sleep(1000)
-dice("d6", 3, "#ff6b6b")
+dice("d6", 3, RED)
 caption("Damage roll: 3", 1500)
 
 # Cleanup

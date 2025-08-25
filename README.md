@@ -17,10 +17,10 @@ npm install -g boardcast
 # 2. Create a tutorial file
 echo 'setGridSizeWithScaling(5)
 showCoordinates()
-token(0, 0, "mech", "circle", "#4444FF", "Mech")
-highlight(1, 0, "#4fc3f7")
+token(0, 0, "mech", "circle", BLUE, "Mech")
+highlight(1, 0, HIGHLIGHT)
 caption("Hello Boardcast!", 3000)
-dice("d20", 15, "#4fc3f7")
+dice("d20", 15, CYAN)
 sleep(2000)
 move("mech", 1, 0)' > my-tutorial.board
 
@@ -373,9 +373,61 @@ resetBoard()             # Clear everything
 ### Data Types
 - **Numbers**: `42`, `-1`, `3.14`
 - **Strings**: `"text"` or `'text'`
-- **Colors**: `"#FF0000"`, `"#4fc3f7"`, or `Colors.RED`
+- **Colors**: Hex colors (`"#FF0000"`), or color constants (`BLUE`, `Colors.BLUE`)
 - **Shapes**: `"circle"`, `"rect"`, `"triangle"`, `"star"`
-- **Clear Types**: `"ALL"`, `"HIGHLIGHT"`, `"BLINK"`, `"PULSE"`, `"POINT"`, `"TOKEN"`, `"CAPTION"`
+- **Clear Types**: `"ALL"`, `"HIGHLIGHT"`, `"BLINK"`, `"PULSE"`, `"POINT"`, `"TOKEN"`, `"CAPTION"`, `"DICE"`
+
+### 🎨 Color Palette
+
+Boardcast includes a curated color palette optimized for dark backgrounds. Use these constants instead of hex colors for consistent, accessible visuals:
+
+#### Primary Colors (Bright & Vibrant)
+```board
+highlight(0, 0, BLUE)      # #4FC3F7 - Primary highlight color
+highlight(1, 0, RED)       # #FF6B6B - Danger/enemy
+highlight(2, 0, GREEN)     # #4CAF50 - Success/ally  
+highlight(3, 0, YELLOW)    # #FFD54F - Attention/movement
+highlight(4, 0, PURPLE)    # #BA68C8 - Special effects
+highlight(-1, 0, ORANGE)   # #FF9800 - Warning/boss
+highlight(-2, 0, CYAN)     # #4DD0E1 - Water/ice
+highlight(-3, 0, PINK)     # #F48FB1 - Charm/healing
+```
+
+#### Semantic Colors (Game Meanings)
+```board
+token(0, 0, "hero", "circle", ALLY)      # Green for friendly units
+token(1, 0, "orc", "triangle", ENEMY)    # Red for hostile units  
+highlight(0, 1, NEUTRAL)                 # Yellow for neutral/movement
+highlight(1, 1, HIGHLIGHT)               # Blue for selection/focus
+highlight(2, 1, DANGER)                  # Orange-red for hazards
+highlight(3, 1, DIFFICULT)               # Brown for difficult terrain
+pulse(0, 2, ENGAGEMENT)                  # Bright yellow for threat zones
+```
+
+#### Neutral Colors
+```board
+token(0, 0, "npc", "rect", WHITE)        # #FFFFFF - High contrast
+token(1, 0, "item", "star", LIGHT_GRAY)  # #BDBDBD - Secondary elements
+token(2, 0, "wall", "rect", GRAY)        # #757575 - Borders/inactive
+token(3, 0, "void", "rect", DARK_GRAY)   # #424242 - Backgrounds
+token(4, 0, "shadow", "circle", BLACK)   # #000000 - Void/hidden
+```
+
+#### Usage Examples
+```board
+# Using color constants (recommended)
+highlight(0, 0, BLUE)
+token(1, 1, "player", "circle", ALLY)
+dice("d20", 15, CYAN)
+
+# Alternative syntax
+highlight(0, 0, Colors.BLUE)
+token(1, 1, "player", "circle", Colors.ALLY)
+
+# Traditional hex colors (still supported)
+highlight(0, 0, "#4FC3F7")
+token(1, 1, "player", "circle", "#4CAF50")
+```
 
 ### Toolchain Commands
 
@@ -552,20 +604,20 @@ import { BoardcastHexBoard } from 'boardcast';
 const board = new BoardcastHexBoard('#game-board', { gridRadius: 6 });
 
 // Set up terrain
-board.highlight(2, -1, '#8d6e63'); // Difficult terrain
-board.highlight(-2, 3, '#f44336'); // Dangerous terrain
+board.highlight(2, -1, 'DIFFICULT'); // Difficult terrain
+board.highlight(-2, 3, 'DANGER'); // Dangerous terrain
 
 // Place units
-board.token(-3, 2, 'player', 'circle', '#4fc3f7', 'Hero');
-board.token(4, -2, 'enemy', 'triangle', '#f44336', 'Enemy');
+board.token(-3, 2, 'player', 'circle', 'ALLY', 'Hero');
+board.token(4, -2, 'enemy', 'triangle', 'ENEMY', 'Enemy');
 
 // Show movement roll
-board.dice('d20', 15, '#4fc3f7');
+board.dice('d20', 15, 'BLUE');
 board.caption('Movement roll: 15', 2000);
 board.point(-3, 2, 'Start');
-board.pulse(-2, 1, '#4fc3f7'); // Show range
+board.pulse(-2, 1, 'HIGHLIGHT'); // Show range
 await board.move('player', -1, 1);
-board.dice('d6', 4, '#ff6b6b'); // Add damage roll
+board.dice('d6', 4, 'RED'); // Add damage roll
 board.caption('Hero advances and attacks for 4 damage!', 2000);
 ```
 

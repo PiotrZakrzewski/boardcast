@@ -68,30 +68,43 @@ export enum ClearType {
 }
 
 export const Colors = {
-  // Basic colors
-  RED: '#FF4444',
-  DARK_RED: '#CC3333',
-  GREEN: '#44FF44',
-  DARK_GREEN: '#33CC33',
-  BLUE: '#4444FF',
-  DARK_BLUE: '#3333CC',
-  YELLOW: '#FFFF44',
-  DARK_YELLOW: '#CCCC33',
-  ORANGE: '#FFA500',
-  DARK_ORANGE: '#CC8400',
-  PURPLE: '#FF44FF',
-  DARK_PURPLE: '#CC33CC',
-  CYAN: '#44FFFF',
-  DARK_CYAN: '#33CCCC',
+  // Primary palette - optimized for dark backgrounds
+  BLUE: '#4FC3F7',           // Bright cyan-blue (primary highlight)
+  RED: '#FF6B6B',            // Soft red (danger/enemy)
+  GREEN: '#4CAF50',          // Material green (ally/success)
+  YELLOW: '#FFD54F',         // Warm yellow (attention/movement)
+  PURPLE: '#BA68C8',         // Light purple (special effects)
+  ORANGE: '#FF9800',         // Bright orange (warning/boss)
+  CYAN: '#4DD0E1',           // Light cyan (water/ice)
+  PINK: '#F48FB1',           // Light pink (charm/healing)
   
-  // Grays
-  WHITE: '#FFFFFF',
-  LIGHT_GRAY: '#CCCCCC',
-  GRAY: '#888888',
-  DARK_GRAY: '#666666',
-  BLACK: '#000000',
+  // Secondary palette - darker variants
+  DARK_BLUE: '#1976D2',      // Darker blue
+  DARK_RED: '#D32F2F',       // Darker red
+  DARK_GREEN: '#388E3C',     // Darker green
+  DARK_YELLOW: '#F57C00',    // Darker yellow/amber
+  DARK_PURPLE: '#7B1FA2',    // Darker purple
+  DARK_ORANGE: '#E65100',    // Darker orange
+  DARK_CYAN: '#00838F',      // Darker cyan
+  DARK_PINK: '#C2185B',      // Darker pink
   
-  // Special colors
+  // Grays - neutral colors
+  WHITE: '#FFFFFF',          // Pure white (contrast text)
+  LIGHT_GRAY: '#BDBDBD',     // Light gray (disabled/secondary)
+  GRAY: '#757575',           // Medium gray (borders/lines)
+  DARK_GRAY: '#424242',      // Dark gray (backgrounds)
+  BLACK: '#000000',          // Pure black
+  
+  // Special game colors - semantic meanings
+  ALLY: '#4CAF50',           // Green for allies/friendly
+  ENEMY: '#FF6B6B',          // Red for enemies/hostile
+  NEUTRAL: '#FFD54F',        // Yellow for neutral/movement
+  HIGHLIGHT: '#4FC3F7',      // Blue for highlights/selection
+  DANGER: '#FF5722',         // Orange-red for dangerous terrain
+  DIFFICULT: '#8D6E63',      // Brown for difficult terrain
+  ENGAGEMENT: '#FFEB3B',     // Bright yellow for engagement zones
+  
+  // Legacy colors (maintained for compatibility)
   DEFAULT_HEX: '#2a2a2a',
   HIGHLIGHT_BLUE: '#4FC3F7',
   ENGAGEMENT_YELLOW: '#FFFF00'

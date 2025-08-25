@@ -146,6 +146,22 @@ function levenshteinDistance(str1, str2) {
 }
 
 /**
+ * Valid color constants from the Colors palette
+ */
+const VALID_COLOR_CONSTANTS = [
+  // Primary palette
+  'BLUE', 'RED', 'GREEN', 'YELLOW', 'PURPLE', 'ORANGE', 'CYAN', 'PINK',
+  // Secondary palette
+  'DARK_BLUE', 'DARK_RED', 'DARK_GREEN', 'DARK_YELLOW', 'DARK_PURPLE', 'DARK_ORANGE', 'DARK_CYAN', 'DARK_PINK',
+  // Grays
+  'WHITE', 'LIGHT_GRAY', 'GRAY', 'DARK_GRAY', 'BLACK',
+  // Special game colors
+  'ALLY', 'ENEMY', 'NEUTRAL', 'HIGHLIGHT', 'DANGER', 'DIFFICULT', 'ENGAGEMENT',
+  // Legacy colors
+  'DEFAULT_HEX', 'HIGHLIGHT_BLUE', 'ENGAGEMENT_YELLOW'
+];
+
+/**
  * Validate color format
  */
 function isValidColor(color) {
@@ -154,12 +170,18 @@ function isValidColor(color) {
     return true;
   }
   
-  // Colors constant
+  // Colors constant with prefix (e.g., "Colors.BLUE")
   if (color.startsWith('Colors.')) {
+    const colorName = color.slice(7);
+    return VALID_COLOR_CONSTANTS.includes(colorName);
+  }
+  
+  // Direct color constant name (e.g., "BLUE")
+  if (VALID_COLOR_CONSTANTS.includes(color)) {
     return true;
   }
   
-  // Common color names (basic validation)
+  // Common CSS color names (basic validation for backward compatibility)
   const commonColors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple', 'cyan', 'white', 'black'];
   if (commonColors.includes(color.toLowerCase())) {
     return true;
@@ -212,15 +234,16 @@ function validateArgumentValue(method, argIndex, value, type) {
     }
   }
 
-  // Color validation
-  if (type === 'string' && (
+  // Color validation (accept strings, identifiers, and enums for color constants)
+  if ((type === 'string' || type === 'identifier' || type === 'enum') && (
     (method === 'highlight' && argIndex === 2) ||
     (method === 'blink' && argIndex === 2) ||
     (method === 'pulse' && argIndex === 2) ||
-    (method === 'token' && argIndex === 4)
+    (method === 'token' && argIndex === 4) ||
+    (method === 'dice' && argIndex === 2)
   )) {
     if (!isValidColor(value)) {
-      return `Color must be a valid hex color (e.g., "#FF0000") or Colors constant, got "${value}".`;
+      return `Color must be a valid hex color (e.g., "#FF0000") or color constant (e.g., "BLUE"), got "${value}".`;
     }
   }
 
@@ -304,13 +327,27 @@ function validateCommand(command) {
       const actualType = argInfo.type;
       const actualValue = argInfo.value;
 
+      // Special case: allow identifiers for string parameters in color positions
+      const isColorPosition = (
+        (method === 'highlight' && i === 2) ||
+        (method === 'blink' && i === 2) ||
+        (method === 'pulse' && i === 2) ||
+        (method === 'token' && i === 4) ||
+        (method === 'dice' && i === 2)
+      );
+      
       if (expectedType !== actualType) {
-        return {
-          valid: false,
-          error: `Argument ${i + 1} of "${method}" expects ${expectedType}, got ${actualType} ("${actualValue}"). Usage: ${methodSpec.description}`,
-          line: location.startLine,
-          column: location.startColumn
-        };
+        // Allow identifiers and enums in place of strings for color parameters
+        if (expectedType === 'string' && (actualType === 'identifier' || actualType === 'enum') && isColorPosition) {
+          // This is okay - color constants can be identifiers or enums
+        } else {
+          return {
+            valid: false,
+            error: `Argument ${i + 1} of "${method}" expects ${expectedType}, got ${actualType} ("${actualValue}"). Usage: ${methodSpec.description}`,
+            line: location.startLine,
+            column: location.startColumn
+          };
+        }
       }
 
       // Validate specific value constraints

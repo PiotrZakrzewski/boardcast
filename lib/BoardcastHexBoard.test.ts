@@ -294,14 +294,14 @@ describe('BoardcastHexBoard - Visual Methods', () => {
       expect(label).toBeTruthy()
       
       // Check styling
-      expect(line.getAttribute('stroke')).toBe('#ff4444')
+      expect(line.getAttribute('stroke')).toBe('#FF6B6B')
       expect(line.getAttribute('stroke-width')).toBe('3')
       expect(line.getAttribute('fill')).toBe('none')
-      expect(head.getAttribute('fill')).toBe('#ff4444')
+      expect(head.getAttribute('fill')).toBe('#FF6B6B')
       
       // Check label
       expect(label.textContent).toBe('Target Here')
-      expect(label.getAttribute('fill')).toBe('#ff4444')
+      expect(label.getAttribute('fill')).toBe('#FF6B6B')
     })
 
     it('should create arrow without label when not provided', () => {
@@ -480,7 +480,7 @@ describe('BoardcastHexBoard - Visual Methods', () => {
         const hexes = svg.querySelectorAll('path.hex')
         const highlightedHex = Array.from(hexes).find(hex => {
           const fill = hex.getAttribute('fill')
-          return fill === '#4fc3f7'
+          return fill === '#4FC3F7'
         })
         
         expect(highlightedHex).toBeTruthy()
@@ -530,7 +530,7 @@ describe('BoardcastHexBoard - Visual Methods', () => {
         const blinkingHex = getHexCell(0, 0)
         
         expect(blinkingHex.isBlinking).toBe(true)
-        expect(blinkingHex.blinkColor).toBe('#4fc3f7')
+        expect(blinkingHex.blinkColor).toBe('#4FC3F7')
       })
 
       it('should stop pulse when starting blink', () => {
@@ -564,7 +564,7 @@ describe('BoardcastHexBoard - Visual Methods', () => {
         const pulsingHex = getHexCell(0, 0)
         
         expect(pulsingHex.isPulsing).toBe(true)
-        expect(pulsingHex.pulseColor).toBe('#4fc3f7')
+        expect(pulsingHex.pulseColor).toBe('#FFEB3B')
       })
     })
   })
@@ -990,7 +990,7 @@ describe('BoardcastHexBoard - Visual Methods', () => {
         
         const diceElement = svg.querySelector('.dice')
         expect(diceElement).toBeTruthy()
-        expect(diceElement!.getAttribute('fill')).toBe('#f0f0f0')
+        expect(diceElement!.getAttribute('fill')).toBe('#BDBDBD')
       })
 
       it('should use custom color when specified', () => {
@@ -1025,6 +1025,83 @@ describe('BoardcastHexBoard - Visual Methods', () => {
         const diceElements = Array.from(svg.querySelectorAll('.dice'))
         expect(diceElements[0].getAttribute('fill')).toBe('#ff0000') // First die red
         expect(diceElements[1].getAttribute('fill')).toBe('#00ff00') // Second die green
+      })
+    })
+
+    describe('Color Constants Support', () => {
+      it('should resolve Colors.BLUE syntax to hex color', () => {
+        board.highlight(0, 0, 'Colors.BLUE')
+        forceRender()
+        
+        const hexElement = svg.querySelector('[fill="#4FC3F7"]')
+        expect(hexElement).toBeTruthy()
+      })
+
+      it('should resolve direct color constants to hex colors', () => {
+        board.highlight(0, 0, 'BLUE')
+        forceRender()
+        
+        const hexElement = svg.querySelector('[fill="#4FC3F7"]')
+        expect(hexElement).toBeTruthy()
+      })
+
+      it('should resolve semantic color constants', () => {
+        board.highlight(0, 0, 'ALLY')
+        board.highlight(1, 0, 'ENEMY')
+        board.highlight(0, 1, 'NEUTRAL')
+        forceRender()
+        
+        expect(svg.querySelector('[fill="#4CAF50"]')).toBeTruthy() // ALLY = green
+        expect(svg.querySelector('[fill="#FF6B6B"]')).toBeTruthy() // ENEMY = red  
+        expect(svg.querySelector('[fill="#FFD54F"]')).toBeTruthy() // NEUTRAL = yellow
+      })
+
+      it('should work with tokens using color constants', () => {
+        board.token(0, 0, 'hero', 'circle', 'ALLY')
+        board.token(1, 0, 'enemy', 'triangle', 'ENEMY')
+        forceRender()
+        
+        const circles = svg.querySelectorAll('circle[fill="#4CAF50"]')
+        const triangles = svg.querySelectorAll('path[fill="#FF6B6B"]')
+        expect(circles.length).toBeGreaterThan(0)
+        expect(triangles.length).toBeGreaterThan(0)
+      })
+
+      it('should work with dice using color constants', () => {
+        board.dice('d6', 4, 'BLUE')
+        board.dice('d20', 15, 'RED')
+        forceRender()
+        
+        const blueDice = svg.querySelector('.dice[fill="#4FC3F7"]')
+        const redDice = svg.querySelector('.dice[fill="#FF6B6B"]')
+        expect(blueDice).toBeTruthy()
+        expect(redDice).toBeTruthy()
+      })
+
+      it('should fall back to original string for unknown colors', () => {
+        board.highlight(0, 0, '#custom123')
+        forceRender()
+        
+        const hexElement = svg.querySelector('[fill="#custom123"]')
+        expect(hexElement).toBeTruthy()
+      })
+
+      it('should support all palette colors', () => {
+        const paletteColors = [
+          ['BLUE', '#4FC3F7'], ['RED', '#FF6B6B'], ['GREEN', '#4CAF50'], 
+          ['YELLOW', '#FFD54F'], ['PURPLE', '#BA68C8'], ['ORANGE', '#FF9800'],
+          ['WHITE', '#FFFFFF'], ['BLACK', '#000000'], ['GRAY', '#757575']
+        ]
+        
+        paletteColors.forEach(([colorName, expectedHex], i) => {
+          board.highlight(i, 0, colorName)
+        })
+        forceRender()
+        
+        paletteColors.forEach(([colorName, expectedHex]) => {
+          const element = svg.querySelector(`[fill="${expectedHex}"]`)
+          expect(element).toBeTruthy()
+        })
       })
     })
   })

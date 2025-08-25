@@ -32,32 +32,13 @@ function argumentToJS(arg) {
       if (arg.enumType === 'ClearType') {
         return `"${arg.value}"`;
       } else if (arg.enumType === 'Colors') {
-        // Map Colors constants to actual hex values
-        const colorMap = {
-          'Colors.RED': '#FF4444',
-          'Colors.DARK_RED': '#CC3333',
-          'Colors.GREEN': '#44FF44',
-          'Colors.DARK_GREEN': '#33CC33',
-          'Colors.BLUE': '#4444FF',
-          'Colors.DARK_BLUE': '#3333CC',
-          'Colors.YELLOW': '#FFFF44',
-          'Colors.DARK_YELLOW': '#CCCC33',
-          'Colors.ORANGE': '#FFA500',
-          'Colors.DARK_ORANGE': '#CC8400',
-          'Colors.PURPLE': '#FF44FF',
-          'Colors.DARK_PURPLE': '#CC33CC',
-          'Colors.CYAN': '#44FFFF',
-          'Colors.DARK_CYAN': '#33CCCC',
-          'Colors.WHITE': '#FFFFFF',
-          'Colors.LIGHT_GRAY': '#CCCCCC',
-          'Colors.GRAY': '#888888',
-          'Colors.DARK_GRAY': '#666666',
-          'Colors.BLACK': '#000000',
-          'Colors.DEFAULT_HEX': '#2a2a2a',
-          'Colors.HIGHLIGHT_BLUE': '#4FC3F7',
-          'Colors.ENGAGEMENT_YELLOW': '#FFFF00'
-        };
-        return `"${colorMap[arg.raw] || arg.raw}"`;
+        // Pass color constants as strings to be resolved by BoardcastHexBoard
+        // This allows dynamic color resolution and easier maintenance
+        if (arg.raw.startsWith('Colors.')) {
+          // Convert "Colors.BLUE" to just "BLUE"
+          return `"${arg.raw.slice(7)}"`;
+        }
+        return `"${arg.raw}"`;
       }
       return `"${arg.value}"`;
     default:

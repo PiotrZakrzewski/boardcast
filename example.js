@@ -14,7 +14,7 @@ export async function runTutorial(board) {
   
   board.setGridSizeWithScaling(3);
   board.showCoordinates();
-  board.dice("d6", 2, "#ff6b6b");
+  board.dice("d6", 2, "CYAN");
   await sleep(1100);
   board.dice("d20", 20, "#ffffff");
   await sleep(1100);

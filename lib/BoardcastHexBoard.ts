@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { HexCell, GamePiece, GamePointer, GameCaption, GameDice, GridConfig, ClearType } from './types.js';
+import { HexCell, GamePiece, GamePointer, GameCaption, GameDice, GridConfig, ClearType, Colors } from './types.js';
 
 export class BoardcastHexBoard {
   private static readonly MAX_COORDINATE_RANGE = 20; // Fixed coordinate space -20 to +20
@@ -36,6 +36,26 @@ export class BoardcastHexBoard {
     this.initializeBoard();
     this.startAnimationLoop();
     this.render();
+  }
+
+  /**
+   * Resolves color constants (e.g., "Colors.BLUE") to hex color codes.
+   * If the input is already a hex color or not a color constant, returns it unchanged.
+   */
+  private resolveColor(colorInput: string): string {
+    // Check if it's a Colors constant (e.g., "Colors.BLUE", "BLUE")
+    if (colorInput.startsWith('Colors.')) {
+      const colorName = colorInput.slice(7) as keyof typeof Colors;
+      return Colors[colorName] || colorInput;
+    }
+    
+    // Check if it's just the color name (e.g., "BLUE")
+    if (colorInput in Colors) {
+      return Colors[colorInput as keyof typeof Colors];
+    }
+    
+    // Otherwise, assume it's already a hex color or valid CSS color
+    return colorInput;
   }
 
   private axialToPixel(q: number, r: number): { x: number; y: number } {
@@ -577,14 +597,15 @@ export class BoardcastHexBoard {
   }
 
   // Public API methods from README.md
-  public highlight(q: number, r: number, colour: string = '#4fc3f7'): void {
+  public highlight(q: number, r: number, colour: string = 'HIGHLIGHT'): void {
     // Ensure coordinate is visible by expanding viewport if needed
     const expanded = this.ensureCoordinatesVisible([{q, r}]);
     
+    const resolvedColor = this.resolveColor(colour);
     const cell = this.allHexCells.get(`hex-${q}-${r}`);
     if (cell) {
       cell.highlighted = true;
-      cell.highlightColor = colour;
+      cell.highlightColor = resolvedColor;
       cell.isBlinking = false; // Stop blinking if it was blinking
       cell.isPulsing = false; // Stop pulsing if it was pulsing
       
@@ -595,14 +616,15 @@ export class BoardcastHexBoard {
     }
   }
 
-  public blink(q: number, r: number, colour: string = '#4fc3f7'): void {
+  public blink(q: number, r: number, colour: string = 'HIGHLIGHT'): void {
     // Ensure coordinate is visible by expanding viewport if needed
     const expanded = this.ensureCoordinatesVisible([{q, r}]);
     
+    const resolvedColor = this.resolveColor(colour);
     const cell = this.allHexCells.get(`hex-${q}-${r}`);
     if (cell) {
       cell.isBlinking = true;
-      cell.blinkColor = colour;
+      cell.blinkColor = resolvedColor;
       cell.highlighted = false; // Stop static highlight if it was highlighted
       cell.isPulsing = false; // Stop pulsing if it was pulsing
       cell.blinkPhase = this.time * 3;
@@ -614,14 +636,15 @@ export class BoardcastHexBoard {
     }
   }
 
-  public pulse(q: number, r: number, colour: string = '#4fc3f7'): void {
+  public pulse(q: number, r: number, colour: string = 'ENGAGEMENT'): void {
     // Ensure coordinate is visible by expanding viewport if needed
     const expanded = this.ensureCoordinatesVisible([{q, r}]);
     
+    const resolvedColor = this.resolveColor(colour);
     const cell = this.allHexCells.get(`hex-${q}-${r}`);
     if (cell) {
       cell.isPulsing = true;
-      cell.pulseColor = colour;
+      cell.pulseColor = resolvedColor;
       cell.highlighted = false; // Stop static highlight if it was highlighted
       cell.isBlinking = false; // Stop blinking if it was blinking
       cell.pulsePhase = this.time * 0.8; // Slower than blink for gradual transition
@@ -665,7 +688,7 @@ export class BoardcastHexBoard {
         startX,
         startY,
         label,
-        color: '#ff4444'
+        color: Colors.RED
       });
     } else {
       // Point from outside the grid
@@ -691,7 +714,7 @@ export class BoardcastHexBoard {
         startX,
         startY,
         label,
-        color: '#ff4444'
+        color: Colors.RED
       });
     }
     
@@ -729,7 +752,7 @@ export class BoardcastHexBoard {
     });
   }
 
-  public dice(dieType: 'd6' | 'd20', displayedNumber: number, color: string = '#f0f0f0'): void {
+  public dice(dieType: 'd6' | 'd20', displayedNumber: number, color: string = 'LIGHT_GRAY'): void {
     // Validate the displayedNumber range based on die type
     const maxValue = dieType === 'd6' ? 6 : 20;
     if (displayedNumber < 1 || displayedNumber > maxValue) {
@@ -737,12 +760,13 @@ export class BoardcastHexBoard {
       return;
     }
 
+    const resolvedColor = this.resolveColor(color);
     const dice: GameDice = {
       id: `dice-${Date.now()}-${Math.random()}`,
       dieType,
       displayedNumber,
       visible: true,
-      color
+      color: resolvedColor
     };
 
     this.gameDice.push(dice);
@@ -837,6 +861,7 @@ export class BoardcastHexBoard {
     // Ensure coordinate is visible by expanding viewport if needed
     const expanded = this.ensureCoordinatesVisible([{q, r}]);
     
+    const resolvedColor = this.resolveColor(colour);
     const targetCell = this.allHexCells.get(`hex-${q}-${r}`);
     if (!targetCell) return;
 
@@ -854,7 +879,7 @@ export class BoardcastHexBoard {
       tokenName,
       x: targetCell.x,
       y: targetCell.y,
-      color: colour,
+      color: resolvedColor,
       size: 12,
       shape,
       currentHex: { q, r },

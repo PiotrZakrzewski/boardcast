@@ -261,8 +261,9 @@ class BoardInterpreter extends parserInstance.getBaseCstVisitorConstructor() {
       };
     } else if (enumType === 'Colors') {
       return {
-        type: 'string',
-        value: `${enumType}.${enumValue}`,
+        type: 'enum',
+        enumType: 'Colors',
+        value: enumValue,
         raw: `${enumType}.${enumValue}`
       };
     }

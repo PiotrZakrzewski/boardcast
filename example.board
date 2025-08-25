@@ -5,7 +5,7 @@
 setGridSizeWithScaling(3)
 showCoordinates()
 
-dice("d6", 2, '#ff6b6b')
+dice("d6", 2, 'CYAN')
 sleep(1100)
 dice("d20", 20, '#ffffff')
 sleep(1100)

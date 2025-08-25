@@ -116,7 +116,7 @@ async function validateCommand(args) {
       console.error(result.formattedError);
     }
     
-    return { success: false, error: result.error };
+    process.exit(1);
   }
 }
 
