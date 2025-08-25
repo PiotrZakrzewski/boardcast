@@ -5,7 +5,7 @@
 setGridSizeWithScaling(3)
 showCoordinates()
 
-dice("d6", 2)
+dice("d6", 2, '#ff6b6b')
 sleep(1100)
 clear("DICE")
 

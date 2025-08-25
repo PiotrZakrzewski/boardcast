@@ -920,6 +920,46 @@ describe('BoardcastHexBoard - Visual Methods', () => {
         
         expect(svg.querySelectorAll('.dice').length).toBe(0)
       })
+
+      it('should use default color when no color specified', () => {
+        board.dice('d6', 3)
+        forceRender()
+        
+        const diceElement = svg.querySelector('.dice')
+        expect(diceElement).toBeTruthy()
+        expect(diceElement!.getAttribute('fill')).toBe('#f0f0f0')
+      })
+
+      it('should use custom color when specified', () => {
+        board.dice('d6', 4, '#ff6b6b')
+        forceRender()
+        
+        const diceElement = svg.querySelector('.dice')
+        expect(diceElement).toBeTruthy()
+        expect(diceElement!.getAttribute('fill')).toBe('#ff6b6b')
+      })
+
+      it('should support different colors for d20', () => {
+        board.dice('d20', 15, '#4ecdc4')
+        forceRender()
+        
+        const diceElement = svg.querySelector('.dice')
+        expect(diceElement).toBeTruthy()
+        expect(diceElement!.getAttribute('fill')).toBe('#4ecdc4')
+      })
+
+      it('should override previous dice color', () => {
+        board.dice('d6', 1, '#ff0000')
+        forceRender()
+        
+        expect(svg.querySelector('.dice')!.getAttribute('fill')).toBe('#ff0000')
+        
+        board.dice('d6', 6, '#00ff00')
+        forceRender()
+        
+        expect(svg.querySelectorAll('.dice').length).toBe(1) // Only one die
+        expect(svg.querySelector('.dice')!.getAttribute('fill')).toBe('#00ff00')
+      })
     })
   })
 })

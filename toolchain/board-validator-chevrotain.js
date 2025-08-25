@@ -47,9 +47,9 @@ const VALID_METHODS = {
     description: 'caption(text, duration?, position?)' 
   },
   dice: {
-    args: 2,
-    types: ['string', 'number'],
-    description: 'dice(dieType, displayedNumber)'
+    args: [2, 3],
+    types: [['string', 'number'], ['string', 'number', 'string']],
+    description: 'dice(dieType, displayedNumber, color?)'
   },
   
   // Game pieces

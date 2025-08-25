@@ -446,6 +446,8 @@ export class BoardcastHexBoard {
         const diceSize = 80;
         
         // Different styling for d6 vs d20
+        const diceColor = dice.color || '#f0f0f0';
+        
         if (dice.dieType === 'd6') {
           // Square die for d6
           this.svg.append('rect')
@@ -456,7 +458,7 @@ export class BoardcastHexBoard {
             .attr('height', diceSize)
             .attr('rx', 8)
             .attr('ry', 8)
-            .attr('fill', '#ffffff')
+            .attr('fill', diceColor)
             .attr('stroke', '#333333')
             .attr('stroke-width', 3);
         } else {
@@ -471,7 +473,7 @@ export class BoardcastHexBoard {
           this.svg.append('polygon')
             .attr('class', 'dice')
             .attr('points', points.map(p => `${p[0]},${p[1]}`).join(' '))
-            .attr('fill', '#ffffff')
+            .attr('fill', diceColor)
             .attr('stroke', '#333333')
             .attr('stroke-width', 3);
         }
@@ -721,7 +723,7 @@ export class BoardcastHexBoard {
     });
   }
 
-  public dice(dieType: 'd6' | 'd20', displayedNumber: number): void {
+  public dice(dieType: 'd6' | 'd20', displayedNumber: number, color: string = '#f0f0f0'): void {
     // Validate the displayedNumber range based on die type
     const maxValue = dieType === 'd6' ? 6 : 20;
     if (displayedNumber < 1 || displayedNumber > maxValue) {
@@ -736,7 +738,8 @@ export class BoardcastHexBoard {
       id: `dice-${Date.now()}-${Math.random()}`,
       dieType,
       displayedNumber,
-      visible: true
+      visible: true,
+      color
     };
 
     this.gameDice.push(dice);

@@ -81,26 +81,26 @@ function setupDemoEventListeners(): void {
     board.resetBoard();
     await board.caption('Rolling dice...', 1000);
     
-    // Show different d6 rolls
-    board.dice('d6', 1);
+    // Show different d6 rolls with colors
+    board.dice('d6', 1, '#ff6b6b'); // Red
     await sleep(1500);
-    board.dice('d6', 3);
+    board.dice('d6', 3, '#4ecdc4'); // Teal
     await sleep(1500);
-    board.dice('d6', 6);
+    board.dice('d6', 6, '#feca57'); // Yellow
     await sleep(1500);
     
     // Clear and show d20 rolls
     board.clear();
-    await board.caption('Now rolling d20...', 1000);
-    board.dice('d20', 1);
+    await board.caption('Now rolling d20 with colors...', 1000);
+    board.dice('d20', 1, '#ff9ff3'); // Pink
     await sleep(1500);
-    board.dice('d20', 10);
+    board.dice('d20', 10, '#54a0ff'); // Blue
     await sleep(1500);
-    board.dice('d20', 20);
+    board.dice('d20', 20, '#5f27cd'); // Purple
     await sleep(1500);
     
     board.clear();
-    await board.caption('Notice the visual difference between d6 and d20!', 2000);
+    await board.caption('Dice now support custom colors!', 2000);
   });
 
   demoClearBtn?.addEventListener('click', async () => {

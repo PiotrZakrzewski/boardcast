@@ -53,6 +53,7 @@ export interface GameDice {
   dieType: 'd6' | 'd20';
   displayedNumber: number;
   visible: boolean;
+  color?: string;
 }
 
 export enum ClearType {
