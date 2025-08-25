@@ -283,11 +283,10 @@ grep "board\." complex-tutorial.js | wc -l
 
 ```bash
 # Test that generated files work with existing CLI
-cd boardcast && npm run build  # Ensure library is built
+npm run build  # Ensure library is built
 
 # Test the generated file directly with CLI
-cd cli
-node bin/boardcast record ../../complex-tutorial.js
+node cli/bin/boardcast-record complex-tutorial.js
 # This may take a few minutes and opens a browser window
 ```
 
@@ -311,31 +310,21 @@ If everything works correctly, you should see:
 ✅ **CLI Integration**: Generated files work with existing boardcast-cli  
 ✅ **Video Recording**: Optional video generation (requires Playwright)  
 
-## 📦 Packages
+## 📦 Package Structure
 
-### 📦 [boardcast](./boardcast/) - Core Library
+Boardcast is now a unified npm package containing all functionality:
+
+### 📦 Core Library (`lib/`)
 The main animation library for hex-based visualizations.
 
-```bash
-npm install boardcast
-```
-
-### 🎮 [boardcast-contrib](./boardcast-contrib/) - Game System Extensions  
+### 🎮 Game Extensions (`contrib/`)  
 Specialized mechanics for specific tabletop games (Lancer RPG, etc.).
 
-```bash
-npm install boardcast-contrib
-```
-
-### 🛠️ [boardcast-cli](./boardcast-cli/) - CLI Tools
+### 🛠️ CLI Tools (`cli/`)
 Command-line tools for creating and recording video tutorials.
 
-```bash
-npm install -g boardcast-cli
-```
-
-### 🆕 **Boardcast DSL Toolchain** - Complete Workflow
-Simple text files to animated videos with validation and compilation.
+### 🆕 **DSL Toolchain** (`toolchain/`)
+Complete workflow for `.board` files with validation and compilation.
 
 ```bash
 # Install globally and use anywhere
@@ -472,13 +461,13 @@ board.clear('HIGHLIGHT');              // Clear specific type
 
 ## 🏗️ Development Setup
 
-This is a monorepo managed with npm workspaces:
+This is a unified npm package:
 
 ```bash
 # Install all dependencies
 npm install
 
-# Build all packages
+# Build all components
 npm run build
 
 # Run tests
@@ -487,17 +476,18 @@ npm run test
 # Start demo development server
 npm run dev
 
-# Type check all packages
+# Type check all code
 npm run typecheck
 ```
 
-### Package Development
+### Component Development
 
 ```bash
-# Work on specific packages
-npm run build --workspace=boardcast
-npm run build --workspace=boardcast-contrib
-npm run test --workspace=boardcast
+# Build specific components
+npm run build:lib        # Core library only
+npm run build:contrib    # Game extensions only
+npm run build:demo       # Demo only
+npm run build:all        # Everything including demo
 ```
 
 ## 🔗 Local Development Testing
@@ -541,11 +531,11 @@ npm unlink boardcast
 
 ```bash
 # Test CLI commands directly from source
-node ./toolchain/bin/boardcast validate test.board
+node ./toolchain/bin/boardcast-toolchain validate test.board
 node ./cli/bin/boardcast-record test.js
 
 # Test with npm scripts
-npm run build && node ./toolchain/bin/boardcast serve test.board
+npm run build && node ./toolchain/bin/boardcast-toolchain serve test.board
 ```
 
 ## 📚 Examples

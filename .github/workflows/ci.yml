@@ -25,13 +25,13 @@ jobs:
         cache: 'npm'
 
     - name: Install dependencies
-      run: cd boardcast && npm install
+      run: npm install
 
     - name: Run type checking
-      run: cd boardcast && npm run typecheck
+      run: npm run typecheck
 
     - name: Run tests
-      run: cd boardcast && npm run test
+      run: npm run test
 
     - name: Build packages
-      run: cd boardcast && npm run build:all
+      run: npm run build:all
