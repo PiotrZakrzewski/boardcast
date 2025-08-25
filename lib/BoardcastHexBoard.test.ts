@@ -1040,9 +1040,18 @@ describe('BoardcastHexBoard - Visual Methods', () => {
       it('should resolve direct color constants to hex colors', () => {
         board.highlight(0, 0, 'BLUE')
         forceRender()
-        
+
         const hexElement = svg.querySelector('[fill="#4FC3F7"]')
         expect(hexElement).toBeTruthy()
+      })
+
+      it('should resolve color constants regardless of case', () => {
+        board.highlight(0, 0, 'blue')
+        board.highlight(1, 0, 'Colors.red')
+        forceRender()
+
+        expect(svg.querySelector('[fill="#4FC3F7"]')).toBeTruthy()
+        expect(svg.querySelector('[fill="#FF6B6B"]')).toBeTruthy()
       })
 
       it('should resolve semantic color constants', () => {
