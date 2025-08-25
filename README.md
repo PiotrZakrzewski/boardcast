@@ -500,6 +500,54 @@ npm run build --workspace=boardcast-contrib
 npm run test --workspace=boardcast
 ```
 
+## 🔗 Local Development Testing
+
+When developing boardcast locally, use `npm link` to test your changes without publishing:
+
+### Link for Global Testing
+
+```bash
+# Build and link the package globally
+npm run build
+npm link
+
+# Now you can use your local development version globally
+boardcast validate test.board
+boardcast serve test.board
+```
+
+### Test in Another Project
+
+```bash
+# In your test project directory
+npm link boardcast
+
+# Use the locally linked version
+import { BoardcastHexBoard } from 'boardcast';
+```
+
+### Unlink When Done
+
+```bash
+# Remove global link
+npm unlink -g boardcast
+
+# Remove from test project
+cd /path/to/test/project
+npm unlink boardcast
+```
+
+### Alternative: Direct Path Testing
+
+```bash
+# Test CLI commands directly from source
+node ./toolchain/bin/boardcast validate test.board
+node ./cli/bin/boardcast-record test.js
+
+# Test with npm scripts
+npm run build && node ./toolchain/bin/boardcast serve test.board
+```
+
 ## 📚 Examples
 
 ### Basic Game Demo

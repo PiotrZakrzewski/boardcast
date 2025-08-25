@@ -7,10 +7,23 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Read version from package.json
+const packageJsonPath = path.join(__dirname, '../../package.json');
+const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+const VERSION = packageJson.version;
+
+/**
+ * Print version information
+ */
+function printVersion() {
+  console.log(`Boardcast v${VERSION}`);
+}
+
 const command = process.argv[2];
 const arg = process.argv[3];
 
 function showHelp() {
+  printVersion();
   console.log(`
 Boardcast CLI - Create animated hex board tutorials
 
@@ -46,6 +59,12 @@ async function main() {
     return;
   }
 
+  // Handle version command
+  if (command === 'version' || command === '--version' || command === '-v') {
+    printVersion();
+    return;
+  }
+
   // Check if this is a DSL command by looking at file extension or command type
   const isDSLCommand = ['validate', 'compile', 'build', 'serve'].includes(command) || 
                        (arg && arg.endsWith('.board'));
@@ -71,6 +90,7 @@ async function main() {
   // Handle JavaScript-based commands (legacy)
   switch (command) {
     case 'create':
+      printVersion();
       if (!arg) {
         console.error('❌ Error: Please specify a filename');
         console.log('Usage: boardcast create <filename.js>');
@@ -81,6 +101,7 @@ async function main() {
       break;
 
     case 'record':
+      printVersion();
       if (!arg) {
         console.error('❌ Error: Please specify a tutorial file');
         console.log('Usage: boardcast record <filename.js>');

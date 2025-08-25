@@ -10,6 +10,11 @@ import { validateBoardFile } from './board-validator-chevrotain.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Read version from package.json
+const packageJsonPath = path.join(__dirname, '../package.json');
+const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
+const VERSION = packageJson.version;
+
 /**
  * Unified Boardcast Toolchain CLI
  * Provides a complete workflow for .board files:
@@ -19,6 +24,11 @@ const __dirname = path.dirname(__filename);
  */
 
 const COMMANDS = {
+  version: {
+    description: 'Show version information',
+    usage: 'version',
+    action: versionCommand
+  },
   validate: {
     description: 'Validate a .board file',
     usage: 'validate <file.board>',
@@ -52,9 +62,25 @@ const COMMANDS = {
 };
 
 /**
+ * Print version information
+ */
+function printVersion() {
+  console.log(`Boardcast v${VERSION}`);
+}
+
+/**
+ * Version command
+ */
+async function versionCommand(args) {
+  printVersion();
+  return { success: true };
+}
+
+/**
  * Validate command
  */
 async function validateCommand(args) {
+  printVersion();
   if (args.length === 0) {
     console.error('❌ Error: No file specified');
     console.error('Usage: boardcast-toolchain validate <file.board>');
@@ -98,6 +124,7 @@ async function validateCommand(args) {
  * Compile command
  */
 async function compileCommand(args) {
+  printVersion();
   if (args.length === 0) {
     console.error('❌ Error: No file specified');
     console.error('Usage: boardcast-toolchain compile <file.board> [output.js]');
@@ -139,6 +166,7 @@ async function compileCommand(args) {
  * Build command (validate + compile)
  */
 async function buildCommand(args) {
+  printVersion();
   if (args.length === 0) {
     console.error('❌ Error: No file specified');
     console.error('Usage: boardcast-toolchain build <file.board> [output.js]');
@@ -175,6 +203,7 @@ async function buildCommand(args) {
  * Serve command (local development server with live reload)
  */
 async function serveCommand(args) {
+  printVersion();
   if (args.length === 0) {
     console.error('❌ Error: No file specified');
     console.error('Usage: boardcast-toolchain serve <file.board> [port]');
@@ -641,6 +670,7 @@ function createDevelopmentHTML(jsFileName, port) {
  * Record command (build + record with boardcast-cli)
  */
 async function recordCommand(args) {
+  printVersion();
   if (args.length === 0) {
     console.error('❌ Error: No file specified');
     console.error('Usage: boardcast-toolchain record <file.board> [output.js]');
@@ -699,6 +729,7 @@ async function recordCommand(args) {
  * Help command
  */
 async function helpCommand(args) {
+  printVersion();
   if (args.length > 0) {
     const command = args[0];
     if (COMMANDS[command]) {
